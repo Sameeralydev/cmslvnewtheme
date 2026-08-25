@@ -1,0 +1,14 @@
+<?php
+namespace App\Http\Controllers\Admin\Hrms;
+use App\Http\Controllers\Controller; use App\Models\Hrms\Staff; use App\Models\Hrms\TrainingEvaluationForm; use Illuminate\Http\Request; use Illuminate\Http\RedirectResponse; use Illuminate\View\View;
+class TrainingEvaluationController extends Controller {
+    public function index(Request $request): View { return view('admin.hrms.training.evaluation',$this->data($request)); }
+    public function store(Request $request): RedirectResponse { TrainingEvaluationForm::create($this->validated($request)); return to_route('admin.hrms.training.evaluation.index')->with('success','Training Evaluation saved successfully.'); }
+    public function edit(TrainingEvaluationForm $trainingEvaluation, Request $request): View { return view('admin.hrms.training.evaluation',$this->data($request,$trainingEvaluation)); }
+    public function update(Request $request, TrainingEvaluationForm $trainingEvaluation): RedirectResponse { $trainingEvaluation->update($this->validated($request)); return to_route('admin.hrms.training.evaluation.index')->with('success','Training Evaluation updated successfully.'); }
+    public function show(TrainingEvaluationForm $trainingEvaluation, Request $request): View { return view('admin.hrms.training.evaluation',$this->data($request,$trainingEvaluation,true)); }
+    public function destroy(TrainingEvaluationForm $trainingEvaluation): RedirectResponse { $trainingEvaluation->delete(); return back()->with('success','Training Evaluation deleted successfully.'); }
+    private function validated(Request $r): array { $rules=['participant_name'=>'required|string|max:255','designation'=>'nullable|string|max:255','dep_campus'=>'nullable|string|max:255','date_of_event'=>'nullable|date','venue'=>'nullable|string|max:255','topic_of_training'=>'nullable|string|max:255','trainer_company'=>'nullable|string|max:255']; for($i=1;$i<=9;$i++)$rules['q'.$i]=['nullable','string','max:255']; for($i=10;$i<=14;$i++)$rules['q'.$i]=['nullable','string']; return $r->validate($rules); }
+    private function data(Request $r, ?TrainingEvaluationForm $evaluation=null, bool $view=false): array { return ['evaluations'=>TrainingEvaluationForm::latest()->get(),'evaluation'=>$evaluation,'viewMode'=>$view,'staff'=>Staff::query()->where('is_active',1)->orderBy('name')->orderBy('surname')->get(['id','name','surname']),'questions'=>$this->questions(),'today'=>now()->toDateString()]; }
+    private function questions(): array { return ['The objectives of the training were met','The trainer engaged and involved the participants','The presentation material was relevant','The content of the course was organized and easy to follow','The trainer was well prepared and able to answer any questions','The course length was appropriate','The pace of the course was appropriate to the content and attendees','The exercises/role play were helpful and relevant','The venue was appropriate for the event']; }
+}
