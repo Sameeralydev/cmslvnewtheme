@@ -478,7 +478,7 @@
             ['label' => 'Registers', 'route' => 'admin.academics.documents.index'],
             ['label' => 'Video Supports', 'route' => 'admin.academics.documents.index'],
         ]),
-        $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics', 'domains', 'domain-modules'])),
+        $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics', 'domain-modules', 'domains'])),
         $academicGroup('syllabus_management', 'Syllabus Mgmt.', 'fa fa-building', $academicChildren(['term-settings', 'week-settings', 'day-settings', 'syllabus'])),
         $academicGroup('effective_lesson_planning', 'Effective Lesson Planning', 'fa fa-calendar-check', $academicChildren(['lessons'])),
         $academicGroup('timetable_staffing', 'Timetable & Staffing', 'fa fa-clock', $academicChildren(['timetables', 'teachers'])),

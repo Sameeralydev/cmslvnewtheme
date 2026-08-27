@@ -22,12 +22,12 @@ class WelcomeController extends Controller
 {
     public function index(): View
     {
-        $settings = $this->settings();
-        $frontSettings = $this->frontSettings();
-        $homePage = Page::query()->active()->published()->where('is_homepage', 1)->latest('created_at')->first();
-        $branches = Branch::query()->active()->latest('created_at')->limit(8)->get();
-        $posts = Post::query()->active()->published()->latest('publish_date')->limit(6)->get();
-        $gallery = Gallery::query()->latest('created_at')->limit(8)->get();
+        $settings = rescue(fn () => $this->settings(), null, false);
+        $frontSettings = rescue(fn () => $this->frontSettings(), null, false);
+        $homePage = rescue(fn () => Page::query()->active()->published()->where('is_homepage', 1)->latest('created_at')->first(), null, false);
+        $branches = rescue(fn () => Branch::query()->active()->latest('created_at')->limit(8)->get(), collect(), false);
+        $posts = rescue(fn () => Post::query()->active()->published()->latest('publish_date')->limit(6)->get(), collect(), false);
+        $gallery = rescue(fn () => Gallery::query()->latest('created_at')->limit(8)->get(), collect(), false);
         $seo = $this->seo($homePage, 'Home');
 
         return view('frontend.index', compact('settings', 'frontSettings', 'homePage', 'branches', 'posts', 'gallery', 'seo'));
@@ -166,28 +166,28 @@ class WelcomeController extends Controller
 
     private function optionalPage(string $slug): ?Page
     {
-        return Page::query()
+        return rescue(fn () => Page::query()
             ->active()
             ->published()
             ->where(fn (Builder $query) => $query->bySlug($slug))
             ->latest('created_at')
-            ->first();
+            ->first(), null, false);
     }
 
     private function settings(?Branch $branch = null): ?Setting
     {
-        return Setting::query()
+        return rescue(fn () => Setting::query()
             ->when($branch, fn (Builder $query) => $query->where('brc_id', $branch->id))
             ->latest('created_at')
-            ->first();
+            ->first(), null, false);
     }
 
     private function frontSettings(?Branch $branch = null): ?FrontCmsSetting
     {
-        return FrontCmsSetting::query()
+        return rescue(fn () => FrontCmsSetting::query()
             ->when($branch, fn (Builder $query) => $query->where('brc_id', $branch->id))
             ->latest('created_at')
-            ->first();
+            ->first(), null, false);
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class SubjectGroup extends AcademicModel
 {
+    public $timestamps = false;
     public const UPDATED_AT = null;
 
     protected $table = 'subject_groups';

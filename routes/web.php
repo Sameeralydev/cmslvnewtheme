@@ -267,6 +267,9 @@ Route::prefix('admin/academics')
         Route::get('/chapter', [ChapterController::class, 'index'])
             ->middleware('permission:chapter,view')
             ->name('chapters.index');
+        Route::post('/chapter', [ChapterController::class, 'store'])->middleware('permission:chapter,add')->name('chapters.store');
+        Route::put('/chapter/{chapter}', [ChapterController::class, 'update'])->middleware('permission:chapter,edit')->name('chapters.update');
+        Route::delete('/chapter/{chapter}', [ChapterController::class, 'destroy'])->middleware('permission:chapter,delete')->name('chapters.destroy');
 
         Route::get('/conference', [ConferenceController::class, 'index'])
             ->middleware('permission:conference,view')
@@ -283,10 +286,16 @@ Route::prefix('admin/academics')
         Route::get('/domain', [DomainController::class, 'index'])
             ->middleware('permission:domain,view')
             ->name('domains.index');
+        Route::post('/domain', [DomainController::class, 'store'])->middleware('permission:domain,add')->name('domains.store');
+        Route::put('/domain/{domain}', [DomainController::class, 'update'])->middleware('permission:domain,edit')->name('domains.update');
+        Route::delete('/domain/{domain}', [DomainController::class, 'destroy'])->middleware('permission:domain,delete')->name('domains.destroy');
 
         Route::get('/domainmodules', [DomainModuleController::class, 'index'])
             ->middleware('permission:domainmodules,view')
             ->name('domain-modules.index');
+        Route::post('/domainmodules', [DomainModuleController::class, 'store'])->middleware('permission:domainmodules,add')->name('domain-modules.store');
+        Route::put('/domainmodules/{domainModule}', [DomainModuleController::class, 'update'])->middleware('permission:domainmodules,edit')->name('domain-modules.update');
+        Route::delete('/domainmodules/{domainModule}', [DomainModuleController::class, 'destroy'])->middleware('permission:domainmodules,delete')->name('domain-modules.destroy');
 
         Route::get('/examgroup', [ExamGroupController::class, 'index'])
             ->middleware('permission:examgroup,view')
@@ -343,10 +352,16 @@ Route::prefix('admin/academics')
         Route::get('/subject', [SubjectController::class, 'index'])
             ->middleware('permission:subject,view')
             ->name('subjects.index');
+        Route::post('/subject', [SubjectController::class, 'store'])->middleware('permission:subject,add')->name('subjects.store');
+        Route::put('/subject/{subject}', [SubjectController::class, 'update'])->middleware('permission:subject,edit')->name('subjects.update');
+        Route::delete('/subject/{subject}', [SubjectController::class, 'destroy'])->middleware('permission:subject,delete')->name('subjects.destroy');
 
         Route::get('/subjectgroup', [SubjectGroupController::class, 'index'])
             ->middleware('permission:subjectgroup,view')
             ->name('subject-groups.index');
+        Route::post('/subjectgroup', [SubjectGroupController::class, 'store'])->middleware('permission:subjectgroup,add')->name('subject-groups.store');
+        Route::put('/subjectgroup/{subjectGroup}', [SubjectGroupController::class, 'update'])->middleware('permission:subjectgroup,edit')->name('subject-groups.update');
+        Route::delete('/subjectgroup/{subjectGroup}', [SubjectGroupController::class, 'destroy'])->middleware('permission:subjectgroup,delete')->name('subject-groups.destroy');
 
         Route::get('/syllabus', [SyllabusController::class, 'index'])
             ->middleware('permission:syllabus,view')
@@ -379,6 +394,9 @@ Route::prefix('admin/academics')
         Route::get('/topic', [TopicController::class, 'index'])
             ->middleware('permission:topic,view')
             ->name('topics.index');
+        Route::post('/topic', [TopicController::class, 'store'])->middleware('permission:topic,add')->name('topics.store');
+        Route::put('/topic/{topic}', [TopicController::class, 'update'])->middleware('permission:topic,edit')->name('topics.update');
+        Route::delete('/topic/{topic}', [TopicController::class, 'destroy'])->middleware('permission:topic,delete')->name('topics.destroy');
 
         Route::get('/weeksetting', [WeekSettingController::class, 'index'])
             ->middleware('permission:weeksetting,view')

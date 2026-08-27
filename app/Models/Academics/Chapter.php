@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Chapter extends AcademicModel
 {
+    public $timestamps = false;
     protected $table = 'chapter';
 
     public function subject(): BelongsTo

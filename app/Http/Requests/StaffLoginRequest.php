@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use App\Models\Role;
 use App\Models\Staff;
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -177,6 +177,9 @@ class StaffLoginRequest extends FormRequest
     {
         $provider = config('auth.guards.'.config('auth.defaults.guard', 'web').'.provider', 'users');
         $model = config("auth.providers.{$provider}.model", User::class);
+        if (is_string($model)) {
+            $model = str_replace('\\\\', '\\', $model);
+        }
 
         return (new $model)->getTable();
     }

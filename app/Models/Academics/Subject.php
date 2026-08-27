@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends AcademicModel
 {
+    public $timestamps = false;
     protected $table = 'subjects';
 
     public function chapters(): HasMany

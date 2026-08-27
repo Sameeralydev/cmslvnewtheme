@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Domain extends AcademicModel
 {
+    public $timestamps = false;
     protected $table = 'domain';
 
     public function modules(): HasMany

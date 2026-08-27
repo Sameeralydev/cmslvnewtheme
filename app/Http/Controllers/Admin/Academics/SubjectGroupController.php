@@ -1,14 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin\Academics;
-
-use Illuminate\Http\Request;
-use Illuminate\View\View;
-
-class SubjectGroupController extends BaseAcademicsController
-{
-    public function index(Request $request): View
-    {
-        return $this->renderIndex('subject-groups', $request);
-    }
-}
+use App\Models\Academics\SubjectGroup;use App\Models\Academics\Subject;use Illuminate\Http\Request;use Illuminate\Support\Facades\DB;use Illuminate\View\View;
+class SubjectGroupController extends BaseAcademicsController{public function index(Request $r):View{$classes=DB::table('classes')->orderBy('id')->get();$classNames=$classes->pluck('class','id');$subjects=Subject::orderBy('name')->get();$records=SubjectGroup::with('subjects')->when($r->filled('search'),fn($q)=>$q->where('name','like','%'.$r->string('search').'%'))->orderBy('id')->paginate(20)->withQueryString();$subjectGroup=$r->integer('edit')?SubjectGroup::with('subjects')->findOrFail($r->integer('edit')):null;return view('admin.academics.curriculum.subject-groups',compact('classes','classNames','subjects','records','subjectGroup'));}private function rules(){return ['class_id'=>'required|exists:classes,id','name'=>'required|string|max:250','subjects'=>'required|array|min:1','subjects.*'=>'integer|exists:subjects,id','description'=>'nullable|string'];}public function store(Request $r){$d=$r->validate($this->rules());$g=SubjectGroup::create(['class_id'=>$d['class_id'],'name'=>$d['name'],'description'=>$d['description']??'']);$g->subjects()->sync($d['subjects']);return back()->with('success','Record saved successfully.');}public function update(Request $r,SubjectGroup $subjectGroup){$d=$r->validate($this->rules());$subjectGroup->update(['class_id'=>$d['class_id'],'name'=>$d['name'],'description'=>$d['description']??'']);$subjectGroup->subjects()->sync($d['subjects']);return back()->with('success','Record updated successfully.');}public function destroy(SubjectGroup $subjectGroup){$subjectGroup->subjects()->detach();$subjectGroup->delete();return back()->with('success','Record deleted successfully.');}}

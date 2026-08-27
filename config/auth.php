@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Staff;
+use App\Models\User;
+
 return [
 
     /*
@@ -67,12 +70,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => is_string(env('AUTH_MODEL')) ? str_replace('\\\\', '\\', env('AUTH_MODEL')) : Staff::class,
         ],
 
         'site_users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => User::class,
         ],
 
         // 'users' => [
