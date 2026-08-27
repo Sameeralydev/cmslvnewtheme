@@ -34,34 +34,23 @@ function runCmd($cmd, $cwd) {
 
 $results = [];
 
-// 1. Git branch
-$results['branch'] = runCmd('git branch --show-current', $repoDir);
+// 1. Git pull --rebase
+$results['pull'] = runCmd('git pull --rebase origin main', $repoDir);
 
-// 2. Git status
-$results['status_before'] = runCmd('git status --short', $repoDir);
-
-// 3. Git remote check
-$results['remote'] = runCmd('git remote -v', $repoDir);
-
-// 4. Set remote if needed
-$remoteOut = $results['remote']['stdout'];
-if (strpos($remoteOut, 'Sameeralydev/cmslvnewtheme.git') === false) {
-    if (empty($remoteOut)) {
-        $results['remote_add'] = runCmd("git remote add origin {$targetRepo}", $repoDir);
-    } else {
-        $results['remote_set'] = runCmd("git remote set-url origin {$targetRepo}", $repoDir);
-    }
+// If pull rebase had conflicts or failed, try git pull origin main --no-rebase
+if ($results['pull']['exit_code'] !== 0) {
+    runCmd('git rebase --abort', $repoDir);
+    $results['pull_merge'] = runCmd('git pull origin main --no-rebase -X theirs --allow-unrelated-histories -m "Merge remote changes"', $repoDir);
 }
 
-// 5. Git add
+// 2. Git add
 $results['add'] = runCmd('git add .', $repoDir);
 
-// 6. Git commit
+// 3. Git commit if any changes
 $results['commit'] = runCmd('git commit -m "Update Chart of Accounts, Details View, and Fee Structure"', $repoDir);
 
-// 7. Git push
-$branch = !empty($results['branch']['stdout']) ? $results['branch']['stdout'] : 'main';
-$results['push'] = runCmd("git push -u origin {$branch}", $repoDir);
+// 4. Git push
+$results['push'] = runCmd('git push -u origin main', $repoDir);
 
 header('Content-Type: application/json');
 echo json_encode($results, JSON_PRETTY_PRINT);
