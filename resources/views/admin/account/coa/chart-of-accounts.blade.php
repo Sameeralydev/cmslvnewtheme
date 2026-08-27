@@ -40,7 +40,7 @@
                                             <tr>
                                                 <td>{{ $row->account_head }}</td>
                                                 <td>{{ $row->account_type }}</td>
-                                                <td style="text-align:left !important;">{{ $row->account_code }}. {{ $row->account_name }}</td>
+                                                <td class="text-left">{{ $row->account_code }}. {{ $row->account_name }}</td>
                                             </tr>
                                         @empty
                                             <tr>

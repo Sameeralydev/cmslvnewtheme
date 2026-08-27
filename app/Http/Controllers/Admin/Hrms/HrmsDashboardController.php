@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Hrms;
 
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class HrmsDashboardController extends BaseHrmsController
 {
-    public function index(): RedirectResponse
+    public function index(Request $request): View
     {
-        return to_route('admin.hrms.training.agenda.index');
+        return $this->renderIndex('dashboard', $request);
     }
 }

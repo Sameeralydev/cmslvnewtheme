@@ -43,9 +43,11 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('web')->logout();
 
+        $loginPortal = $request->session()->get('auth.login_portal', 'staff');
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route($loginPortal === 'superadmin' ? 'superadmin.login' : 'staff.login');
     }
 }

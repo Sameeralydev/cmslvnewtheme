@@ -1,6 +1,8 @@
 @php
     $currentRouteName = request()->route()?->getName() ?? '';
     $isHrmsRoute = str_starts_with($currentRouteName, 'admin.hrms.');
+    $isAdmRoute = str_starts_with($currentRouteName, 'admin.adm.');
+    $isAcademicsRoute = str_starts_with($currentRouteName, 'admin.academics.');
     $isAccountRoute = str_starts_with($currentRouteName, 'admin.account.');
     $isAdminDashboardRoute = in_array($currentRouteName, ['admin.dashboard', 'admin.dashboard.clean', 'cmsc.admin.dashboard'], true);
     $isSystemSettingsRoute = $currentRouteName === 'admin.systemsettings.dashboard';
@@ -92,7 +94,7 @@
         [
             'key' => 'compensations_benefits',
             'label' => 'Compensations Benefits',
-            'icon' => 'fa fa-line-chart',
+            'icon' => 'fa fa-chart-line',
             'route' => null,
             'children' => [
                 ['label' => 'Overview', 'route' => 'admin.hrms.staff.index'],
@@ -112,7 +114,7 @@
         [
             'key' => 'performance_management',
             'label' => 'Performance Management',
-            'icon' => 'fa fa-pie-chart',
+            'icon' => 'fa fa-chart-pie',
             'route' => null,
             'children' => [
                 ['label' => 'Scl Performance', 'route' => 'admin.hrms.school-performance.index'],
@@ -148,7 +150,7 @@
         [
             'key' => 'reports_reviews',
             'label' => 'Reports Reviews',
-            'icon' => 'fa fa-bar-chart',
+            'icon' => 'fa fa-chart-column',
             'route' => null,
             'children' => [
                 ['label' => 'Overview', 'route' => 'admin.hrms.staff.index'],
@@ -174,7 +176,7 @@
         [
             'key' => 'internal_external_communication',
             'label' => "Internal & External Comm'n",
-            'icon' => 'fa fa-commenting-o',
+            'icon' => 'fa fa-comment-dots',
             'route' => null,
             'children' => [],
         ],
@@ -202,28 +204,28 @@
         [
             'key' => 'attendance_management',
             'label' => 'Attendance Mgmt.',
-            'icon' => 'fa fa-calendar-check-o',
+            'icon' => 'fa fa-calendar-check',
             'route' => 'admin.adm.student-attendance.index',
             'children' => [],
         ],
         [
             'key' => 'syllabus_management',
             'label' => 'Syllabus Management',
-            'icon' => 'fa fa-building-o',
+            'icon' => 'fa fa-building',
             'route' => 'admin.academics.dashboard',
             'children' => [],
         ],
         [
             'key' => 'effective_lesson_planning',
             'label' => 'Lesson Planning',
-            'icon' => 'fa fa-calendar-check-o',
+            'icon' => 'fa fa-calendar-check',
             'route' => 'admin.academics.lessons.index',
             'children' => [],
         ],
         [
             'key' => 'timetable_staffing',
             'label' => 'Timetable Staffing',
-            'icon' => 'fa fa-clock-o',
+            'icon' => 'fa fa-clock',
             'route' => 'admin.academics.timetables.index',
             'children' => [],
         ],
@@ -237,28 +239,28 @@
         [
             'key' => 'paper_generate',
             'label' => 'Paper Generate',
-            'icon' => 'fa fa-files-o',
+            'icon' => 'fa fa-file-lines',
             'route' => 'admin.academics.paper-generate.index',
             'children' => [],
         ],
         [
             'key' => 'examination',
             'label' => 'Examination',
-            'icon' => 'fa fa-file-text-o',
+            'icon' => 'fa fa-file-lines',
             'route' => 'admin.academics.exam-groups.index',
             'children' => [],
         ],
         [
             'key' => 'test_system',
             'label' => 'Test System',
-            'icon' => 'fa fa-file-o',
+            'icon' => 'fa fa-file',
             'route' => 'admin.academics.test-groups.index',
             'children' => [],
         ],
         [
             'key' => 'fee_voucher',
             'label' => 'Fee Voucher',
-            'icon' => 'fa fa-newspaper-o',
+            'icon' => 'fa fa-newspaper',
             'route' => 'admin.account.student-fees.index',
             'children' => [],
         ],
@@ -407,7 +409,7 @@
         [
             'key' => 'account_reports_reviews',
             'label' => 'Reports & Reviews',
-            'icon' => 'fa fa-bar-chart',
+            'icon' => 'fa fa-chart-column',
             'route' => null,
             'children' => [
                 ['label' => 'General Report', 'route' => 'admin.account.accounts.index'],
@@ -419,166 +421,159 @@
         ],
     ];
 
+    $admModules = app(\App\Services\Adm\AdmModuleRegistry::class)->all();
+    $admChildren = static function (array $keys) use ($admModules): array {
+        return array_values(array_filter(array_map(
+            static fn (string $key): ?array => isset($admModules[$key])
+                ? ['key' => $key, 'label' => $admModules[$key]['label'], 'route' => $admModules[$key]['route']]
+                : null,
+            $keys
+        )));
+    };
+    $admissionKeys = ['enquiries', 'student-registrations', 'students', 'student-id-cards', 'siblings', 'student-transfers', 'achievements'];
+    $withdrawalKeys = ['leave-requests', 'leave-approvals'];
+    $attendanceKeys = ['attendance', 'student-attendance', 'subject-attendance', 'staff-attendance'];
+    $customerServiceKeys = ['complaints', 'complaint-regardings', 'complaint-sources', 'complaint-types'];
+    $communicationKeys = ['content', 'content-types', 'dispatch', 'documents', 'general-calls', 'general-remarks', 'mail-sms', 'notifications', 'receive', 'references', 'sources'];
+    $usedAdmKeys = array_merge($admissionKeys, $withdrawalKeys, $attendanceKeys, $customerServiceKeys, $communicationKeys);
+    $otherAdmKeys = array_values(array_diff(array_keys($admModules), ['dashboard'], $usedAdmKeys));
+
+    $administrationSidebarItems = [
+        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fa fa-television', 'route' => 'admin.adm.dashboard', 'children' => []],
+        ['key' => 'manual_support', 'label' => 'Manual Support', 'icon' => 'fa fa-life-ring', 'route' => null, 'children' => [
+            ['label' => 'Add Documents', 'route' => 'admin.adm.documents.index'],
+            ['label' => 'Policy Manual', 'route' => 'admin.adm.documents.index'],
+            ['label' => 'Flow Charts', 'route' => 'admin.adm.documents.index'],
+            ['label' => 'Supportive Documents', 'route' => 'admin.adm.documents.index'],
+            ['label' => 'Registers', 'route' => 'admin.adm.documents.index'],
+            ['label' => 'Video Supports', 'route' => 'admin.adm.video-tutorials.index'],
+        ]],
+        ['key' => 'admission_process', 'label' => 'Admission Process', 'icon' => 'fa fa-user-plus', 'route' => null, 'children' => $admChildren($admissionKeys)],
+        ['key' => 'withdrawal_process', 'label' => 'Withdrawal Process', 'icon' => 'fa fa-ban', 'route' => null, 'children' => $admChildren($withdrawalKeys)],
+        ['key' => 'attendance_management', 'label' => 'Attendance Management', 'icon' => 'fa fa-calendar-check', 'route' => null, 'children' => $admChildren($attendanceKeys)],
+        ['key' => 'customer_services_management', 'label' => 'Customer Services Mgmt.', 'icon' => 'fa fa-list-ol', 'route' => null, 'children' => $admChildren($customerServiceKeys)],
+        ['key' => 'internal_external_communication', 'label' => "Internal & External Comm'n", 'icon' => 'fa fa-comment-dots', 'route' => null, 'children' => $admChildren($communicationKeys)],
+        ['key' => 'other_adm_modules', 'label' => 'Other ADM Modules', 'icon' => 'fa fa-th-large', 'route' => null, 'children' => $admChildren($otherAdmKeys)],
+    ];
+
+    $academicModules = app(\App\Services\Academics\AcademicModuleRegistry::class)->all();
+    $academicChildren = static function (array $keys) use ($academicModules): array {
+        return array_values(array_filter(array_map(
+            static fn (string $key): ?array => isset($academicModules[$key])
+                ? ['key' => $key, 'label' => $academicModules[$key]['label'], 'route' => $academicModules[$key]['route']]
+                : null,
+            $keys
+        )));
+    };
+    $academicGroup = static fn (string $key, string $label, string $icon, array $children): array => [
+        'key' => $key, 'label' => $label, 'icon' => $icon, 'route' => null, 'children' => $children,
+    ];
+    $academicsSidebarItems = [
+        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fa fa-television', 'route' => 'admin.academics.dashboard', 'children' => []],
+        $academicGroup('manual_support', 'Manual Support', 'fa fa-life-ring', [
+            ['label' => 'Add Documents', 'route' => 'admin.academics.documents.index'],
+            ['label' => 'Policy Manual', 'route' => 'admin.academics.documents.index'],
+            ['label' => 'Flow Charts', 'route' => 'admin.academics.documents.index'],
+            ['label' => 'Supportive Documents', 'route' => 'admin.academics.documents.index'],
+            ['label' => 'Registers', 'route' => 'admin.academics.documents.index'],
+            ['label' => 'Video Supports', 'route' => 'admin.academics.documents.index'],
+        ]),
+        $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics', 'domains', 'domain-modules'])),
+        $academicGroup('syllabus_management', 'Syllabus Mgmt.', 'fa fa-building', $academicChildren(['term-settings', 'week-settings', 'day-settings', 'syllabus'])),
+        $academicGroup('effective_lesson_planning', 'Effective Lesson Planning', 'fa fa-calendar-check', $academicChildren(['lessons'])),
+        $academicGroup('timetable_staffing', 'Timetable & Staffing', 'fa fa-clock', $academicChildren(['timetables', 'teachers'])),
+        $academicGroup('what_i_have_learnt', 'What I Have Learnt', 'fa fa-flask', $academicChildren(['homework'])),
+        $academicGroup('zoom_live_classes', 'Zoom Live Classes', 'fa fa-video-camera', []),
+        $academicGroup('gmeet_live_classes', 'Gmeet Live Classes', 'fa fa-video-camera', $academicChildren(['google-meet'])),
+        $academicGroup('question_bank', 'Question Bank', 'fa fa-question', $academicChildren(['questions'])),
+        $academicGroup('paper_generate', 'Paper Generate', 'fa fa-file-lines', $academicChildren(['paper-generate'])),
+        $academicGroup('holistic_development', 'Holistic Development', 'fa fa-chart-column', []),
+        $academicGroup('examination', 'Examination', 'fa fa-file-lines', $academicChildren(['exam-groups', 'exam-schedules', 'exam-results'])),
+        $academicGroup('test_system', 'Test System', 'fa fa-file', $academicChildren(['test-groups', 'test-schedules', 'test-results'])),
+        $academicGroup('online_examination', 'Online Examination', 'fa fa-rss', $academicChildren(['online-exams'])),
+        $academicGroup('grooming_analysis', 'Grooming Analysis', 'fa fa-chart-area', $academicChildren(['grooming', 'grooming-domains', 'grooming-parameters'])),
+        $academicGroup('parent_teachers_meeting', 'Parent Teachers Meeting', 'fa fa-handshake', []),
+        $academicGroup('discipline_conduct', 'Discipline / Conduct', 'fa fa-person-dress', []),
+        $academicGroup('library', 'Library', 'fa fa-book', $academicChildren(['members', 'books'])),
+        $academicGroup('lab', 'Lab', 'fa fa-flask', []),
+        $academicGroup('academic_conferences', 'Conferences', 'fa fa-comments', $academicChildren(['conferences'])),
+        $academicGroup('academic_reports_reviews', 'Reports & Reviews', 'fa fa-chart-column', []),
+    ];
+
     $sidebarItems = $isAdminDashboardRoute
         ? $dashboardSidebarItems
-        : ($isSystemSettingsRoute ? $systemSettingsSidebarItems : ($isAccountRoute ? $accountSidebarItems : $hrmsSidebarItems));
+        : ($isSystemSettingsRoute
+            ? $systemSettingsSidebarItems
+            : ($isAccountRoute
+                ? $accountSidebarItems
+                : ($isAdmRoute ? $administrationSidebarItems : ($isAcademicsRoute ? $academicsSidebarItems : $hrmsSidebarItems))));
 @endphp
 
-<style>
-    .admin-sidebar-tree {
-        overflow: hidden;
-        max-height: 0;
-        background: #3d5fa7;
-        transition: max-height .24s ease;
-    }
-
-    .admin-sidebar-tree.is-open {
-        max-height: var(--sidebar-tree-height, 520px);
-    }
-</style>
-
-<aside class="admin-sidebar" style="display:block;position:fixed;top:0;left:0;bottom:0;width:var(--admin-sidebar-width);background:#2d4b94;color:#fff;z-index:30;box-shadow:0 2px 8px rgba(0,0,0,.24);overflow:hidden;">
-    <div style="height:54px;padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:8px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:#f7f7f7;border:1px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;color:#7b8798;font-size:16px;flex:0 0 36px;">
-            <i class="fa fa-user-o"></i>
-        </div>
-        <a href="{{ route('admin.dashboard', absolute: false) }}" style="color:#ffffff;text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            <i class="fa fa-hand-o-right" style="margin-right:4px;"></i>Super Admin
-        </a>
-    </div>
-
-    <div style="padding:10px 10px 8px;border-bottom:1px solid rgba(0,0,0,.18);background:#2b478d;">
-        <div style="font-size:11px;font-weight:700;color:#fff;">Current Session: 2026-27</div>
-        <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#fff;">
-            <span>Quick Links</span>
-            <span style="font-size:13px;"><i class="fa fa-th"></i></span>
+<aside class="admin-sidebar" aria-label="Primary navigation">
+    <div class="admin-sidebar-header">
+        <span class="admin-sidebar-logo">TS</span>
+        <div class="admin-sidebar-user">
+            <a href="{{ route('admin.dashboard', absolute: false) }}">Super Admin</a>
+            <span>Management portal</span>
         </div>
     </div>
 
-    <nav style="height:calc(100vh - 96px);overflow-y:auto;overflow-x:hidden;padding-top:2px;">
+    <div class="admin-sidebar-session">
+        <strong>Current Session</strong><br>
+        <span>2026–27</span>
+    </div>
+
+    <nav class="admin-sidebar-nav">
         @foreach ($sidebarItems as $item)
             @php
                 $itemIsActive = $item['route'] ? request()->routeIs($item['route']) : false;
                 $menuIsActive = ($item['key'] ?? null) !== null && ($item['key'] ?? null) === $currentSidebarMenu;
-                $childRouteIsActive = collect($item['children'])->contains(
-                    fn (array $child): bool => request()->routeIs($child['route'])
-                );
+                $childRouteIsActive = collect($item['children'])->contains(fn (array $child): bool => request()->routeIs($child['route']));
                 $hasCurrentSidebarMenu = $currentSidebarMenu !== null && $currentSidebarMenu !== '';
                 $isExpanded = $itemIsActive || $menuIsActive || (! $hasCurrentSidebarMenu && $childRouteIsActive);
             @endphp
 
             @if ($item['children'] !== [])
-                <div style="border-bottom:1px solid rgba(255,255,255,.06);">
+                <div class="admin-sidebar-section">
                     <a
+                        class="admin-sidebar-link px-3"
                         data-sidebar-toggle
                         data-sidebar-target="sidebar-menu-{{ $item['key'] }}"
                         aria-expanded="{{ $isExpanded ? 'true' : 'false' }}"
                         href="{{ $item['route'] ? route($item['route'], absolute: false) : request()->fullUrlWithQuery(['menu' => $item['key']]) }}"
-                        style="display:flex;align-items:center;gap:10px;padding:11px 10px;color:#fff;text-decoration:none;font-size:11px;font-weight:600;background:{{ $isExpanded ? '#3b61ad' : 'transparent' }};"
                     >
-                        <span style="width:16px;text-align:center;font-size:13px;flex:0 0 16px;"><i class="{{ $item['icon'] }}"></i></span>
-                        <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item['label'] }}</span>
-                        <span style="font-size:12px;"><i data-sidebar-chevron class="fa fa-angle-{{ $isExpanded ? 'down' : 'right' }}"></i></span>
+                        <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
+                        <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
+                        <span class="admin-sidebar-link-chevron"><i data-sidebar-chevron class="fa fa-angle-{{ $isExpanded ? 'down' : 'right' }}"></i></span>
                     </a>
 
-                    <div
-                        id="sidebar-menu-{{ $item['key'] }}"
-                        class="admin-sidebar-tree {{ $isExpanded ? 'is-open' : '' }}"
-                        style="{{ $isExpanded ? '--sidebar-tree-height:520px;' : '' }}padding:2px 0;"
-                    >
-                        @foreach ($item['children'] as $child)
-                            @php
-                                $childKey = $child['key'] ?? '';
-                                $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
-                                $childUrl = route($child['route'], absolute: false);
-
-                                if ($child['route'] !== 'admin.hrms.staff.index') {
-                                    $childParams = ['menu' => $item['key']];
-
-                                    if ($childKey !== '') {
-                                        $childParams['submenu'] = $childKey;
+                    <div id="sidebar-menu-{{ $item['key'] }}" class="admin-sidebar-tree {{ $isExpanded ? 'is-open' : '' }}">
+                        <div class="admin-sidebar-tree-inner">
+                            @foreach ($item['children'] as $child)
+                                @php
+                                    $childKey = $child['key'] ?? '';
+                                    $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
+                                    $childUrl = route($child['route'], absolute: false);
+                                    if ($child['route'] !== 'admin.hrms.staff.index') {
+                                        $childParams = ['menu' => $item['key']];
+                                        if ($childKey !== '') $childParams['submenu'] = $childKey;
+                                        $childUrl = route($child['route'], $childParams, false);
                                     }
-
-                                    $childUrl = route($child['route'], $childParams, false);
-                                }
-                            @endphp
-                            <a
-                                href="{{ $childUrl }}"
-                                style="display:flex;align-items:center;gap:8px;padding:6px 14px 6px 12px;color:#fff;text-decoration:none;font-size:10px;font-weight:600;background:{{ $childIsCurrent ? '#31508f' : 'transparent' }};"
-                            >
-                                <i class="fa fa-angle-double-right" style="font-size:9px;opacity:.9;"></i>
-                                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $child['label'] }}</span>
-                            </a>
-                        @endforeach
+                                @endphp
+                                <a class="admin-sidebar-link admin-sidebar-child {{ $childIsCurrent ? 'is-active' : '' }}" href="{{ $childUrl }}">
+                                    <span class="admin-sidebar-link-icon"><i class="fa fa-angle-double-right"></i></span>
+                                    <span class="admin-sidebar-link-label">{{ $child['label'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             @else
-                <a
-                    href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}"
-                    style="display:flex;align-items:center;gap:10px;padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:11px;font-weight:600;background:{{ $itemIsActive ? '#1f3b7d' : 'transparent' }};"
-                >
-                    <span style="width:16px;text-align:center;font-size:13px;flex:0 0 16px;"><i class="{{ $item['icon'] }}"></i></span>
-                    <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item['label'] }}</span>
-                    @unless ($loop->first)
-                        <span style="font-size:12px;"><i class="fa fa-angle-right"></i></span>
-                    @endunless
+                <a class="admin-sidebar-link px-3 {{ $itemIsActive ? 'is-active' : '' }}" href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}">
+                    <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
+                    <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
                 </a>
             @endif
         @endforeach
     </nav>
 </aside>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var toggles = Array.prototype.slice.call(document.querySelectorAll('[data-sidebar-toggle]'));
-
-        toggles.forEach(function (toggle) {
-            var target = document.getElementById(toggle.getAttribute('data-sidebar-target'));
-
-            if (!target) {
-                return;
-            }
-
-            if (target.classList.contains('is-open')) {
-                target.style.setProperty('--sidebar-tree-height', target.scrollHeight + 'px');
-            }
-
-            toggle.addEventListener('click', function (event) {
-                event.preventDefault();
-
-                var shouldOpen = !target.classList.contains('is-open');
-
-                toggles.forEach(function (otherToggle) {
-                    var otherTarget = document.getElementById(otherToggle.getAttribute('data-sidebar-target'));
-                    var otherChevron = otherToggle.querySelector('[data-sidebar-chevron]');
-
-                    if (!otherTarget) {
-                        return;
-                    }
-
-                    otherTarget.style.setProperty('--sidebar-tree-height', otherTarget.scrollHeight + 'px');
-                    otherTarget.classList.remove('is-open');
-                    otherToggle.setAttribute('aria-expanded', 'false');
-                    otherToggle.style.background = 'transparent';
-
-                    if (otherChevron) {
-                        otherChevron.className = 'fa fa-angle-right';
-                    }
-                });
-
-                if (shouldOpen) {
-                    var chevron = toggle.querySelector('[data-sidebar-chevron]');
-
-                    target.style.setProperty('--sidebar-tree-height', target.scrollHeight + 'px');
-                    target.classList.add('is-open');
-                    toggle.setAttribute('aria-expanded', 'true');
-                    toggle.style.background = '#3b61ad';
-
-                    if (chevron) {
-                        chevron.className = 'fa fa-angle-down';
-                    }
-                }
-            });
-        });
-    });
-</script>

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Staff;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -51,7 +53,11 @@ class StaffLoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->credentials(), $this->shouldRemember()) || ! $this->activeUser()) {
+        if (
+            ! Auth::attempt($this->credentials(), $this->shouldRemember())
+            || ! $this->activeUser()
+            || ! $this->matchesRequestedPortal()
+        ) {
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
 
@@ -141,6 +147,30 @@ class StaffLoginRequest extends FormRequest
         $isActive = strtolower(trim((string) Auth::user()?->is_active));
 
         return in_array($isActive, config('legacy.status.active_values', ['1', 'yes', 'active']), true);
+    }
+
+    private function matchesRequestedPortal(): bool
+    {
+        $isSuperAdminPortal = $this->routeIs('superadmin.login');
+        $user = Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        $role = strtolower(trim((string) ($user->role ?? '')));
+        $isSuperAdmin = in_array($role, ['superadmin', 'super admin'], true);
+        $roleId = $user->role_id ?? null;
+
+        if (! $roleId && isset($user->user_id)) {
+            $roleId = Staff::query()->where('user_id', $user->user_id)->value('role_id');
+        }
+
+        if (! $isSuperAdmin && $roleId) {
+            $isSuperAdmin = Role::query()->whereKey($roleId)->where('is_superadmin', 1)->exists();
+        }
+
+        return $isSuperAdminPortal ? $isSuperAdmin : ! $isSuperAdmin;
     }
 
     private function authTable(): string

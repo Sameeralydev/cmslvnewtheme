@@ -3,10 +3,6 @@
 @section('title', $module['label'])
 
 @section('content')
-    @if ($moduleKey !== 'staff')
-        @include('admin.hrms.partials.nav')
-    @endif
-
     @if ($moduleKey === 'staff')
         <section class="mb-4 overflow-hidden rounded-md border border-[#d9d9d9] bg-white shadow-sm">
             <div class="flex items-center justify-between border-b border-[#d9d9d9] bg-white px-4 py-2.5">
@@ -244,7 +240,7 @@
                 </div>
             @endif
         </section>
-    @else
+    @elseif ($moduleKey !== 'dashboard')
         <section class="mb-5 overflow-hidden rounded-[28px] border border-sky-100 bg-linear-to-r from-slate-900 via-blue-900 to-sky-700 text-white shadow-lg shadow-blue-950/10">
             <div class="flex flex-col gap-6 px-5 py-6 lg:flex-row lg:items-end lg:justify-between lg:px-7">
                 <div class="max-w-2xl">

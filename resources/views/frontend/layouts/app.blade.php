@@ -12,12 +12,13 @@
         @if (! empty($seo['og_image']))
             <meta property="og:image" content="{{ asset($seo['og_image']) }}">
         @endif
+        @vite(['resources/css/app.css'])
     </head>
-    <body>
+    <body class="frontend-shell">
         @include('frontend.partials.header')
         @include('frontend.partials.navbar')
 
-        <main>
+        <main class="frontend-main">
             @include('frontend.partials.alerts')
             @yield('content')
         </main>

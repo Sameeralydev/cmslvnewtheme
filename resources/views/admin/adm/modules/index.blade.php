@@ -3,8 +3,7 @@
 @section('title', $module['label'])
 
 @section('content')
-    @include('admin.adm.partials.nav')
-
+    @if ($moduleKey !== 'dashboard')
     <form method="GET" action="{{ route($module['route']) }}" class="mb-4 flex gap-2 rounded border border-neutral-200 bg-white p-3">
         <input name="search" value="{{ request('search') }}" class="w-full rounded border border-neutral-300 px-3 py-2" placeholder="Search {{ strtolower($module['label']) }}">
         <button class="rounded bg-blue-600 px-4 py-2 text-white">Search</button>
@@ -44,4 +43,5 @@
     </section>
 
     <div class="mt-4">{{ $records->links() }}</div>
+    @endif
 @endsection

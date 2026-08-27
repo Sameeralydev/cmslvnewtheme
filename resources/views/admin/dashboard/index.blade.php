@@ -33,10 +33,10 @@
         ];
 
         $cmsCards = [
-            ['label' => 'HRMS', 'image' => 'human-resources.png', 'href' => '/admin/hrms/hrm/dashboard'],
-            ['label' => 'ADMINISTRATION', 'image' => 'admin.png', 'href' => '/admin/adm/admn/dashboard'],
-            ['label' => 'ACADEMICS', 'image' => 'education.png', 'href' => '/admin/academics/acadm/dashboard'],
-            ['label' => 'ACCOUNTS & FINANCE', 'image' => 'accounting.png', 'href' => '/admin/account/accounts/dashboard'],
+            ['label' => 'HRMS', 'image' => 'human-resources.png', 'href' => route('admin.hrms.dashboard', absolute: false)],
+            ['label' => 'ADMINISTRATION', 'image' => 'admin.png', 'href' => route('admin.adm.dashboard', absolute: false)],
+            ['label' => 'ACADEMICS', 'image' => 'education.png', 'href' => route('admin.academics.dashboard', absolute: false)],
+            ['label' => 'ACCOUNTS & FINANCE', 'image' => 'accounting.png', 'href' => route('admin.account.accounts.dashboard.legacy', absolute: false)],
         ];
 
         $reportCards = [
@@ -107,14 +107,14 @@
                 <div class="admin-metric-grid grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
                     @foreach ($metricCards as $card)
                         <article class="admin-metric-card flex min-h-[74px] items-center gap-3 rounded-xl border border-neutral-300 bg-white px-3 shadow-sm">
-                            <div class="admin-metric-icon {{ $card['color'] }} w-10 text-center text-4xl leading-none" style="{{ $card['style'] }}">
+                            <div class="admin-metric-icon {{ $card['color'] }} w-10 text-center text-4xl leading-none">
                                 <i class="{{ $card['icon'] }}"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="admin-card-title {{ $card['color'] }} text-sm font-medium" style="{{ $card['style'] }}">{{ $card['label'] }}</p>
+                                <p class="admin-card-title {{ $card['color'] }} text-sm font-medium">{{ $card['label'] }}</p>
                                 <p class="admin-card-value text-sm font-bold text-blue-700">{{ $card['value'] }}</p>
                                 @if ($card['meta'])
-                                    <p class="admin-card-meta {{ $card['color'] }} text-sm font-semibold" style="{{ $card['style'] }}">{{ $card['meta'] }}</p>
+                                    <p class="admin-card-meta {{ $card['color'] }} text-sm font-semibold">{{ $card['meta'] }}</p>
                                 @endif
                             </div>
                         </article>
@@ -166,7 +166,7 @@
                                             <span>{{ $row['value'] }}</span>
                                         </div>
                                         <div class="admin-progress-track h-1.5 bg-neutral-200">
-                                            <div class="admin-progress-fill h-full {{ $row['color'] }}" style="width: {{ $row['width'] }}; {{ $row['style'] }}"></div>
+                                            <div class="admin-progress-fill admin-progress-width-{{ (int) $row['width'] }} h-full {{ $row['color'] }}"></div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -249,56 +249,6 @@
         </div>
     </section>
 @endsection
-
-@push('styles')
-    <style>
-        .legacy-dashboard-card-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 5px;
-        }
-
-        .legacy-dashboard-card {
-            display: flex;
-            min-height: 48px;
-            align-items: flex-start;
-            gap: 10px;
-            border: 1px solid #000;
-            border-radius: 7px;
-            background: #fff;
-            padding: 5px 8px;
-            color: #000;
-            font-size: 11px;
-            font-weight: 700;
-            line-height: 1.1;
-            text-decoration: none;
-        }
-
-        .legacy-dashboard-card:hover {
-            color: #000;
-            text-decoration: none;
-        }
-
-        .legacy-dashboard-card img {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-            flex: 0 0 34px;
-        }
-
-        @media (max-width: 1024px) {
-            .legacy-dashboard-card-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 640px) {
-            .legacy-dashboard-card-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-@endpush
 
 @push('scripts')
     <script>

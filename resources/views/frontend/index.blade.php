@@ -1,7 +1,9 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <section>
+    <section class="frontend-hero">
+        <div>
+        <p class="frontend-eyebrow">WELCOME</p>
         <h1>{{ $homePage?->title ?? ($settings?->name ?? config('app.name', 'Laravel')) }}</h1>
 
         @if (! empty($homePage?->description))
@@ -9,13 +11,14 @@
         @else
             <p>Welcome to {{ $settings?->name ?? config('app.name', 'Laravel') }}.</p>
         @endif
+        </div>
     </section>
 
-    <section>
+    <section class="frontend-section frontend-container">
         <h2>Branches</h2>
 
         @forelse ($branches as $branch)
-            <article>
+            <article class="frontend-card">
                 <h3><a href="{{ route('frontend.branch', $branch) }}">{{ $branch->name }}</a></h3>
                 @if (! empty($branch->websiteurl))
                     <p>{{ $branch->websiteurl }}</p>
@@ -26,11 +29,11 @@
         @endforelse
     </section>
 
-    <section>
+    <section class="frontend-section frontend-container">
         <h2>Latest Updates</h2>
 
         @forelse ($posts as $post)
-            <article>
+            <article class="frontend-card">
                 <h3>{{ $post->title }}</h3>
                 @if (! empty($post->publish_date))
                     <time datetime="{{ $post->publish_date->toDateString() }}">{{ $post->publish_date->toFormattedDateString() }}</time>
@@ -42,12 +45,12 @@
         @endforelse
     </section>
 
-    <section>
+    <section class="frontend-section frontend-container">
         <h2>Gallery</h2>
 
         @forelse ($gallery as $item)
             @if (! empty($item->thumb_path) || ! empty($item->image))
-                <img src="{{ asset($item->thumb_path ?: $item->image) }}" alt="{{ $item->img_name ?: 'Gallery image' }}" height="120">
+                <img class="frontend-gallery-image" src="{{ asset($item->thumb_path ?: $item->image) }}" alt="{{ $item->img_name ?: 'Gallery image' }}" height="120">
             @endif
         @empty
             <p>No gallery items are available.</p>

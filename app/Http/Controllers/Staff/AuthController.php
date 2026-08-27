@@ -27,6 +27,11 @@ class AuthController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        $request->session()->put(
+            'auth.login_portal',
+            $request->routeIs('superadmin.login') ? 'superadmin' : 'staff'
+        );
+
         return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 
@@ -37,10 +42,12 @@ class AuthController extends Controller
     {
         Auth::guard('web')->logout();
 
+        $loginPortal = $request->session()->get('auth.login_portal', 'staff');
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('staff.login');
+        return redirect()->route($loginPortal === 'superadmin' ? 'superadmin.login' : 'staff.login');
     }
 
     /**

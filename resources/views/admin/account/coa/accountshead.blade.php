@@ -69,7 +69,7 @@
                                     @enderror
                                 </div>
 
-                                <div id="ooa" style="display:none;">
+                                    <div id="ooa" class="hidden">
                                     <div class="form-group">
                                         <label>Account Name</label> <small class="req"> *</small>
                                         <input autofocus id="name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}">
@@ -78,7 +78,7 @@
                                         @enderror
                                     </div>
 
-                                    <div id="ob" style="display:none;">
+                                    <div id="ob" class="hidden">
                                         <div class="form-group">
                                             <label>Staff</label>
                                             <select id="staff_id" name="staff_id" class="form-control">
@@ -106,22 +106,22 @@
                                     </div>
                                 </div>
 
-                                <div id="ooamsg" style="display:none;">
-                                    <div class="alert alert-danger text-left trevd" style="display:none;">Please add "trade receivable" in the "Student Admission" menu from "Admission Process" tab.</div>
-                                    <div class="alert alert-danger text-left trpayabl" style="display:none;">Please add "trade Payable" in the "Supplier" menu from "Inventory Process" tab.</div>
-                                    <div class="alert alert-danger text-left invt" style="display:none;">Please add "Inventories" in the "Product/Service" menu from "Inventory Process" tab.</div>
-                                    <div class="alert alert-danger text-left salaies" style="display:none;">Please add " Staff Directory" in the "Employees" menu from "Staff Recruitment" tab.</div>
-                                    <div class="alert alert-danger text-left sales" style="display:none;">"Sales" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
-                                    <div class="alert alert-danger text-left salesreturn" style="display:none;">"Sales Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left purchases" style="display:none;">"Purchases" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left purchasesreturn" style="display:none;">"Purchases Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left costofsales" style="display:none;">"Cost of Sales" accounts cannot be created here. They are automatically generated when adding new products / services</div>
+                                <div id="ooamsg" class="hidden">
+                                    <div class="alert alert-danger text-left trevd hidden">Please add "trade receivable" in the "Student Admission" menu from "Admission Process" tab.</div>
+                                    <div class="alert alert-danger text-left trpayabl hidden">Please add "trade Payable" in the "Supplier" menu from "Inventory Process" tab.</div>
+                                    <div class="alert alert-danger text-left invt hidden">Please add "Inventories" in the "Product/Service" menu from "Inventory Process" tab.</div>
+                                    <div class="alert alert-danger text-left salaies hidden">Please add " Staff Directory" in the "Employees" menu from "Staff Recruitment" tab.</div>
+                                    <div class="alert alert-danger text-left sales hidden">"Sales" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                                    <div class="alert alert-danger text-left salesreturn hidden">"Sales Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
+                                    <div class="alert alert-danger text-left purchases hidden">"Purchases" accounts cannot be created here. They are automatically generated when adding new products / services</div>
+                                    <div class="alert alert-danger text-left purchasesreturn hidden">"Purchases Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
+                                    <div class="alert alert-danger text-left costofsales hidden">"Cost of Sales" accounts cannot be created here. They are automatically generated when adding new products / services</div>
                                 </div>
                             </div>
 
                             <div class="box-footer">
                                 <button type="submit" class="btn btn-primary pull-right">Save</button>
-                                <div style="clear:both;"></div>
+                                <div class="clear-both"></div>
                             </div>
                         </form>
                     </div>

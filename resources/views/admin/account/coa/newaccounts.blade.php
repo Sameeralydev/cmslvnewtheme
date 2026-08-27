@@ -54,7 +54,7 @@
 
                             <div class="box-footer">
                                 <button type="submit" class="btn btn-primary pull-right">Save</button>
-                                <div style="clear:both;"></div>
+                                <div class="clear-both"></div>
                             </div>
                         </form>
                     </div>
