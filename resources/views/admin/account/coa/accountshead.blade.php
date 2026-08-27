@@ -11,6 +11,56 @@
 @section('content')
     @include('admin.account.coa._styles')
 
+    <style>
+        .legacy-coa .mailbox-date .btn,
+        .legacy-coa .mailbox-date a,
+        .legacy-coa .btn.btn-xs {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 22px !important;
+            height: 22px !important;
+            min-width: 22px !important;
+            min-height: 22px !important;
+            max-width: 22px !important;
+            max-height: 22px !important;
+            padding: 0 !important;
+            margin: 1px !important;
+            border-radius: 3px !important;
+            line-height: 1 !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+            vertical-align: middle !important;
+        }
+        .legacy-coa .mailbox-date .btn-success,
+        .legacy-coa .btn.btn-success.btn-xs {
+            background-color: #00a65a !important;
+            border: 1px solid #008d4c !important;
+            color: #ffffff !important;
+        }
+        .legacy-coa .mailbox-date .btn-danger,
+        .legacy-coa .btn.btn-danger.btn-xs {
+            background-color: #dd4b39 !important;
+            border: 1px solid #d73925 !important;
+            color: #ffffff !important;
+        }
+        .legacy-coa .mailbox-date .btn-primary,
+        .legacy-coa .btn.btn-primary.btn-xs {
+            background-color: #24448d !important;
+            border: 1px solid #1d3f8d !important;
+            color: #ffffff !important;
+        }
+        .legacy-coa .mailbox-date .btn i,
+        .legacy-coa .mailbox-date a i,
+        .legacy-coa .btn.btn-xs i {
+            font-size: 11px !important;
+            line-height: 1 !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    </style>
+
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
@@ -69,7 +119,7 @@
                                     @enderror
                                 </div>
 
-                                    <div id="ooa" class="hidden">
+                                <div id="ooa" class="hidden">
                                     <div class="form-group">
                                         <label>Account Name</label> <small class="req"> *</small>
                                         <input autofocus id="name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}">
@@ -120,7 +170,10 @@
                             </div>
 
                             <div class="box-footer">
-                                <button type="submit" class="btn btn-primary pull-right">Save</button>
+                                @if ($account)
+                                    <a href="{{ route('admin.account.accounts.accountshead', ['branch' => $branchId], false) }}" class="btn btn-default pull-left" style="margin-top: 2px;">Cancel</a>
+                                @endif
+                                <button type="submit" class="btn btn-primary pull-right">{{ $account ? 'Update' : 'Save' }}</button>
                                 <div class="clear-both"></div>
                             </div>
                         </form>
@@ -134,60 +187,74 @@
                         </div>
                         <div class="box-body">
                             <div class="legacy-datatable-toolbar">
-                                <input type="search" placeholder="Search...">
+                                <input type="search" id="accHeadSearchInput" placeholder="Search..." autocomplete="off">
                                 <div class="legacy-datatable-icons">
-                                    <span><i class="fa fa-copy"></i></span>
-                                    <span><i class="fa fa-file-csv"></i></span>
-                                    <span><i class="fa fa-file-text"></i></span>
-                                    <span><i class="fa fa-file-pdf"></i></span>
-                                    <span><i class="fa fa-print"></i></span>
-                                    <span><i class="fa fa-table-list"></i></span>
+                                    <span id="btnCopyAccHead" title="Copy"><i class="fa fa-copy"></i></span>
+                                    <span id="btnCsvAccHead" title="CSV"><i class="fa fa-file-csv"></i></span>
+                                    <span id="btnExcelAccHead" title="Excel"><i class="fa fa-file-text"></i></span>
+                                    <span id="btnPdfAccHead" title="PDF"><i class="fa fa-file-pdf"></i></span>
+                                    <span id="btnPrintAccHead" title="Print"><i class="fa fa-print"></i></span>
+                                    <span id="btnColumnsAccHead" title="Columns"><i class="fa fa-table-list"></i></span>
                                 </div>
                             </div>
-                            <table class="table table-striped table-bordered table-hover example">
+                            <table class="table table-striped table-bordered table-hover example" id="accHeadTable">
                                 <thead>
                                     <tr>
-                                        <th>Account Head</th>
-                                        <th>Account Type</th>
-                                        <th>Account Name</th>
-                                        <th>Action</th>
+                                        <th class="sortable" data-sort-col="head" style="width: 30%; cursor: pointer;" title="Sort by Account Head">
+                                            Account Head <i class="fa fa-sort pull-right" style="margin-top:2px; opacity:0.8;"></i>
+                                        </th>
+                                        <th class="sortable" data-sort-col="type" style="width: 30%; cursor: pointer;" title="Sort by Account Type">
+                                            Account Type <i class="fa fa-sort pull-right" style="margin-top:2px; opacity:0.8;"></i>
+                                        </th>
+                                        <th class="sortable" data-sort-col="name" style="width: 25%; cursor: pointer;" title="Sort by Account Name">
+                                            Account Name <i class="fa fa-sort pull-right" style="margin-top:2px; opacity:0.8;"></i>
+                                        </th>
+                                        <th class="text-right noExport" style="width: 15%; text-align: right;">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="accHeadTableBody">
                                     @forelse ($hierarchy as $head)
-                                        <tr>
-                                            <td>{{ $head->code }}. {{ $head->name }}</td>
+                                        <tr class="head-group-row" data-head-name="{{ strtolower($head->name) }}" data-head-code="{{ $head->code }}">
+                                            <td><strong>{{ $head->code }}. {{ $head->name }}</strong></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                         </tr>
                                         @foreach ($head->newaccounts as $type)
-                                            <tr>
+                                            <tr class="type-group-row" data-search="{{ strtolower(($head->name ?? '') . ' ' . ($head->code ?? '') . ' ' . ($type->name ?? '') . ' ' . ($type->code ?? '')) }}">
                                                 <td></td>
-                                                <td>{{ $type->code }}. {{ $type->name }}</td>
+                                                <td><strong>{{ $type->code }}. {{ $type->name }}</strong></td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>
                                             @foreach ($type->accountshead as $accountHead)
-                                                <tr>
+                                                <tr class="account-item-row" data-search="{{ strtolower(($head->name ?? '') . ' ' . ($head->code ?? '') . ' ' . ($type->name ?? '') . ' ' . ($type->code ?? '') . ' ' . ($accountHead->name ?? '') . ' ' . ($accountHead->code ?? '')) }}">
                                                     <td></td>
                                                     <td></td>
-                                                    <td>{{ $accountHead->code }}. {{ $accountHead->name }}</td>
-                                                    <td class="mailbox-date text-right">
+                                                    <td style="padding-left: 20px;">{{ $accountHead->code }}. {{ $accountHead->name }}</td>
+                                                    <td class="mailbox-date text-right" style="text-align: right; white-space: nowrap; width: 12%;">
                                                         @unless ((bool) ($accountHead->is_system ?? false))
-                                                            <button onclick="changestatuspost('{{ $accountHead->id }}')" type="button" class="btn {{ (int) ($accountHead->is_posted ?? 0) === 1 ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ (int) ($accountHead->is_posted ?? 0) === 1 ? 'Is Posted' : 'Is Post' }}"><i class="fa fa-plus"></i></button>
-                                                            <a href="{{ route('admin.account.accounts.accountshead.edit', ['account' => $accountHead->id, 'branch' => $accountHead->brc_id ?: $branchId], false) }}" class="btn btn-primary btn-xs" title="Edit">
-                                                                <i class="fa fa-pencil"></i>
+                                                            @php
+                                                                $isPosted = (int) ($accountHead->is_posted ?? 0) === 1;
+                                                                $isActive = ($accountHead->is_active ?? 'yes') === 'yes';
+                                                            @endphp
+                                                            <button onclick="changestatuspost('{{ $accountHead->id }}')" type="button" class="btn {{ $isPosted ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isPosted ? 'Is Posted' : 'Is Post' }}" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: {{ $isPosted ? '#00a65a' : '#dd4b39' }} !important; border: 1px solid {{ $isPosted ? '#008d4c' : '#d73925' }} !important; color: #ffffff !important; vertical-align: middle !important; box-sizing: border-box !important;">
+                                                                <i class="fa fa-plus" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                            </button>
+                                                            <a href="{{ route('admin.account.accounts.accountshead.edit', ['account' => $accountHead->id, 'branch' => $accountHead->brc_id ?: $branchId], false) }}" class="btn btn-primary btn-xs" title="Edit" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: #24448d !important; border: 1px solid #1d3f8d !important; color: #ffffff !important; text-decoration: none !important; vertical-align: middle !important; box-sizing: border-box !important;">
+                                                                <i class="fa fa-pencil" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
                                                             </a>
-                                                            <button onclick="changestatus('{{ $accountHead->id }}')" type="button" class="btn {{ ($accountHead->is_active ?? 'yes') === 'yes' ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ ($accountHead->is_active ?? 'yes') === 'yes' ? 'Active' : 'In Active' }}"><i class="fa {{ ($accountHead->is_active ?? 'yes') === 'yes' ? 'fa-check' : 'fa-remove' }}"></i></button>
+                                                            <button onclick="changestatus('{{ $accountHead->id }}')" type="button" class="btn {{ $isActive ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isActive ? 'Active' : 'In Active' }}" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: {{ $isActive ? '#00a65a' : '#dd4b39' }} !important; border: 1px solid {{ $isActive ? '#008d4c' : '#d73925' }} !important; color: #ffffff !important; vertical-align: middle !important; box-sizing: border-box !important;">
+                                                                <i class="fa {{ $isActive ? 'fa-check' : 'fa-remove' }}" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                            </button>
                                                         @endunless
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         @endforeach
                                     @empty
-                                        <tr>
-                                            <td colspan="4">No accounts head records found, or the legacy tables are not available in this environment.</td>
+                                        <tr id="emptyHeadRow">
+                                            <td colspan="4" class="text-center" style="padding: 15px; color: #777;">No accounts head records found, or the legacy tables are not available in this environment.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -197,6 +264,11 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    {{-- Toast Notification --}}
+    <div id="accHeadToast" style="display: none; position: fixed; bottom: 25px; right: 25px; background: #24448d; color: #fff; padding: 10px 18px; border-radius: 4px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 99999;">
+        Table copied to clipboard!
     </div>
 
     <script>
@@ -309,6 +381,373 @@
                 setAccountTypeVisibility(this.value);
             });
             loadAccountTypes(headSelect.value, '{{ $selectedTypeId }}');
+
+            // Toolbar functionality
+            var searchInput = document.getElementById('accHeadSearchInput');
+            var table = document.getElementById('accHeadTable');
+            var tbody = document.getElementById('accHeadTableBody');
+            var toast = document.getElementById('accHeadToast');
+
+            function showToast(msg) {
+                if (!toast) return;
+                toast.innerText = msg;
+                toast.style.display = 'block';
+                setTimeout(function () { toast.style.display = 'none'; }, 2200);
+            }
+
+            // 1. Live Search
+            if (searchInput && tbody) {
+                searchInput.addEventListener('input', function () {
+                    var filter = this.value.toLowerCase().trim();
+                    var rows = Array.from(tbody.querySelectorAll('tr:not(#emptyHeadRow):not(#noMatchHeadRow)'));
+
+                    if (!filter) {
+                        rows.forEach(function (r) { r.style.display = ''; });
+                        var noMatch = document.getElementById('noMatchHeadRow');
+                        if (noMatch) noMatch.style.display = 'none';
+                        return;
+                    }
+
+                    var currentHead = null;
+                    var currentType = null;
+                    var headHasVisible = false;
+                    var typeHasVisible = false;
+                    var totalVisible = 0;
+
+                    rows.forEach(function (row) {
+                        if (row.classList.contains('head-group-row')) {
+                            if (currentHead && !headHasVisible) {
+                                currentHead.style.display = 'none';
+                            }
+                            if (currentType && !typeHasVisible) {
+                                currentType.style.display = 'none';
+                            }
+                            currentHead = row;
+                            currentType = null;
+                            headHasVisible = false;
+                            typeHasVisible = false;
+                            row.style.display = '';
+                        } else if (row.classList.contains('type-group-row')) {
+                            if (currentType && !typeHasVisible) {
+                                currentType.style.display = 'none';
+                            }
+                            currentType = row;
+                            typeHasVisible = false;
+                            row.style.display = '';
+                        } else if (row.classList.contains('account-item-row')) {
+                            var search = row.getAttribute('data-search') || row.innerText.toLowerCase();
+                            if (search.indexOf(filter) > -1) {
+                                row.style.display = '';
+                                headHasVisible = true;
+                                typeHasVisible = true;
+                                totalVisible++;
+                                if (currentHead) currentHead.style.display = '';
+                                if (currentType) currentType.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    if (currentHead && !headHasVisible) {
+                        currentHead.style.display = 'none';
+                    }
+                    if (currentType && !typeHasVisible) {
+                        currentType.style.display = 'none';
+                    }
+
+                    var noMatchRow = document.getElementById('noMatchHeadRow');
+                    if (totalVisible === 0) {
+                        if (!noMatchRow) {
+                            noMatchRow = document.createElement('tr');
+                            noMatchRow.id = 'noMatchHeadRow';
+                            noMatchRow.innerHTML = '<td colspan="4" class="text-center" style="padding:15px; color:#777;">No matching records found</td>';
+                            tbody.appendChild(noMatchRow);
+                        }
+                        noMatchRow.style.display = '';
+                    } else if (noMatchRow) {
+                        noMatchRow.style.display = 'none';
+                    }
+                });
+            }
+
+            // 2. Copy to Clipboard
+            var btnCopy = document.getElementById('btnCopyAccHead');
+            if (btnCopy && table) {
+                btnCopy.addEventListener('click', function () {
+                    var rows = Array.from(table.querySelectorAll('tr'));
+                    var text = '';
+                    rows.forEach(function (r) {
+                        if (r.style.display === 'none' || r.id === 'noMatchHeadRow' || r.id === 'emptyHeadRow') return;
+                        var cells = r.querySelectorAll('th, td');
+                        var rowData = [];
+                        cells.forEach(function (c, idx) {
+                            if (idx < cells.length - 1) {
+                                rowData.push(c.innerText.trim());
+                            }
+                        });
+                        text += rowData.join("\t") + "\n";
+                    });
+
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(function () {
+                            showToast('Table copied to clipboard!');
+                        });
+                    } else {
+                        showToast('Table copied to clipboard!');
+                    }
+                });
+            }
+
+            // 3. CSV Export
+            function exportCSV(filename) {
+                if (!table) return;
+                var rows = Array.from(table.querySelectorAll('tr'));
+                var csv = "\uFEFF\"Account Head\",\"Account Type\",\"Account Name\"\n";
+                rows.forEach(function (r) {
+                    if (r.style.display === 'none' || r.id === 'noMatchHeadRow' || r.id === 'emptyHeadRow' || r.parentElement.tagName === 'THEAD') return;
+                    var cells = r.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        var c0 = '"' + cells[0].innerText.trim().replace(/"/g, '""') + '"';
+                        var c1 = '"' + cells[1].innerText.trim().replace(/"/g, '""') + '"';
+                        var c2 = '"' + cells[2].innerText.trim().replace(/"/g, '""') + '"';
+                        csv += c0 + ',' + c1 + ',' + c2 + "\n";
+                    }
+                });
+
+                var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Exported successfully!');
+            }
+
+            var btnCsv = document.getElementById('btnCsvAccHead');
+            if (btnCsv) {
+                btnCsv.addEventListener('click', function () { exportCSV('Accounts_Head_List.csv'); });
+            }
+
+            var btnExcel = document.getElementById('btnExcelAccHead');
+            if (btnExcel) {
+                btnExcel.addEventListener('click', function () { exportCSV('Accounts_Head_List.xls'); });
+            }
+
+            function generateAccHeadPdfDownload() {
+                if (typeof pdfMake === 'undefined') {
+                    window.print();
+                    return;
+                }
+
+                var tableBody = [];
+                tableBody.push([
+                    { text: 'Account Head', bold: true, fillColor: '#2F5DA8', color: '#ffffff', fontSize: 10 },
+                    { text: 'Account Type', bold: true, fillColor: '#2F5DA8', color: '#ffffff', fontSize: 10 },
+                    { text: 'Account Name', bold: true, fillColor: '#2F5DA8', color: '#ffffff', fontSize: 10 }
+                ]);
+
+                var rows = Array.from(tbody.querySelectorAll('tr:not(#emptyHeadRow):not(#noMatchHeadRow)'));
+                var itemIndex = 0;
+
+                rows.forEach(function (r) {
+                    if (r.style.display === 'none') return;
+                    var cells = r.querySelectorAll('td');
+                    if (cells.length < 3) return;
+
+                    var isHead = r.classList.contains('head-group-row');
+                    var isType = r.classList.contains('type-group-row');
+                    var c0 = cells[0].innerText.trim();
+                    var c1 = cells[1].innerText.trim();
+                    var c2 = cells[2].innerText.trim();
+
+                    var bg = (isHead || isType) ? '#ffffff' : (itemIndex % 2 === 1 ? '#f4f6f8' : '#ffffff');
+                    if (!isHead && !isType) itemIndex++;
+
+                    tableBody.push([
+                        { text: c0, bold: isHead, fillColor: bg, fontSize: 9.5, color: '#333333' },
+                        { text: c1, bold: isType, fillColor: bg, fontSize: 9.5, color: '#333333' },
+                        { text: c2, bold: false, fillColor: bg, fontSize: 9.5, color: '#333333' }
+                    ]);
+                });
+
+                var docDefinition = {
+                    pageOrientation: 'portrait',
+                    pageSize: 'A4',
+                    pageMargins: [40, 40, 40, 40],
+                    content: [
+                        {
+                            text: 'Accounts Head List',
+                            fontSize: 16,
+                            bold: true,
+                            color: '#111827',
+                            margin: [0, 0, 0, 16]
+                        },
+                        {
+                            table: {
+                                headerRows: 1,
+                                widths: ['30%', '30%', '40%'],
+                                body: tableBody
+                            },
+                            layout: {
+                                hLineWidth: function (i, node) {
+                                    return (i === 0 || i === 1 || i === node.table.body.length) ? 0.8 : 0;
+                                },
+                                vLineWidth: function () {
+                                    return 0;
+                                },
+                                hLineColor: function (i) {
+                                    return i === 1 ? '#2F5DA8' : '#e5e7eb';
+                                },
+                                paddingLeft: function () { return 8; },
+                                paddingRight: function () { return 8; },
+                                paddingTop: function () { return 5.5; },
+                                paddingBottom: function () { return 5.5; }
+                            }
+                        }
+                    ],
+                    defaultStyle: {
+                        font: 'Roboto'
+                    }
+                };
+
+                pdfMake.createPdf(docDefinition).download('Accounts Head List.pdf');
+                showToast('Accounts Head List.pdf downloaded!');
+            }
+
+            var btnPdf = document.getElementById('btnPdfAccHead');
+            if (btnPdf) {
+                btnPdf.addEventListener('click', function () {
+                    generateAccHeadPdfDownload();
+                });
+            }
+
+            var btnPrint = document.getElementById('btnPrintAccHead');
+            if (btnPrint) {
+                btnPrint.addEventListener('click', function () {
+                    window.print();
+                });
+            }
+
+            var btnColumns = document.getElementById('btnColumnsAccHead');
+            if (btnColumns) {
+                btnColumns.addEventListener('click', function () {
+                    showToast('All columns visible');
+                });
+            }
+
+            // 8. Header Column Sorting for Accounts Head List
+            var sortDirections = {
+                head: 'asc',
+                type: 'asc',
+                name: 'asc'
+            };
+
+            document.querySelectorAll('#accHeadTable th.sortable').forEach(function (th) {
+                th.addEventListener('click', function () {
+                    var column = this.getAttribute('data-sort-col');
+                    var currentDir = sortDirections[column] || 'asc';
+                    var newDir = currentDir === 'asc' ? 'desc' : 'asc';
+                    sortDirections[column] = newDir;
+
+                    // Update sort icons
+                    document.querySelectorAll('#accHeadTable th.sortable i').forEach(function (icon) {
+                        icon.className = 'fa fa-sort pull-right';
+                    });
+                    var icon = this.querySelector('i');
+                    if (icon) {
+                        icon.className = newDir === 'asc' ? 'fa fa-sort-asc pull-right' : 'fa fa-sort-desc pull-right';
+                    }
+
+                    // Parse hierarchy: Heads -> Types -> Items
+                    var allRows = Array.from(tbody.querySelectorAll('tr:not(#emptyHeadRow):not(#noMatchHeadRow)'));
+                    var heads = [];
+                    var curHead = null;
+                    var curType = null;
+
+                    allRows.forEach(function (row) {
+                        if (row.classList.contains('head-group-row')) {
+                            if (curType && curHead) {
+                                curHead.types.push(curType);
+                                curType = null;
+                            }
+                            if (curHead) {
+                                heads.push(curHead);
+                            }
+                            curHead = {
+                                headRow: row,
+                                headName: (row.innerText || '').trim().toLowerCase(),
+                                types: []
+                            };
+                        } else if (row.classList.contains('type-group-row')) {
+                            if (curType && curHead) {
+                                curHead.types.push(curType);
+                            }
+                            curType = {
+                                typeRow: row,
+                                typeName: (row.innerText || '').trim().toLowerCase(),
+                                items: []
+                            };
+                        } else if (row.classList.contains('account-item-row')) {
+                            if (curType) {
+                                var itemName = (row.cells[2] ? row.cells[2].innerText : '').trim().toLowerCase();
+                                curType.items.push({
+                                    itemRow: row,
+                                    itemName: itemName
+                                });
+                            }
+                        }
+                    });
+
+                    if (curType && curHead) {
+                        curHead.types.push(curType);
+                    }
+                    if (curHead) {
+                        heads.push(curHead);
+                    }
+
+                    if (heads.length === 0) return;
+
+                    if (column === 'head') {
+                        heads.sort(function (a, b) {
+                            var cmp = a.headName.localeCompare(b.headName, undefined, { numeric: true, sensitivity: 'base' });
+                            return newDir === 'asc' ? cmp : -cmp;
+                        });
+                    } else if (column === 'type') {
+                        heads.forEach(function (h) {
+                            h.types.sort(function (a, b) {
+                                var cmp = a.typeName.localeCompare(b.typeName, undefined, { numeric: true, sensitivity: 'base' });
+                                return newDir === 'asc' ? cmp : -cmp;
+                            });
+                        });
+                    } else if (column === 'name') {
+                        heads.forEach(function (h) {
+                            h.types.forEach(function (t) {
+                                t.items.sort(function (a, b) {
+                                    var cmp = a.itemName.localeCompare(b.itemName, undefined, { numeric: true, sensitivity: 'base' });
+                                    return newDir === 'asc' ? cmp : -cmp;
+                                });
+                            });
+                        });
+                    }
+
+                    // Re-append in sorted order
+                    tbody.innerHTML = '';
+                    heads.forEach(function (h) {
+                        tbody.appendChild(h.headRow);
+                        h.types.forEach(function (t) {
+                            tbody.appendChild(t.typeRow);
+                            t.items.forEach(function (item) {
+                                tbody.appendChild(item.itemRow);
+                            });
+                        });
+                    });
+                });
+            });
         });
     </script>
+    <script src="{{ asset('assets/dist/datatables/js/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('assets/dist/datatables/js/vfs_fonts.js') }}"></script>
 @endsection

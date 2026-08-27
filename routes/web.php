@@ -483,9 +483,45 @@ Route::prefix('admin/account')
             ->middleware('permission:expenses,view')
             ->name('expenses.index');
 
-        Route::get('/feemaster', [FeeMasterController::class, 'index'])
+        Route::get('/feemaster/index/{branch_id?}', [FeeMasterController::class, 'index'])
+            ->whereNumber('branch_id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.index.branch');
+
+        Route::get('/feemaster/{branch_id?}', [FeeMasterController::class, 'index'])
+            ->whereNumber('branch_id')
             ->middleware('permission:feemaster,view')
             ->name('fee-master.index');
+
+        Route::post('/feemaster/{branch_id?}', [FeeMasterController::class, 'store'])
+            ->whereNumber('branch_id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.store');
+
+        Route::get('/feemaster/edit/{id}/{branch_id?}', [FeeMasterController::class, 'edit'])
+            ->whereNumber('id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.edit');
+
+        Route::match(['post', 'put', 'patch'], '/feemaster/edit/{id}/{branch_id?}', [FeeMasterController::class, 'update'])
+            ->whereNumber('id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.update');
+
+        Route::match(['delete', 'get', 'post'], '/feemaster/deletegrp/{id}/{branch_id?}', [FeeMasterController::class, 'destroy'])
+            ->whereNumber('id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.deletegrp');
+
+        Route::match(['delete', 'get', 'post'], '/feemaster/delete/{id}/{branch_id?}', [FeeMasterController::class, 'destroy'])
+            ->whereNumber('id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.delete');
+
+        Route::get('/feemaster/pdf/{branch_id?}', [FeeMasterController::class, 'downloadPdf'])
+            ->whereNumber('branch_id')
+            ->middleware('permission:feemaster,view')
+            ->name('fee-master.pdf');
 
         Route::get('/invoicebooksets', [InvoiceBookSetController::class, 'index'])
             ->middleware('permission:invoicebooksets,view')
@@ -550,6 +586,51 @@ Route::prefix('admin/account')
         Route::get('/studentfee', [StudentFeeController::class, 'index'])
             ->middleware('permission:studentfee,view')
             ->name('student-fees.index');
+
+        Route::match(['get', 'post'], '/studentfee/feerevise/{branch_id?}', [StudentFeeController::class, 'feerevise'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.feerevise');
+
+        Route::post('/studentfee/feereviseUpdate', [StudentFeeController::class, 'feereviseUpdate'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.feereviseUpdate');
+
+        Route::get('/studentfee/get-sections/{class_id}', [StudentFeeController::class, 'getSectionsByClass'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getSectionsByClass');
+
+        Route::get('/setting/sections/getByClass', function (\Illuminate\Http\Request $request) {
+            $classId = (int) $request->input('class_id');
+            $sections = collect();
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('class_sections')) {
+                $sections = \Illuminate\Support\Facades\DB::table('class_sections')
+                    ->join('sections', 'sections.id', '=', 'class_sections.section_id')
+                    ->where('class_sections.class_id', $classId)
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            if ($sections->isEmpty() && \Illuminate\Support\Facades\Schema::hasTable('student_session')) {
+                $sections = \Illuminate\Support\Facades\DB::table('student_session')
+                    ->join('sections', 'sections.id', '=', 'student_session.section_id')
+                    ->where('student_session.class_id', $classId)
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->distinct()
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            if ($sections->isEmpty() && \Illuminate\Support\Facades\Schema::hasTable('sections')) {
+                $sections = \Illuminate\Support\Facades\DB::table('sections')
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            return response()->json($sections);
+        });
 
         Route::get('/supplier', [SupplierController::class, 'index'])
             ->middleware('permission:supplier,view')

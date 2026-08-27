@@ -20,6 +20,7 @@ class AccountController extends BaseAccountController
         $branchId = $this->selectedBranchId();
 
         return view('admin.account.coa.chart-of-accounts', [
+            'branchId' => $branchId,
             'accountTypes' => $this->accountTypes(),
             'chartRows' => $this->chartRows($branchId),
             'hierarchy' => $this->accountHierarchy($branchId),
@@ -368,6 +369,7 @@ class AccountController extends BaseAccountController
             'accounts_type_id' => $validated['accounts_type_id'],
             'name' => $validated['name'],
             'note' => $validated['description'] ?? null,
+            'is_active' => 'yes',
         ];
 
         if (! $accountId) {
@@ -417,6 +419,7 @@ class AccountController extends BaseAccountController
             'staff_id' => $validated['staff_id'] ?? null,
             'name' => $validated['name'],
             'note' => $validated['description'] ?? null,
+            'is_active' => 'yes',
         ];
 
         if (! $accountId) {
@@ -451,6 +454,10 @@ class AccountController extends BaseAccountController
             'credit_amount' => $isDebit ? 0 : $amount,
             'note' => $validated['description'] ?? null,
         ];
+
+        if (Schema::hasColumn('opening_balances', 'is_active')) {
+            $data['is_active'] = 'yes';
+        }
 
         $existingId = DB::table('opening_balances')
             ->where('brc_id', $branchId)
@@ -535,67 +542,116 @@ class AccountController extends BaseAccountController
     private function accountTypeHierarchy(): array
     {
         return array_map(function (object $type): object {
-            $type->newaccounts = $this->newAccountsForType((int) $type->id);
+            $newAccounts = $this->newAccountsForType((int) $type->id, $type->code ?? null);
+            $type->newaccounts = $newAccounts;
+            $type->newAccounts = $newAccounts;
 
             return $type;
         }, $this->accountTypes());
     }
 
-    private function accountHierarchy(int $branchId): array
+    private function accountHierarchy(?int $branchId = null): array
     {
         return array_map(function (object $type) use ($branchId): object {
-            $type->newaccounts = array_map(function (object $newAccount) use ($branchId): object {
-                $newAccount->accountshead = $this->accountHeadsForNewAccount((int) $newAccount->id, $branchId);
+            $newAccounts = array_map(function (object $newAccount) use ($branchId, $type): object {
+                $heads = $this->accountHeadsForNewAccount((int) $newAccount->id, $branchId, $newAccount->code ?? null);
+                $newAccount->accountshead = $heads;
+                $newAccount->accountHeads = $heads;
 
                 return $newAccount;
-            }, $this->newAccountsForType((int) $type->id));
+            }, $this->newAccountsForType((int) $type->id, $type->code ?? null));
+
+            $type->newaccounts = $newAccounts;
+            $type->newAccounts = $newAccounts;
 
             return $type;
         }, $this->accountTypes());
     }
 
-    private function newAccountsForType(int $accountTypeId): array
+    private function newAccountsForType(int $accountTypeId, ?string $code = null): array
     {
         if (! Schema::hasTable('accountsnew')) {
             return [];
         }
 
+        $columns = Schema::getColumnListing('accountsnew');
+        $col = in_array('accounts_type_id', $columns, true) ? 'accounts_type_id' : (in_array('account_type_id', $columns, true) ? 'account_type_id' : null);
+
+        if (! $col) {
+            return DB::table('accountsnew')->orderBy('id')->get()->all();
+        }
+
         return DB::table('accountsnew')
-            ->where('accounts_type_id', $accountTypeId)
+            ->where(function (Builder $query) use ($col, $accountTypeId, $code): void {
+                $query->where($col, $accountTypeId);
+                if ($code !== null && $code !== '') {
+                    $query->orWhere($col, $code);
+                }
+            })
             ->orderBy('id')
             ->get()
             ->all();
     }
 
-    private function accountHeadsForNewAccount(int $newAccountId, int $branchId): array
+    private function accountHeadsForNewAccount(int $newAccountId, ?int $branchId = null, ?string $code = null): array
     {
         if (! Schema::hasTable('accountshead')) {
             return [];
         }
 
-        return DB::table('accountshead')
-            ->where('new_accounts_id', $newAccountId)
-            ->where(function (Builder $query) use ($branchId): void {
-                $query->whereNull('brc_id')->orWhere('brc_id', $branchId);
-            })
-            ->orderBy('id')
-            ->get()
-            ->all();
+        $columns = Schema::getColumnListing('accountshead');
+        $col = in_array('new_accounts_id', $columns, true) ? 'new_accounts_id' : (in_array('account_type_id', $columns, true) ? 'account_type_id' : null);
+
+        $query = DB::table('accountshead');
+        if ($col) {
+            $query->where(function (Builder $q) use ($col, $newAccountId, $code): void {
+                $q->where($col, $newAccountId);
+                if ($code !== null && $code !== '') {
+                    $q->orWhere($col, $code);
+                }
+            });
+        }
+
+        if ($branchId && in_array('brc_id', $columns, true)) {
+            $query->where(function (Builder $q) use ($branchId): void {
+                $q->whereNull('brc_id')
+                    ->orWhere('brc_id', 0)
+                    ->orWhere('brc_id', '')
+                    ->orWhere('brc_id', $branchId);
+            });
+        }
+
+        return $query->orderBy('id')->get()->all();
     }
 
-    private function chartRows(int $branchId): array
+    private function chartRows(?int $branchId = null): array
     {
         if (! Schema::hasTable('accounts_type') || ! Schema::hasTable('accountsnew') || ! Schema::hasTable('accountshead')) {
             return [];
         }
 
-        return DB::table('accounts_type')
-            ->join('accountsnew', 'accountsnew.accounts_type_id', '=', 'accounts_type.id')
-            ->join('accountshead', 'accountshead.new_accounts_id', '=', 'accountsnew.id')
-            ->where(function (Builder $query) use ($branchId): void {
-                $query->whereNull('accountshead.brc_id')->orWhere('accountshead.brc_id', $branchId);
-            })
+        $newCols = Schema::getColumnListing('accountsnew');
+        $headCols = Schema::getColumnListing('accountshead');
+
+        $typeJoinCol = in_array('accounts_type_id', $newCols, true) ? 'accountsnew.accounts_type_id' : 'accountsnew.account_type_id';
+        $headJoinCol = in_array('new_accounts_id', $headCols, true) ? 'accountshead.new_accounts_id' : 'accountshead.account_type_id';
+
+        $query = DB::table('accounts_type')
+            ->join('accountsnew', $typeJoinCol, '=', 'accounts_type.id')
+            ->join('accountshead', $headJoinCol, '=', 'accountsnew.id');
+
+        if ($branchId && in_array('brc_id', $headCols, true)) {
+            $query->where(function (Builder $q) use ($branchId): void {
+                $q->whereNull('accountshead.brc_id')
+                    ->orWhere('accountshead.brc_id', 0)
+                    ->orWhere('accountshead.brc_id', '')
+                    ->orWhere('accountshead.brc_id', $branchId);
+            });
+        }
+
+        return $query
             ->orderBy('accounts_type.id')
+            ->orderBy('accountshead.id')
             ->get([
                 'accounts_type.name as account_head',
                 'accountsnew.name as account_type',

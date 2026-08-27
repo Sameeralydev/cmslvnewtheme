@@ -35,6 +35,24 @@ class FeeMasterController extends BaseAccountController
         return $this->saveFeeStructure($request, $branch, $feeMaster);
     }
 
+    public function downloadPdf(Request $request, ?int $branch_id = null): View
+    {
+        $branchId = $this->selectedBranchId($branch_id);
+        $branchInfo = Schema::hasTable('branch') ? DB::table('branch')->where('id', $branchId)->first() : null;
+        $feeGroups = $this->feeGroups($branchId);
+        $sessionLabel = $this->currentSessionLabel($branchId);
+
+        return view('admin.account.feemaster.pdf', [
+            'branch' => $branchInfo,
+            'branchId' => $branchId,
+            'feeGroups' => $feeGroups,
+            'sessionLabel' => $sessionLabel,
+            'current_session_name' => $sessionLabel,
+            'currency_symbol' => 'Rs.',
+            'autoPrint' => $request->boolean('print') || (string)$request->query('print') === '1',
+        ]);
+    }
+
     public function destroy(int $feeMaster, ?int $branch = null): RedirectResponse
     {
         $branchId = $this->selectedBranchId($branch);
@@ -56,7 +74,7 @@ class FeeMasterController extends BaseAccountController
         }
 
         return redirect()
-            ->route('admin.account.fee-master.index.legacy', ['branch' => $branchId], false)
+            ->route('admin.account.fee-master.index', ['branch_id' => $branchId])
             ->with('success', 'Fee Structure deleted successfully');
     }
 
@@ -64,18 +82,34 @@ class FeeMasterController extends BaseAccountController
     {
         $branchId = $this->selectedBranchId($branch);
         $editingFee = $this->feeStructureRecord($feeMaster, $branchId);
+        $sessionLabel = $this->currentSessionLabel($branchId);
+        $branches = $this->branches();
+        $classes = $this->classes();
+        $feeTypes = $this->feeTypes($branchId);
+        $feeGroups = $this->feeGroups($branchId);
+        $showMonthCount = $this->showMonthCount($branchId);
 
         return view('admin.account.feemaster.index', [
             'title' => $editingFee ? 'Edit Fee Structure' : 'Add Fee Structure',
-            'branchId' => $branchId,
-            'branches' => $this->branches(),
-            'classes' => $this->classes(),
-            'feeTypes' => $this->feeTypes($branchId),
-            'feeGroups' => $this->feeGroups($branchId),
+            'id' => $feeMaster,
+            'feemaster' => $editingFee,
             'editingFee' => $editingFee,
-            'sessionLabel' => $this->currentSessionLabel($branchId),
-            'showMonthCount' => $this->showMonthCount($branchId),
+            'branchId' => $branchId,
+            'brc_id' => $branchId,
+            'branches' => $branches,
+            'branchlist' => $branches,
+            'classes' => $classes,
+            'classlist' => $classes,
+            'feeTypes' => $feeTypes,
+            'feetypeList' => $feeTypes,
+            'feeGroups' => $feeGroups,
+            'feemasterList' => $feeGroups,
+            'sessionLabel' => $sessionLabel,
+            'current_session_name' => $sessionLabel,
+            'showMonthCount' => $showMonthCount,
+            'show_month_count' => $showMonthCount,
             'currencySymbol' => 'Rs.',
+            'currency_symbol' => 'Rs.',
             'pdfUrl' => url('/admin/report/pdffeestructurereport?brc_id='.$branchId),
         ]);
     }
@@ -137,7 +171,7 @@ class FeeMasterController extends BaseAccountController
         }
 
         return redirect()
-            ->route('admin.account.fee-master.index.legacy', ['branch' => $branchId], false)
+            ->route('admin.account.fee-master.index', ['branch_id' => $branchId])
             ->with('success', $message);
     }
 
