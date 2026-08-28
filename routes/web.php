@@ -6,8 +6,6 @@ use App\Http\Controllers\Admin\Academics\BookController;
 use App\Http\Controllers\Admin\Academics\ChapterController;
 use App\Http\Controllers\Admin\Academics\ConferenceController;
 use App\Http\Controllers\Admin\Academics\DaySettingController;
-use App\Http\Controllers\Admin\Academics\DomainController;
-use App\Http\Controllers\Admin\Academics\DomainModuleController;
 use App\Http\Controllers\Admin\Academics\ExamGroupController;
 use App\Http\Controllers\Admin\Academics\ExamResultController;
 use App\Http\Controllers\Admin\Academics\ExamScheduleController;
@@ -268,6 +266,7 @@ Route::prefix('admin/academics')
             ->middleware('permission:chapter,view')
             ->name('chapters.index');
         Route::post('/chapter', [ChapterController::class, 'store'])->middleware('permission:chapter,add')->name('chapters.store');
+        Route::post('/chapter/import', [ChapterController::class, 'import'])->middleware('permission:chapter,add')->name('chapters.import');
         Route::put('/chapter/{chapter}', [ChapterController::class, 'update'])->middleware('permission:chapter,edit')->name('chapters.update');
         Route::delete('/chapter/{chapter}', [ChapterController::class, 'destroy'])->middleware('permission:chapter,delete')->name('chapters.destroy');
 
@@ -278,24 +277,13 @@ Route::prefix('admin/academics')
         Route::get('/daysetting', [DaySettingController::class, 'index'])
             ->middleware('permission:daysetting,view')
             ->name('day-settings.index');
+        Route::post('/daysetting', [DaySettingController::class, 'store'])->middleware('permission:daysetting,add')->name('day-settings.store');
+        Route::put('/daysetting/{daySetting}', [DaySettingController::class, 'update'])->middleware('permission:daysetting,edit')->name('day-settings.update');
+        Route::delete('/daysetting/{daySetting}', [DaySettingController::class, 'destroy'])->middleware('permission:daysetting,delete')->name('day-settings.destroy');
 
         Route::get('/documentsaca', [AcademicDocumentController::class, 'index'])
             ->middleware('permission:documentsaca,view')
             ->name('documents.index');
-
-        Route::get('/domain', [DomainController::class, 'index'])
-            ->middleware('permission:domain,view')
-            ->name('domains.index');
-        Route::post('/domain', [DomainController::class, 'store'])->middleware('permission:domain,add')->name('domains.store');
-        Route::put('/domain/{domain}', [DomainController::class, 'update'])->middleware('permission:domain,edit')->name('domains.update');
-        Route::delete('/domain/{domain}', [DomainController::class, 'destroy'])->middleware('permission:domain,delete')->name('domains.destroy');
-
-        Route::get('/domainmodules', [DomainModuleController::class, 'index'])
-            ->middleware('permission:domainmodules,view')
-            ->name('domain-modules.index');
-        Route::post('/domainmodules', [DomainModuleController::class, 'store'])->middleware('permission:domainmodules,add')->name('domain-modules.store');
-        Route::put('/domainmodules/{domainModule}', [DomainModuleController::class, 'update'])->middleware('permission:domainmodules,edit')->name('domain-modules.update');
-        Route::delete('/domainmodules/{domainModule}', [DomainModuleController::class, 'destroy'])->middleware('permission:domainmodules,delete')->name('domain-modules.destroy');
 
         Route::get('/examgroup', [ExamGroupController::class, 'index'])
             ->middleware('permission:examgroup,view')
@@ -363,6 +351,24 @@ Route::prefix('admin/academics')
         Route::put('/subjectgroup/{subjectGroup}', [SubjectGroupController::class, 'update'])->middleware('permission:subjectgroup,edit')->name('subject-groups.update');
         Route::delete('/subjectgroup/{subjectGroup}', [SubjectGroupController::class, 'destroy'])->middleware('permission:subjectgroup,delete')->name('subject-groups.destroy');
 
+        Route::get('/syllabus/options', [SyllabusController::class, 'options'])
+            ->middleware('permission:syllabus,view')
+            ->name('syllabus.options');
+        Route::post('/syllabus', [SyllabusController::class, 'store'])
+            ->middleware('permission:syllabus,add')
+            ->name('syllabus.store');
+        Route::delete('/syllabus/{syllabus}', [SyllabusController::class, 'destroy'])
+            ->middleware('permission:syllabus,delete')
+            ->name('syllabus.destroy');
+        Route::get('/syllabus/pdf', [SyllabusController::class, 'pdf'])
+            ->middleware('permission:syllabus,view')
+            ->name('syllabus.pdf');
+        Route::get('/syllabus/print', [SyllabusController::class, 'print'])
+            ->middleware('permission:syllabus,view')
+            ->name('syllabus.print');
+        Route::get('/syllabus/search/{branch?}', [SyllabusController::class, 'directory'])
+            ->middleware('permission:syllabus,view')
+            ->name('syllabus-directory.index');
         Route::get('/syllabus', [SyllabusController::class, 'index'])
             ->middleware('permission:syllabus,view')
             ->name('syllabus.index');
@@ -374,6 +380,9 @@ Route::prefix('admin/academics')
         Route::get('/termsetting', [TermSettingController::class, 'index'])
             ->middleware('permission:termsetting,view')
             ->name('term-settings.index');
+        Route::post('/termsetting', [TermSettingController::class, 'store'])->middleware('permission:termsetting,add')->name('term-settings.store');
+        Route::put('/termsetting/{termSetting}', [TermSettingController::class, 'update'])->middleware('permission:termsetting,edit')->name('term-settings.update');
+        Route::delete('/termsetting/{termSetting}', [TermSettingController::class, 'destroy'])->middleware('permission:termsetting,delete')->name('term-settings.destroy');
 
         Route::get('/testgroup', [TestGroupController::class, 'index'])
             ->middleware('permission:testgroup,view')
@@ -395,12 +404,16 @@ Route::prefix('admin/academics')
             ->middleware('permission:topic,view')
             ->name('topics.index');
         Route::post('/topic', [TopicController::class, 'store'])->middleware('permission:topic,add')->name('topics.store');
+        Route::post('/topic/import', [TopicController::class, 'import'])->middleware('permission:topic,add')->name('topics.import');
         Route::put('/topic/{topic}', [TopicController::class, 'update'])->middleware('permission:topic,edit')->name('topics.update');
         Route::delete('/topic/{topic}', [TopicController::class, 'destroy'])->middleware('permission:topic,delete')->name('topics.destroy');
 
         Route::get('/weeksetting', [WeekSettingController::class, 'index'])
             ->middleware('permission:weeksetting,view')
             ->name('week-settings.index');
+        Route::post('/weeksetting', [WeekSettingController::class, 'store'])->middleware('permission:weeksetting,add')->name('week-settings.store');
+        Route::put('/weeksetting/{weekSetting}', [WeekSettingController::class, 'update'])->middleware('permission:weeksetting,edit')->name('week-settings.update');
+        Route::delete('/weeksetting/{weekSetting}', [WeekSettingController::class, 'destroy'])->middleware('permission:weeksetting,delete')->name('week-settings.destroy');
     });
 
 Route::prefix('admin/account')
@@ -1390,4 +1403,35 @@ require __DIR__.'/auth.php';
 Route::controller(WelcomeController::class)->group(function () {
     Route::get('/register', 'register')->name('frontend.register');
     Route::post('/register', 'storeRegistration')->name('frontend.register.store');
+});
+
+Route::get('/run-git-push-auto', function () {
+    header('Content-Type: text/plain; charset=utf-8');
+    putenv('PATH=' . getenv('PATH') . ';C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\bin');
+    chdir(base_path());
+    
+    echo "=== RESOLVING & PUSHING TO GITHUB ===\n\n";
+    
+    echo "--- 1. ABORT PENDING REBASE ---\n";
+    $out1 = shell_exec('git rebase --abort 2>&1');
+    echo $out1 ? "$out1\n" : "Rebase aborted / clean.\n";
+    
+    echo "\n--- 2. GIT ADD ---\n";
+    $out2 = shell_exec('git add . 2>&1');
+    echo $out2 ? "$out2\n" : "Done.\n";
+    
+    echo "\n--- 3. GIT COMMIT ---\n";
+    $out3 = shell_exec('git commit -m "Update fee voucher direct print layout and right-aligned action buttons" 2>&1');
+    echo $out3 ? "$out3\n" : "Nothing to commit / Already committed.\n";
+    
+    echo "\n--- 4. GIT PULL (MERGE) ---\n";
+    $out4 = shell_exec('git pull origin main --no-rebase --no-edit 2>&1');
+    echo $out4 ? "$out4\n" : "Synced.\n";
+    
+    echo "\n--- 5. GIT PUSH ---\n";
+    $out5 = shell_exec('git push origin main 2>&1');
+    echo $out5 ? "$out5\n" : "Push output empty.\n";
+    
+    echo "\n=== FINISHED ===\n";
+    exit;
 });
