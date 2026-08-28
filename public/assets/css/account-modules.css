@@ -1,0 +1,2363 @@
+/* ==========================================================================
+   Account Modules Centralized Stylesheet
+   (Fee Master, Fee Structure, Assign Dues, Fee Voucher, Fee Revise)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Typography & Global Layout Wrappers
+   -------------------------------------------------------------------------- */
+.feemaster-container,
+.feevoucher-container,
+.assigndues-container,
+.feevoucher-datewise-container {
+    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #1f2937;
+    font-size: 13.5px;
+}
+
+.main-box-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: #111827;
+}
+
+.feemaster-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .feemaster-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card-wrapper-sm {
+    max-width: 600px;
+}
+
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.grid-3-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+    .grid-2-col,
+    .grid-3-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. Card & Box Containers
+   -------------------------------------------------------------------------- */
+.box,
+.box-card {
+    position: relative;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.box-header,
+.box-card-header {
+    color: #111827;
+    background: #ffffff;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.box-title,
+.box-card-title {
+    display: inline-block;
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.3;
+    font-weight: 600;
+    color: #111827;
+}
+
+.box-body,
+.box-card-body {
+    padding: 18px;
+    background: #ffffff;
+}
+
+.box-footer,
+.box-card-footer,
+.card-footer,
+.footer-end {
+    padding: 14px 18px;
+    background-color: #fafafa;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.box-footer > :first-child:not(button):not(a):not(.btn):not(.btn-save):not(.btn-cancel):not(.btn-update):not(.btn-secondary):not(.btn-primary):not(.btn-submit):not(.btn-default):not(.btn-cancel-cmsc):not(.btn-save-cmsc),
+.box-card-footer > :first-child:not(button):not(a):not(.btn):not(.btn-save):not(.btn-cancel):not(.btn-update):not(.btn-secondary):not(.btn-primary):not(.btn-submit):not(.btn-default):not(.btn-cancel-cmsc):not(.btn-save-cmsc) {
+    margin-right: auto;
+}
+
+.box-footer .pull-left,
+.box-footer .pull-right,
+.box-card-footer .pull-left,
+.box-card-footer .pull-right,
+.legacy-coa .box-footer .pull-left,
+.legacy-coa .box-footer .pull-right {
+    float: none !important;
+    margin: 0 !important;
+}
+
+.box-footer .clear-both,
+.box-card-footer .clear-both {
+    display: none !important;
+}
+
+.box-footer a.btn-default,
+.box-footer .btn-default,
+.box-card-footer a.btn-default,
+.box-card-footer .btn-default,
+.legacy-coa .box-footer .btn-default {
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151 !important;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.box-footer a.btn-default:hover,
+.box-footer .btn-default:hover,
+.box-card-footer a.btn-default:hover,
+.box-card-footer .btn-default:hover,
+.legacy-coa .box-footer .btn-default:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+    color: #111827 !important;
+}
+
+.box-footer .btn-primary,
+.box-card-footer .btn-primary,
+.legacy-coa .box-footer .btn-primary {
+    background-color: #1e3a8a;
+    border: 1px solid #1e3a8a;
+    color: #ffffff !important;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(30, 58, 138, 0.2);
+}
+
+.box-footer .btn-primary:hover,
+.box-card-footer .btn-primary:hover,
+.legacy-coa .box-footer .btn-primary:hover {
+    background-color: #1e40af;
+    border-color: #1e40af;
+    color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. Form Inputs, Selects & Labels
+   -------------------------------------------------------------------------- */
+.form-group,
+.form-group-item {
+    margin-bottom: 14px;
+}
+
+.form-group label,
+.form-group-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group .req,
+.form-group-item .req {
+    color: #ef4444;
+    font-weight: 600;
+    margin-left: 2px;
+}
+
+.form-control-cmsc,
+.custom-input,
+.custom-select {
+    display: block;
+    width: 100%;
+    height: 38px;
+    padding: 7px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #374151;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box;
+}
+
+.form-control-cmsc:focus,
+.custom-input:focus,
+.custom-select:focus {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+.input-feedback-error {
+    color: #ef4444;
+    font-size: 12px;
+    display: block;
+    margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Buttons & Badges
+   -------------------------------------------------------------------------- */
+.btn-cmsc-primary,
+.btn-save-cmsc,
+.btn-generate {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border: 1px solid #1e3a8a;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-cmsc-primary:hover,
+.btn-save-cmsc:hover,
+.btn-generate:hover {
+    background-color: #172554;
+    color: #ffffff !important;
+}
+
+.btn-cmsc-success {
+    background-color: #16a34a;
+    color: #ffffff !important;
+    border: 1px solid #16a34a;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-cmsc-success:hover {
+    background-color: #15803d;
+    color: #ffffff !important;
+}
+
+.btn-cmsc-danger {
+    background-color: #dc2626;
+    color: #ffffff !important;
+    border: 1px solid #dc2626;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-cmsc-danger:hover {
+    background-color: #b91c1c;
+    color: #ffffff !important;
+}
+
+.btn-pdf-download {
+    background-color: #f39c12;
+    color: #ffffff !important;
+    border: 1px solid #e08e0b;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-pdf-download:hover {
+    background-color: #d68400;
+    color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. DataTables Toolbar & Action Icons
+   -------------------------------------------------------------------------- */
+.dt-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dt-search-input {
+    height: 34px;
+    width: 210px;
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    color: #1f2937;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box;
+}
+
+.dt-search-input:focus {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+.dt-buttons-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #1e3a8a;
+    border: 1px solid #1e3a8a;
+    color: #ffffff !important;
+    border-radius: 5px;
+    font-size: 13.5px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.dt-btn:hover {
+    background: #172554;
+    border-color: #172554;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(30, 58, 138, 0.3);
+}
+
+.dt-btn[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+}
+
+.dt-btn[data-tooltip]:hover::after {
+    opacity: 1;
+}
+
+.btn-action-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border-radius: 4px;
+    font-size: 11px;
+    text-decoration: none !important;
+    transition: background-color 0.2s ease;
+    margin-right: 3px;
+    cursor: pointer;
+}
+
+.btn-action-edit:hover {
+    background-color: #162c6d;
+    color: #ffffff !important;
+}
+
+.btn-action-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #dc2626;
+    color: #ffffff !important;
+    border-radius: 4px;
+    font-size: 11px;
+    text-decoration: none !important;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-action-delete:hover {
+    background-color: #b91c1c;
+    color: #ffffff !important;
+}
+
+/* Popover Tooltip */
+.fee-popover-trigger {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+.fee-popover-trigger:hover {
+    color: #1e3a8a;
+}
+
+.fee-popover-box {
+    position: fixed;
+    display: none;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    padding: 10px 14px;
+    font-size: 12px;
+    z-index: 10000;
+    max-width: 260px;
+    pointer-events: none;
+}
+
+/* Table Footer & Pagination */
+.table-footer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+.pagination-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border: 1px solid #d2d6de;
+    border-radius: 3px;
+    background: #fff;
+    color: #333;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.pagination-btn.active {
+    background: #1e3a8a;
+    color: #fff;
+    border-color: #1e3a8a;
+}
+
+#exportToast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #1e3a8a;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    display: none;
+    z-index: 9999;
+}
+
+/* --------------------------------------------------------------------------
+   6. Tables & Data Grids
+   -------------------------------------------------------------------------- */
+.cmsc-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+.cmsc-fee-table,
+.table-results {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #ffffff;
+}
+
+.cmsc-fee-table thead th,
+.table-results thead th {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid #162c6d;
+    white-space: nowrap;
+}
+
+.cmsc-fee-table tbody td,
+.table-results tbody td {
+    padding: 9px 14px;
+    border: 1px solid #e5e7eb;
+    vertical-align: middle;
+    color: #1f2937;
+}
+
+.cmsc-fee-table tbody tr:hover td,
+.table-results tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* --------------------------------------------------------------------------
+   7. Radio / Checkbox Groups & Labels
+   -------------------------------------------------------------------------- */
+.criteria-options-group {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.radio-inline-label,
+.checkbox-inline-label {
+    font-weight: 500;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.radio-inline-label input[type="radio"],
+.checkbox-inline-label input[type="checkbox"] {
+    accent-color: #1e3a8a;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.total-fee-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #dc2626;
+}
+
+/* --------------------------------------------------------------------------
+   8. Assign Dues Specific Styles
+   -------------------------------------------------------------------------- */
+.assigndues-grid {
+    display: grid;
+    grid-template-columns: 28% 36% 36%;
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .assigndues-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .assigndues-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.btn-primary-blue {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border: 1px solid #1e3a8a;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none !important;
+}
+
+.btn-primary-blue:hover {
+    background-color: #172554;
+    border-color: #172554;
+    color: #ffffff !important;
+}
+
+.btn-add-badge {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    border: 1px solid #1e3a8a;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.btn-add-badge:hover {
+    background-color: #172554;
+}
+
+.btn-remove-badge {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    height: 36px;
+    width: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: background-color 0.15s ease;
+}
+
+.btn-remove-badge:hover {
+    background-color: #b91c1c;
+}
+
+.table-proceed-view {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.table-proceed-view th {
+    background-color: #f9fafb;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    color: #374151;
+}
+
+.table-proceed-view td {
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 12px;
+    vertical-align: middle;
+    color: #4b5563;
+}
+
+.dues-dynamic-row {
+    display: grid;
+    grid-template-columns: 34% 33% 33%;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 12px;
+}
+
+.dues-extra-row {
+    display: grid;
+    grid-template-columns: 32% 31% 27% 10%;
+    gap: 6px;
+    align-items: end;
+    margin-bottom: 10px;
+}
+
+.proceed-body-panel {
+    min-height: 280px;
+}
+
+.student-criteria-section {
+    display: none;
+    margin-bottom: 15px;
+}
+
+.grid-3-col-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.label-compact {
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    display: block;
+    color: #374151;
+}
+
+.custom-select-compact {
+    font-size: 11px !important;
+    height: 32px !important;
+    padding: 4px 6px !important;
+}
+
+.custom-input-compact {
+    font-size: 12px !important;
+    height: 32px !important;
+}
+
+.label-dues {
+    font-size: 12px;
+    margin-bottom: 4px;
+    display: block;
+    color: #374151;
+    font-weight: 500;
+}
+
+.dues-dates-section {
+    margin-top: 14px;
+}
+
+.notification-checkbox-label {
+    font-weight: normal;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #374151;
+    user-select: none;
+}
+
+#ajaxToastMsg {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #1e3a8a;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 99999;
+}
+
+/* --------------------------------------------------------------------------
+   9. Fee Voucher & Modal Styles
+   -------------------------------------------------------------------------- */
+.page-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.btn-print-empty {
+    background-color: #16a34a;
+    color: #ffffff !important;
+    border: 1px solid #15803d;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-print-empty:hover {
+    background-color: #15803d;
+}
+
+.btn-revert {
+    background-color: #dc2626;
+    color: #ffffff !important;
+    border: 1px solid #b91c1c;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.15s ease-in-out;
+    text-decoration: none !important;
+}
+
+.btn-revert:hover {
+    background-color: #b91c1c;
+}
+
+.criteria-radios {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    accent-color: #1e3a8a;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal-dialog {
+    background: #ffffff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.custom-modal-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.custom-modal-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.custom-modal-body {
+    padding: 18px;
+    color: #374151;
+    font-size: 14px;
+}
+
+.custom-modal-footer {
+    padding: 12px 18px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e7eb;
+}
+
+.modal-close-btn {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+    color: #6b7280;
+    line-height: 1;
+    padding: 0;
+}
+
+.modal-close-btn:hover {
+    color: #111827;
+}
+
+.modal-icon-danger {
+    color: #dc2626;
+    margin-right: 6px;
+}
+
+.modal-icon-success {
+    color: #16a34a;
+    margin-right: 6px;
+}
+
+.modal-title-text {
+    margin-top: 0;
+    font-weight: 500;
+}
+
+.modal-subtitle-text {
+    margin-bottom: 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.mb-3 {
+    margin-bottom: 12px !important;
+}
+
+.footer-action-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-generate.btn-sm {
+    padding: 5px 12px !important;
+    font-size: 12px !important;
+    text-decoration: none !important;
+}
+
+.text-success {
+    color: #16a34a !important;
+}
+
+.font-medium {
+    font-weight: 500 !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.mt-5 {
+    margin-top: 20px !important;
+}
+
+/* --------------------------------------------------------------------------
+   10. Fee Revise Styles
+   -------------------------------------------------------------------------- */
+.feerevise-box {
+    background: #ffffff;
+    border: 1px solid #d2d6de;
+    border-top: 3px solid #1e3a8a;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.feerevise-box .box-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f4f4f4;
+    background: #ffffff;
+}
+
+.feerevise-box .box-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin: 0;
+}
+
+.feerevise-box .box-body {
+    padding: 15px;
+}
+
+.feerevise-box .box-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #f4f4f4;
+    background: #ffffff;
+}
+
+.criteria-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -7px;
+    margin-right: -7px;
+}
+
+.criteria-col-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding-left: 7px;
+    padding-right: 7px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 991px) {
+    .criteria-col-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .criteria-col-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.feerevise-box label {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333333;
+}
+
+.feerevise-box .req {
+    color: #dd4b39;
+    font-weight: bold;
+}
+
+.btn-theme-search {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border: 1px solid #1e3a8a;
+    padding: 6px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-theme-search:hover {
+    background-color: #162c6d;
+    border-color: #162c6d;
+    color: #ffffff !important;
+}
+
+.btn-theme-save {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    border: 1px solid #1e3a8a;
+    padding: 7px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-theme-save:hover {
+    background-color: #162c6d;
+    color: #ffffff !important;
+}
+
+.radio-inline-wrap {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 34px;
+}
+
+.radio-inline-wrap label {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#feereviseToast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #1e3a8a;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    display: none;
+    z-index: 99999;
+}
+
+/* Fee Revise Table & Helper Styles */
+.feerevise-box table.table thead th,
+.feerevise-box .table thead th,
+#feeReviseTable thead th {
+    background-color: #1e3a8a !important;
+    background: #1e3a8a !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border: 1px solid #162c6d !important;
+    padding: 8px 10px !important;
+    vertical-align: middle !important;
+}
+
+.feerevise-box table thead th *,
+#feeReviseTable thead th * {
+    color: #ffffff !important;
+}
+
+.input-revised-fee {
+    text-align: right !important;
+    width: 120px !important;
+    display: inline-block !important;
+    height: 30px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+}
+
+.th-checkbox-col {
+    width: 40px !important;
+    text-align: center !important;
+}
+
+.th-fee-col {
+    width: 140px !important;
+    text-align: right !important;
+}
+
+.td-fee-amount {
+    text-align: right !important;
+    font-weight: 600 !important;
+}
+
+.td-empty-notice {
+    text-align: center !important;
+    padding: 20px !important;
+    color: #64748b !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. Chart of Accounts & Legacy COA Styles
+   -------------------------------------------------------------------------- */
+.legacy-coa {
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.legacy-coa .content {
+    padding: 4px 8px 15px;
+}
+
+.legacy-coa .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.legacy-coa .col-md-4 {
+    width: calc(33.333333% - 4px);
+}
+
+.legacy-coa .col-md-8 {
+    width: calc(66.666667% - 4px);
+}
+
+.legacy-coa .col-md-12 {
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    .legacy-coa .col-md-4,
+    .legacy-coa .col-md-8 {
+        width: 100%;
+    }
+}
+
+.legacy-coa .box {
+    position: relative;
+    border: 1px solid #d2d6de;
+    border-top: 2px solid #3c8dbc;
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.legacy-coa .box-header {
+    display: block;
+    position: relative;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 8px;
+}
+
+.legacy-coa .box-title {
+    display: inline-block;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.legacy-coa .box-body {
+    padding: 8px;
+}
+
+.legacy-coa .box-footer {
+    border-top: 1px solid #f4f4f4;
+    padding: 8px;
+    background: #ffffff;
+}
+
+.legacy-coa .form-group {
+    margin-bottom: 15px;
+}
+
+.legacy-coa label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.legacy-coa .req,
+.legacy-coa .text-danger {
+    color: #dd4b39;
+}
+
+.legacy-coa .form-control {
+    display: block;
+    width: 100%;
+    height: 29px;
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+    padding: 4px 8px;
+    background-color: #ffffff;
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.42857143;
+}
+
+.legacy-coa textarea.form-control {
+    height: auto;
+}
+
+.legacy-coa .btn {
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.legacy-coa .btn-primary {
+    border-color: #1d3f8d;
+    background-color: #24448d;
+    color: #ffffff !important;
+}
+
+.legacy-coa .btn-success {
+    border-color: #008d4c;
+    background-color: #00a65a;
+    color: #ffffff !important;
+}
+
+.legacy-coa .btn-danger {
+    border-color: #d73925;
+    background-color: #dd4b39;
+    color: #ffffff !important;
+}
+
+.legacy-coa .btn-xs {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    font-size: 11px;
+    border-radius: 4px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.legacy-coa .pull-right {
+    float: right;
+}
+
+.legacy-coa table,
+.legacy-coa .table {
+    width: 100%;
+    max-width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+.legacy-coa .table-bordered > thead > tr > th,
+.legacy-coa .table-bordered > tbody > tr > td,
+.legacy-coa table td,
+.legacy-coa .table td {
+    border: 1px solid #d5dfef !important;
+}
+
+.legacy-coa th,
+.legacy-coa td {
+    padding: 8px 10px;
+    vertical-align: middle;
+    line-height: 1.42857143;
+}
+
+/* Crisp, solid, uniform header across all columns */
+.legacy-coa table thead th,
+.legacy-coa .table thead th,
+.legacy-coa table.dataTable thead th,
+.legacy-coa .table-bordered > thead > tr > th,
+.legacy-coa thead th,
+.legacy-coa th.sortable,
+table.dataTable thead th,
+table.dataTable thead td {
+    background-color: #24448d !important;
+    background: #24448d !important;
+    color: #ffffff !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+    border: 1px solid #1d3f8d !important;
+    padding: 8px 10px !important;
+    text-align: left !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure sort arrows and child elements in header stay bright white */
+.legacy-coa table thead th *,
+.legacy-coa table thead th i,
+.legacy-coa table thead th span,
+.legacy-coa thead th i,
+table.dataTable thead th * {
+    color: #ffffff !important;
+    opacity: 0.9 !important;
+}
+
+/* Override DataTables active sort background colors */
+.legacy-coa table.dataTable thead .sorting,
+.legacy-coa table.dataTable thead .sorting_asc,
+.legacy-coa table.dataTable thead .sorting_desc,
+.legacy-coa table.dataTable thead .sorting_asc_disabled,
+.legacy-coa table.dataTable thead .sorting_desc_disabled,
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    background-color: #24448d !important;
+    background: #24448d !important;
+    color: #ffffff !important;
+}
+
+.legacy-coa table thead th.sortable:hover,
+.legacy-coa thead th.sortable:hover,
+table.dataTable thead th:hover {
+    background-color: #1a336f !important;
+    background: #1a336f !important;
+    color: #ffffff !important;
+    cursor: pointer;
+}
+
+.legacy-coa .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9fbfd !important;
+}
+
+.legacy-coa .table-hover > tbody > tr:hover {
+    background-color: #f0f4f9 !important;
+}
+
+.legacy-coa .text-right {
+    text-align: right;
+}
+
+.legacy-coa .alert {
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.legacy-coa .alert-success {
+    border-color: #d6e9c6;
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.legacy-coa .alert-danger {
+    border-color: #ebccd1;
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.legacy-coa .nav-tabs {
+    display: flex;
+    margin: 0;
+    border-bottom: 1px solid #24448d;
+    padding-left: 0;
+    list-style: none;
+}
+
+.legacy-coa .nav-tabs li {
+    margin-bottom: -1px;
+}
+
+.legacy-coa .nav-tabs a {
+    display: block;
+    margin-right: 2px;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    padding: 10px 15px;
+    color: #444444;
+    text-decoration: none;
+}
+
+.legacy-coa .nav-tabs .active a {
+    border: 1px solid #dddddd;
+    border-bottom-color: #ffffff;
+    background: #ffffff;
+}
+
+.legacy-coa .tab-content {
+    border: 1px solid #dddddd;
+    border-top: 0;
+    background: #ffffff;
+    padding: 8px;
+}
+
+.legacy-coa .tab-pane {
+    display: none;
+}
+
+.legacy-coa .tab-pane.active {
+    display: block;
+}
+
+.legacy-coa .panel {
+    margin-bottom: 5px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+.legacy-coa .panel-heading {
+    border-bottom: 1px solid #dddddd;
+    padding: 10px 15px;
+    background: #f5f5f5;
+}
+
+.legacy-coa .panel-title {
+    margin: 0;
+    font-size: 14px;
+}
+
+.legacy-coa .panel-body {
+    padding: 15px;
+}
+
+.legacy-coa .collapse {
+    display: none;
+}
+
+.legacy-coa .collapse.in {
+    display: block !important;
+}
+
+.legacy-coa .sub-acc-type {
+    margin-bottom: 6px;
+}
+
+.legacy-coa .sub-acc-type > a {
+    color: #337ab7;
+    font-size: 13px;
+    text-decoration: none;
+    display: inline-block;
+    padding: 2px 0;
+    cursor: pointer;
+}
+
+.legacy-coa .sub-acc-type > a:hover {
+    color: #23527c;
+    text-decoration: underline;
+}
+
+.legacy-coa .sub-acc-items {
+    padding: 5px 0 8px 18px;
+    font-size: 13px;
+    color: #333333;
+    line-height: 1.8;
+}
+
+.legacy-datatable-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.legacy-datatable-toolbar input {
+    width: 160px;
+    height: 26px;
+    border: 1px solid #aaaaaa;
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 12px;
+    outline: none;
+}
+
+.legacy-datatable-toolbar input:focus {
+    border-color: #24448d;
+}
+
+.legacy-datatable-icons {
+    display: flex;
+    gap: 3px;
+}
+
+.legacy-datatable-icons span {
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    background: #24448d;
+    color: #ffffff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.legacy-datatable-icons span:hover {
+    background: #1a336f;
+}
+
+.legacy-coa th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.legacy-coa th.sortable:hover {
+    background: #1e3977;
+}
+
+/* Action button overrides for table rows */
+.legacy-coa .mailbox-date .btn,
+.legacy-coa .mailbox-date a,
+.legacy-coa .btn.btn-xs {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    padding: 0 !important;
+    margin: 1px !important;
+    border-radius: 3px !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}
+
+.legacy-coa .mailbox-date .btn-success,
+.legacy-coa .btn.btn-success.btn-xs {
+    background-color: #00a65a !important;
+    border: 1px solid #008d4c !important;
+    color: #ffffff !important;
+}
+
+.legacy-coa .mailbox-date .btn-danger,
+.legacy-coa .btn.btn-danger.btn-xs {
+    background-color: #dd4b39 !important;
+    border: 1px solid #d73925 !important;
+    color: #ffffff !important;
+}
+
+.legacy-coa .mailbox-date .btn-primary,
+.legacy-coa .btn.btn-primary.btn-xs {
+    background-color: #24448d !important;
+    border: 1px solid #1d3f8d !important;
+    color: #ffffff !important;
+}
+
+.legacy-coa .mailbox-date .btn i,
+.legacy-coa .mailbox-date a i,
+.legacy-coa .btn.btn-xs i {
+    font-size: 11px !important;
+    line-height: 1 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+@media print {
+    .legacy-datatable-toolbar,
+    .legacy-coa .nav-tabs,
+    .admin-topbar,
+    .admin-sidebar,
+    .main-footer {
+        display: none !important;
+    }
+    .legacy-coa .tab-pane.active {
+        display: block !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    .legacy-coa thead th {
+        background: #24448d !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   12. Account Dashboard Styles
+   -------------------------------------------------------------------------- */
+.legacy-account-dashboard {
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.legacy-dashboard-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(330px, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.legacy-box {
+    overflow: hidden;
+    border: 1px solid #d2d6de;
+    border-radius: 5px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.legacy-box-header {
+    min-height: 21px;
+    border-bottom: 1px solid #d2d6de;
+    background: #2f61b3;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 21px;
+    padding: 0 4px;
+}
+
+.legacy-box-header .box-tool {
+    float: right;
+    margin-top: 2px;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    font-size: 10px;
+}
+
+.legacy-box-body {
+    min-height: 205px;
+    padding: 14px 16px 12px;
+}
+
+.legacy-stat-line {
+    margin-bottom: 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.legacy-stat-line span {
+    display: inline;
+    padding-right: 10px;
+    color: #000000;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.legacy-expense-total span {
+    padding-right: 20px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.legacy-fee-overview {
+    padding: 8px 10px;
+}
+
+.legacy-fee-overview h5 {
+    margin: 0 0 8px;
+    border-bottom: 1px solid #d2d6de;
+    padding-bottom: 10px;
+    color: #000000;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.legacy-progress-row {
+    margin: 10px 0 4px;
+    text-transform: uppercase;
+}
+
+.legacy-progress-row span {
+    float: right;
+}
+
+.legacy-progress-row a {
+    color: #00a9e0;
+    text-decoration: none;
+}
+
+.legacy-progress {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #f5f5f5;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.legacy-progress-bar {
+    height: 100%;
+    min-width: 0;
+}
+
+.legacy-chart-wrap {
+    position: relative;
+    height: 170px;
+}
+
+@media (max-width: 992px) {
+    .legacy-dashboard-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   12. Fee Voucher Student & Sibling Styles
+   -------------------------------------------------------------------------- */
+.feevoucher-sibling-container {
+    width: 100%;
+}
+
+.tabs-outer-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+}
+
+.nav-tabs-cmsc {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+    gap: 0;
+}
+
+.nav-tabs-cmsc .nav-tab-item {
+    padding: 10px 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #4b5563;
+    text-decoration: none !important;
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+    border-right: none;
+    border-radius: 4px 4px 0 0;
+    background: #f9fafb;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    top: 1px;
+    transition: all 0.15s ease-in-out;
+}
+
+.nav-tabs-cmsc .nav-tab-item:last-child {
+    border-right: 1px solid #e5e7eb;
+}
+
+.nav-tabs-cmsc .nav-tab-item:hover {
+    color: #1e3a8a;
+    background: #f3f4f6;
+}
+
+.nav-tabs-cmsc .nav-tab-item.active {
+    background: #ffffff;
+    color: #1e3a8a;
+    font-weight: 600;
+    border-color: #e5e7eb;
+    border-bottom: 2px solid #1e3a8a !important;
+    margin-bottom: -1px;
+    z-index: 2;
+}
+
+.card-compact-wrapper {
+    max-width: 540px;
+}
+
+.feevoucher-split-grid {
+    display: grid;
+    grid-template-columns: 460px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .feevoucher-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card-compact-wrapper .box-card,
+.feevoucher-split-grid .box-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.card-compact-wrapper .box-card-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 16px;
+}
+
+.card-compact-wrapper .box-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.card-compact-wrapper .box-card-body {
+    padding: 16px;
+}
+
+.card-compact-wrapper .box-card-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    background-color: #ffffff;
+}
+
+.btn-table-action-sm {
+    border: 1px solid #1e3a8a;
+    background-color: #1e3a8a;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 4px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-table-action-sm:hover {
+    background-color: #1e40af;
+    border-color: #1e40af;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(30, 58, 138, 0.2);
+}
+
+.print-only-voucher-area {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 4mm;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .print-only-voucher-area,
+    .print-only-voucher-area * {
+        visibility: visible !important;
+    }
+
+    .print-only-voucher-area {
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        z-index: 999999 !important;
+    }
+
+    .print-only-voucher-area .voucher-sheet {
+        display: flex !important;
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+    }
+
+    .print-only-voucher-area .voucher-slip {
+        flex: 1 !important;
+        padding: 4px 6px !important;
+        border-right: 1px dashed #000 !important;
+        font-size: 9px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+    }
+
+    .print-only-voucher-area .voucher-slip:last-child {
+        border-right: none !important;
+    }
+
+    .voucher-copy-type {
+        text-align: center;
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 3px;
+        color: #000;
+    }
+
+    .school-header-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+
+    .school-logo-img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+    .school-header-info {
+        text-align: center;
+    }
+
+    .school-header-title {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #000;
+    }
+
+    .school-header-sub {
+        font-size: 8px;
+        font-weight: 700;
+        color: #111;
+    }
+
+    .school-header-city {
+        font-size: 8px;
+        color: #222;
+    }
+
+    .bank-info-box {
+        border: 2px solid #000;
+        text-align: center;
+        padding: 2px 4px;
+        margin-bottom: 5px;
+    }
+
+    .bank-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: #000;
+        line-height: 1.1;
+    }
+
+    .bank-branch-desc {
+        font-size: 7.5px;
+        font-weight: 500;
+        color: #111;
+        margin-bottom: 2px;
+    }
+
+    .bank-acc-label {
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .bank-acc-number {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+    }
+
+    .student-meta-box {
+        font-size: 8px;
+        line-height: 1.45;
+        margin-bottom: 4px;
+    }
+
+    .meta-flex-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .session-pill-wrap {
+        text-align: center;
+        margin: 3px 0 5px;
+    }
+
+    .session-pill {
+        display: inline-block;
+        border: 1.5px solid #000;
+        border-radius: 12px;
+        padding: 1px 16px;
+        font-weight: 800;
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+
+    .fee-particulars-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 5px;
+        font-size: 8px;
+    }
+
+    .fee-particulars-table th,
+    .fee-particulars-table td {
+        border: 1px solid #000;
+        padding: 2px 3px;
+        line-height: 1.25;
+    }
+
+    .fee-particulars-table th {
+        background-color: #f2f2f2 !important;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .fee-particulars-table th.sr-col,
+    .fee-particulars-table td.sr-col {
+        width: 18px;
+        text-align: center;
+    }
+
+    .fee-particulars-table th.amt-col,
+    .fee-particulars-table td.amt-col {
+        width: 60px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    .total-summary-row td {
+        font-weight: 700;
+        background-color: #fff;
+    }
+
+    .due-date-container {
+        text-align: center;
+        font-size: 9.5px;
+        font-weight: 800;
+        padding: 1px 0;
+        margin-bottom: 3px;
+    }
+
+    .payment-terms-section {
+        font-size: 7px;
+        line-height: 1.25;
+        color: #111;
+        margin-bottom: 4px;
+    }
+
+    .terms-heading {
+        font-weight: 700;
+        margin-bottom: 1px;
+    }
+
+    .terms-bullet-list {
+        margin: 0;
+        padding-left: 12px;
+    }
+
+    .depositor-details-box {
+        font-size: 7.5px;
+        margin-bottom: 6px;
+        line-height: 1.55;
+    }
+
+    .depositor-field-line {
+        white-space: nowrap;
+    }
+
+    .accountant-signature-section {
+        text-align: right;
+        padding-top: 2px;
+        font-size: 7.5px;
+    }
+
+    .signature-dots {
+        letter-spacing: 0.5px;
+        color: #000;
+    }
+
+    .signature-title {
+        font-weight: 600;
+        font-size: 7.5px;
+        margin-top: 1px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   13. Fee Voucher (Dedicated Tab) Styles
+   -------------------------------------------------------------------------- */
+.feevoucher-page-container {
+    width: 100%;
+}
+
+.footer-end {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   14. Custom Fee Voucher Styles
+   -------------------------------------------------------------------------- */
+.customfeevoucher-page-container {
+    width: 100%;
+}
+
+.grid-4-col {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .grid-4-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .grid-4-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   15. Chart of Accounts (COA) Details View & Tree Styles
+   -------------------------------------------------------------------------- */
+.coa-page-container {
+    width: 100%;
+}
+
+.coa-tab-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.coa-head-block {
+    margin-bottom: 8px;
+}
+
+.coa-head-title {
+    background-color: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #4b5563;
+    user-select: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.coa-head-body {
+    background-color: #ffffff;
+}
+
+.coa-type-row {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.coa-type-link {
+    display: flex;
+    align-items: center;
+    padding: 8px 18px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #0284c7;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.coa-type-link:hover {
+    color: #0369a1;
+    background-color: #f8fafc;
+}
+
+.coa-chevron {
+    margin-left: 6px;
+    font-size: 12px;
+}
+
+.coa-accounts-dropdown {
+    display: none;
+    padding: 8px 18px 12px 36px;
+    background-color: #fafbfc;
+    border-top: 1px dashed #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.coa-accounts-dropdown.in {
+    display: block;
+}
+
+.coa-account-item {
+    padding: 4px 0;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.coa-account-empty {
+    font-size: 12.5px;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 4px 0;
+}

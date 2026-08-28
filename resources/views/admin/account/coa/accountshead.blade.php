@@ -9,58 +9,6 @@
 @endphp
 
 @section('content')
-    @include('admin.account.coa._styles')
-
-    <style>
-        .legacy-coa .mailbox-date .btn,
-        .legacy-coa .mailbox-date a,
-        .legacy-coa .btn.btn-xs {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 22px !important;
-            height: 22px !important;
-            min-width: 22px !important;
-            min-height: 22px !important;
-            max-width: 22px !important;
-            max-height: 22px !important;
-            padding: 0 !important;
-            margin: 1px !important;
-            border-radius: 3px !important;
-            line-height: 1 !important;
-            text-decoration: none !important;
-            box-sizing: border-box !important;
-            vertical-align: middle !important;
-        }
-        .legacy-coa .mailbox-date .btn-success,
-        .legacy-coa .btn.btn-success.btn-xs {
-            background-color: #00a65a !important;
-            border: 1px solid #008d4c !important;
-            color: #ffffff !important;
-        }
-        .legacy-coa .mailbox-date .btn-danger,
-        .legacy-coa .btn.btn-danger.btn-xs {
-            background-color: #dd4b39 !important;
-            border: 1px solid #d73925 !important;
-            color: #ffffff !important;
-        }
-        .legacy-coa .mailbox-date .btn-primary,
-        .legacy-coa .btn.btn-primary.btn-xs {
-            background-color: #24448d !important;
-            border: 1px solid #1d3f8d !important;
-            color: #ffffff !important;
-        }
-        .legacy-coa .mailbox-date .btn i,
-        .legacy-coa .mailbox-date a i,
-        .legacy-coa .btn.btn-xs i {
-            font-size: 11px !important;
-            line-height: 1 !important;
-            color: #ffffff !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-    </style>
-
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
@@ -73,9 +21,6 @@
                         <form action="{{ $account ? route('admin.account.accounts.accountshead.update', ['account' => $account->id, 'branch' => $branchId], false) : route('admin.account.accounts.accountshead.store', ['branch' => $branchId], false) }}" method="post" accept-charset="utf-8">
                             @csrf
                             <div class="box-body">
-                                @if (session('success'))
-                                    <div class="alert alert-success text-left">{{ session('success') }}</div>
-                                @endif
 
                                 @if ($account)
                                     <input type="hidden" name="id" value="{{ $account->id }}">
@@ -169,12 +114,11 @@
                                 </div>
                             </div>
 
-                            <div class="box-footer">
+                            <div class="box-footer footer-end">
                                 @if ($account)
-                                    <a href="{{ route('admin.account.accounts.accountshead', ['branch' => $branchId], false) }}" class="btn btn-default pull-left" style="margin-top: 2px;">Cancel</a>
+                                    <a href="{{ route('admin.account.accounts.accountshead', ['branch' => $branchId], false) }}" class="btn btn-default">Cancel</a>
                                 @endif
-                                <button type="submit" class="btn btn-primary pull-right">{{ $account ? 'Update' : 'Save' }}</button>
-                                <div class="clear-both"></div>
+                                <button type="submit" class="btn btn-primary">{{ $account ? 'Update' : 'Save' }}</button>
                             </div>
                         </form>
                     </div>
@@ -238,14 +182,14 @@
                                                                 $isPosted = (int) ($accountHead->is_posted ?? 0) === 1;
                                                                 $isActive = ($accountHead->is_active ?? 'yes') === 'yes';
                                                             @endphp
-                                                            <button onclick="changestatuspost('{{ $accountHead->id }}')" type="button" class="btn {{ $isPosted ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isPosted ? 'Is Posted' : 'Is Post' }}" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: {{ $isPosted ? '#00a65a' : '#dd4b39' }} !important; border: 1px solid {{ $isPosted ? '#008d4c' : '#d73925' }} !important; color: #ffffff !important; vertical-align: middle !important; box-sizing: border-box !important;">
-                                                                <i class="fa fa-plus" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                            <button onclick="changestatuspost('{{ $accountHead->id }}')" type="button" class="btn {{ $isPosted ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isPosted ? 'Is Posted' : 'Is Post' }}">
+                                                                <i class="fa fa-plus"></i>
                                                             </button>
-                                                            <a href="{{ route('admin.account.accounts.accountshead.edit', ['account' => $accountHead->id, 'branch' => $accountHead->brc_id ?: $branchId], false) }}" class="btn btn-primary btn-xs" title="Edit" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: #24448d !important; border: 1px solid #1d3f8d !important; color: #ffffff !important; text-decoration: none !important; vertical-align: middle !important; box-sizing: border-box !important;">
-                                                                <i class="fa fa-pencil" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                            <a href="{{ route('admin.account.accounts.accountshead.edit', ['account' => $accountHead->id, 'branch' => $accountHead->brc_id ?: $branchId], false) }}" class="btn btn-primary btn-xs" title="Edit">
+                                                                <i class="fa fa-pencil"></i>
                                                             </a>
-                                                            <button onclick="changestatus('{{ $accountHead->id }}')" type="button" class="btn {{ $isActive ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isActive ? 'Active' : 'In Active' }}" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; margin: 1px !important; border-radius: 3px !important; background-color: {{ $isActive ? '#00a65a' : '#dd4b39' }} !important; border: 1px solid {{ $isActive ? '#008d4c' : '#d73925' }} !important; color: #ffffff !important; vertical-align: middle !important; box-sizing: border-box !important;">
-                                                                <i class="fa {{ $isActive ? 'fa-check' : 'fa-remove' }}" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                            <button onclick="changestatus('{{ $accountHead->id }}')" type="button" class="btn {{ $isActive ? 'btn-success' : 'btn-danger' }} btn-xs" title="{{ $isActive ? 'Active' : 'In Active' }}">
+                                                                <i class="fa {{ $isActive ? 'fa-check' : 'fa-remove' }}"></i>
                                                             </button>
                                                         @endunless
                                                     </td>

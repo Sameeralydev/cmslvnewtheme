@@ -23,6 +23,10 @@
         'admin.account.accounts.accountshead',
         'admin.account.accounts.accountshead.edit',
         'admin.account.fee-master.index' => 'chart_of_accounts',
+        'admin.account.studentfee.feerevise',
+        'admin.account.studentfee.assigndues',
+        'admin.account.studentfee.assignfeevoucher',
+        'admin.account.studentfee.assignfeevoucherdatewise',
         'admin.account.student-fees.index' => 'fee_voucher',
         'admin.account.expenses.index',
         'admin.account.payments.index',
@@ -341,13 +345,13 @@
             'icon' => 'fa fa-file-invoice-dollar',
             'route' => null,
             'children' => [
-                ['label' => 'Fee Revise', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Assign Dues', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Assign Fee Voucher', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Assign Fee Voucher Date Wise', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Fee Voucher Student Sibling', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Fee Voucher', 'route' => 'admin.account.student-fees.index'],
-                ['label' => 'Custom Fee Voucher', 'route' => 'admin.account.student-fees.index'],
+                ['label' => 'Fee Revise', 'route' => 'admin.account.studentfee.feerevise'],
+                ['label' => 'Assign Dues', 'route' => 'admin.account.studentfee.assigndues'],
+                ['label' => 'Assign Fee Voucher', 'route' => 'admin.account.studentfee.assignfeevoucher'],
+                ['label' => 'Assign Fee Voucher Date Wise', 'route' => 'admin.account.studentfee.assignfeevoucherdatewise'],
+                ['label' => 'Fee Voucher Student Sibling', 'route' => 'admin.account.studentfee.feevoucherstudentsibling'],
+                ['label' => 'Fee Voucher', 'route' => 'admin.account.studentfee.feevoucher'],
+                ['label' => 'Custom Fee Voucher', 'route' => 'admin.account.studentfee.customfeevoucher'],
             ],
         ],
         [
@@ -526,11 +530,10 @@
     <nav class="admin-sidebar-nav">
         @foreach ($sidebarItems as $item)
             @php
-                $itemIsActive = $item['route'] ? request()->routeIs($item['route']) : false;
+                $itemIsActive = !empty($item['route']) ? request()->routeIs($item['route']) : false;
                 $menuIsActive = ($item['key'] ?? null) !== null && ($item['key'] ?? null) === $currentSidebarMenu;
-                $childRouteIsActive = collect($item['children'])->contains(fn (array $child): bool => request()->routeIs($child['route']));
-                $hasCurrentSidebarMenu = $currentSidebarMenu !== null && $currentSidebarMenu !== '';
-                $isExpanded = $itemIsActive || $menuIsActive || (! $hasCurrentSidebarMenu && $childRouteIsActive);
+                $childRouteIsActive = collect($item['children'])->contains(fn (array $child): bool => !empty($child['route']) && request()->routeIs($child['route']));
+                $isExpanded = $itemIsActive || $menuIsActive || $childRouteIsActive;
             @endphp
 
             @if ($item['children'] !== [])
@@ -540,7 +543,7 @@
                         data-sidebar-toggle
                         data-sidebar-target="sidebar-menu-{{ $item['key'] }}"
                         aria-expanded="{{ $isExpanded ? 'true' : 'false' }}"
-                        href="{{ $item['route'] ? route($item['route'], absolute: false) : request()->fullUrlWithQuery(['menu' => $item['key']]) }}"
+                        href="javascript:void(0);"
                     >
                         <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                         <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
@@ -551,14 +554,8 @@
                         <div class="admin-sidebar-tree-inner">
                             @foreach ($item['children'] as $child)
                                 @php
-                                    $childKey = $child['key'] ?? '';
-                                    $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
-                                    $childUrl = route($child['route'], absolute: false);
-                                    if ($child['route'] !== 'admin.hrms.staff.index') {
-                                        $childParams = ['menu' => $item['key']];
-                                        if ($childKey !== '') $childParams['submenu'] = $childKey;
-                                        $childUrl = route($child['route'], $childParams, false);
-                                    }
+                                    $childIsCurrent = !empty($child['route']) && request()->routeIs($child['route']);
+                                    $childUrl = !empty($child['route']) ? route($child['route'], absolute: false) : '#';
                                 @endphp
                                 <a class="admin-sidebar-link admin-sidebar-child {{ $childIsCurrent ? 'is-active' : '' }}" href="{{ $childUrl }}">
                                     <span class="admin-sidebar-link-icon"><i class="fa fa-angle-double-right"></i></span>
@@ -569,7 +566,7 @@
                     </div>
                 </div>
             @else
-                <a class="admin-sidebar-link px-3 {{ $itemIsActive ? 'is-active' : '' }}" href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}">
+                <a class="admin-sidebar-link px-3 {{ $itemIsActive ? 'is-active' : '' }}" href="{{ !empty($item['route']) ? route($item['route'], absolute: false) : '#' }}">
                     <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                     <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
                 </a>

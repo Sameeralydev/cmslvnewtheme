@@ -3,8 +3,6 @@
 @section('title', 'Chart of Accounts')
 
 @section('content')
-    @include('admin.account.coa._styles')
-
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
@@ -52,7 +50,7 @@
                             </div>
 
                             <div class="tab-pane" id="tab_2">
-                                <div class="panel-group" id="accordion1">
+                                <div class="coa-details-tree">
                                     @php
                                         $currentBranchId = $branchId ?? (app(\App\Services\BranchContext::class)->id() ?: 1);
                                         $accountTypesList = \Illuminate\Support\Facades\DB::table('accounts_type')->orderBy('id')->get();
@@ -70,52 +68,46 @@
                                                 ->orderBy('id')
                                                 ->get();
                                         @endphp
-                                        <div class="panel panel-default" style="margin-bottom: 5px; border: 1px solid #ddd; border-radius: 4px; background: #fff;">
-                                            <div class="panel-heading" style="background-color: #f5f5f5; border-bottom: 1px solid #ddd; padding: 10px 15px; cursor: pointer;">
-                                                <h4 class="panel-title" style="margin: 0; font-size: 14px; font-weight: 500; color: #333;">
-                                                    <a href="#collapse{{ $headIndex }}" data-panel-toggle style="color: #333; text-decoration: none; display: block;">
-                                                        {{ $head->code }}. {{ $head->name }}
-                                                    </a>
-                                                </h4>
+                                        <div class="coa-head-block">
+                                            <div class="coa-head-title" data-coa-head-toggle="{{ $headIndex }}">
+                                                <span>{{ $head->code }}. {{ $head->name }}</span>
                                             </div>
-                                            <div id="collapse{{ $headIndex }}" class="panel-collapse collapse {{ $headIndex === 0 ? 'in' : '' }}" style="{{ $headIndex === 0 ? 'display: block;' : 'display: none;' }}">
-                                                <div class="panel-body" style="padding: 15px; background: #fff;">
-                                                    <div class="panel-group" id="accordion11_{{ $headIndex }}">
-                                                        @foreach ($newAccounts as $typeIndex => $type)
-                                                            @php
-                                                                $accountsList = \Illuminate\Support\Facades\DB::table('accountshead')
-                                                                    ->where(function ($q) use ($type) {
-                                                                        $q->where('new_accounts_id', $type->id)
-                                                                          ->orWhere('new_accounts_id', (string) $type->id);
-                                                                        if (!empty($type->code)) {
-                                                                            $q->orWhere('new_accounts_id', $type->code);
-                                                                        }
-                                                                    })
-                                                                    ->where(function ($q) use ($currentBranchId) {
-                                                                        $q->whereNull('brc_id')
-                                                                          ->orWhere('brc_id', 0)
-                                                                          ->orWhere('brc_id', '')
-                                                                          ->orWhere('brc_id', $currentBranchId);
-                                                                    })
-                                                                    ->orderBy('id')
-                                                                    ->get();
-                                                                $isFirst = ($headIndex === 0 && $typeIndex === 0);
-                                                            @endphp
-                                                            <div class="sub-acc-type" style="margin-bottom: 6px;">
-                                                                <a href="#collapse{{ $headIndex }}{{ $typeIndex }}" data-panel-toggle style="color: #337ab7; font-size: 13px; text-decoration: none; display: inline-block; padding: 2px 0; cursor: pointer;">
-                                                                    {{ $type->code }}. {{ $type->name }} &raquo;
-                                                                </a>
-                                                                <div id="collapse{{ $headIndex }}{{ $typeIndex }}" class="panel-collapse collapse {{ $isFirst ? 'in' : '' }}" style="{{ $isFirst ? 'display: block;' : 'display: none;' }}">
-                                                                    <div class="sub-acc-items" style="padding: 5px 0 8px 18px; font-size: 13px; color: #333; line-height: 1.8;">
-                                                                        @foreach ($accountsList as $account)
-                                                                            {{ $account->code }}. {{ $account->name }}<br/>
-                                                                        @endforeach
-                                                                    </div>
+                                            <div class="coa-head-body" id="coaHeadBody{{ $headIndex }}">
+                                                @foreach ($newAccounts as $typeIndex => $type)
+                                                    @php
+                                                        $accountsList = \Illuminate\Support\Facades\DB::table('accountshead')
+                                                            ->where(function ($q) use ($type) {
+                                                                $q->where('new_accounts_id', $type->id)
+                                                                  ->orWhere('new_accounts_id', (string) $type->id);
+                                                                if (!empty($type->code)) {
+                                                                    $q->orWhere('new_accounts_id', $type->code);
+                                                                }
+                                                            })
+                                                            ->where(function ($q) use ($currentBranchId) {
+                                                                $q->whereNull('brc_id')
+                                                                  ->orWhere('brc_id', 0)
+                                                                  ->orWhere('brc_id', '')
+                                                                  ->orWhere('brc_id', $currentBranchId);
+                                                            })
+                                                            ->orderBy('id')
+                                                            ->get();
+                                                    @endphp
+                                                    <div class="coa-type-row">
+                                                        <a href="javascript:void(0)" class="coa-type-link" data-coa-type-toggle="{{ $headIndex }}_{{ $typeIndex }}">
+                                                            <span>{{ $type->code }}. {{ $type->name }}</span>
+                                                            <span class="coa-chevron">&raquo;</span>
+                                                        </a>
+                                                        <div class="coa-accounts-dropdown" id="coaTypeDropdown{{ $headIndex }}_{{ $typeIndex }}">
+                                                            @forelse ($accountsList as $account)
+                                                                <div class="coa-account-item">
+                                                                    {{ $account->code }}. {{ $account->name }}
                                                                 </div>
-                                                            </div>
-                                                        @endforeach
+                                                            @empty
+                                                                <div class="coa-account-empty">No accounts registered under this head</div>
+                                                            @endforelse
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
                                     @endforeach
@@ -148,22 +140,31 @@
                 });
             });
 
-            // 2. Accordion Toggles
-            document.querySelectorAll('[data-panel-toggle]').forEach(function (toggle) {
-                toggle.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    var href = toggle.getAttribute('href');
-                    if (href && href.startsWith('#')) {
-                        var panel = document.getElementById(href.substring(1));
-                        if (panel) {
-                            var isHidden = window.getComputedStyle(panel).display === 'none' || !panel.classList.contains('in');
-                            if (isHidden) {
-                                panel.classList.add('in');
-                                panel.style.display = 'block';
-                            } else {
-                                panel.classList.remove('in');
-                                panel.style.display = 'none';
-                            }
+            // 2. Head & Type Accordion Toggles
+            document.querySelectorAll('[data-coa-head-toggle]').forEach(function (headTitle) {
+                headTitle.addEventListener('click', function () {
+                    var headId = this.getAttribute('data-coa-head-toggle');
+                    var body = document.getElementById('coaHeadBody' + headId);
+                    if (body) {
+                        body.style.display = (body.style.display === 'none') ? 'block' : 'none';
+                    }
+                });
+            });
+
+            document.querySelectorAll('[data-coa-type-toggle]').forEach(function (typeLink) {
+                typeLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var typeId = this.getAttribute('data-coa-type-toggle');
+                    var dropdown = document.getElementById('coaTypeDropdown' + typeId);
+                    if (dropdown) {
+                        var willOpen = !dropdown.classList.contains('in');
+                        // Close all open dropdowns
+                        document.querySelectorAll('.coa-accounts-dropdown').forEach(function (el) {
+                            el.classList.remove('in');
+                        });
+                        // Open only the clicked one if it wasn't already open
+                        if (willOpen) {
+                            dropdown.classList.add('in');
                         }
                     }
                 });

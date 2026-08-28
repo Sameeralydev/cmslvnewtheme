@@ -599,6 +599,107 @@ Route::prefix('admin/account')
             ->middleware('permission:studentfee,view')
             ->name('studentfee.getSectionsByClass');
 
+        Route::match(['get', 'post'], '/studentfee/assigndues/{branch_id?}', [StudentFeeController::class, 'assigndues'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.assigndues');
+
+        Route::post('/studentfee/getStudentByBranch', [StudentFeeController::class, 'getStudentByBranch'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getStudentByBranch');
+
+        Route::post('/studentfee/getClassesByBranch', [StudentFeeController::class, 'getClassesByBranch'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getClassesByBranch');
+
+        Route::post('/studentfee/getClassesSectionsByBranch', [StudentFeeController::class, 'getClassesSectionsByBranch'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getClassesSectionsByBranch');
+
+        Route::post('/studentfee/getStudentClassSectionsByBranch', [StudentFeeController::class, 'getStudentClassSectionsByBranch'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getStudentClassSectionsByBranch');
+
+        Route::post('/studentfee/getstdByBrcIDByAdmitNo', [StudentFeeController::class, 'getstdByBrcIDByAdmitNo'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getstdByBrcIDByAdmitNo');
+
+        Route::post('/studentfee/getFeeTypeByBranchID', [StudentFeeController::class, 'getFeeTypeByBranchID'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getFeeTypeByBranchID');
+
+        Route::post('/studentfee/addDues', [StudentFeeController::class, 'addDues'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.addDues');
+
+        Route::match(['get', 'post'], '/studentfee/assignfeevoucher/{branch_id?}', [StudentFeeController::class, 'assignfeevoucher'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.assignfeevoucher');
+
+        Route::post('/studentfee/revertfeevoucher', [StudentFeeController::class, 'revertfeevoucher'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.revertfeevoucher');
+
+        Route::get('/studentfee/printfeevoucher', [StudentFeeController::class, 'printfeevoucher'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.printfeevoucher');
+
+        Route::match(['get', 'post'], '/studentfee/assignfeevoucherdatewise/{branch_id?}', [StudentFeeController::class, 'assignfeevoucherdatewise'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.assignfeevoucherdatewise');
+
+        Route::match(['get', 'post'], '/studentfee/feevoucherstudentsibling/{branch_id?}/{tab?}', [StudentFeeController::class, 'feevoucherstudentsibling'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.feevoucherstudentsibling');
+
+        Route::match(['get', 'post'], '/studentfee/feevoucher/{branch_id?}', [StudentFeeController::class, 'feevoucher'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.feevoucher');
+
+        Route::match(['get', 'post'], '/studentfee/customfeevoucher/{branch_id?}', [StudentFeeController::class, 'customfeevoucher'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.customfeevoucher');
+
+        Route::get('/studentfee/getStudentFeeSummary', [StudentFeeController::class, 'getStudentFeeSummary'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getStudentFeeSummary');
+
+        Route::get('/studentfee/getSiblingFeeSummary', [StudentFeeController::class, 'getSiblingFeeSummary'])
+            ->middleware('permission:studentfee,view')
+            ->name('studentfee.getSiblingFeeSummary');
+
+        Route::get('/studentfee/get-sections/{class_id}', function ($classId) {
+            $classId = (int) $classId;
+            $sections = collect();
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('class_sections')) {
+                $sections = \Illuminate\Support\Facades\DB::table('class_sections')
+                    ->join('sections', 'sections.id', '=', 'class_sections.section_id')
+                    ->where('class_sections.class_id', $classId)
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            if ($sections->isEmpty() && \Illuminate\Support\Facades\Schema::hasTable('student_session')) {
+                $sections = \Illuminate\Support\Facades\DB::table('student_session')
+                    ->join('sections', 'sections.id', '=', 'student_session.section_id')
+                    ->where('student_session.class_id', $classId)
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->distinct()
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            if ($sections->isEmpty() && \Illuminate\Support\Facades\Schema::hasTable('sections')) {
+                $sections = \Illuminate\Support\Facades\DB::table('sections')
+                    ->select('sections.id as section_id', 'sections.id', 'sections.section', 'sections.section as name')
+                    ->orderBy('sections.section', 'asc')
+                    ->get();
+            }
+
+            return response()->json($sections);
+        });
+
         Route::get('/setting/sections/getByClass', function (\Illuminate\Http\Request $request) {
             $classId = (int) $request->input('class_id');
             $sections = collect();

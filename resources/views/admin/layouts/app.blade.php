@@ -7,7 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') - {{ config('app.name', 'Laravel') }}</title>
     <link rel="stylesheet" href="{{ asset('assets/themes/default/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom-toast.css') }}">
     @vite(['resources/css/app.css', 'resources/js/admin.js'])
+    <link rel="stylesheet" href="{{ asset('assets/css/account-modules.css') }}">
     @stack('styles')
 </head>
 

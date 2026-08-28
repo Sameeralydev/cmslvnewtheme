@@ -2,465 +2,6 @@
 
 @section('title', 'Edit Fee Structure : ' . ($current_session_name ?? ''))
 
-@push('styles')
-<style>
-    /* ===================================================
-       CMSC Fee Master / Fee Structure Exact Styles
-       =================================================== */
-
-    .feemaster-container {
-        font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        color: #333;
-        font-size: 14px;
-    }
-
-    .feemaster-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-        gap: 15px;
-        align-items: start;
-    }
-
-    @media (max-width: 991px) {
-        .feemaster-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    /* Box Cards */
-    .box {
-        position: relative;
-        border-radius: 4px;
-        background: #ffffff;
-        border: 1px solid #d2d6de;
-        margin-bottom: 20px;
-        width: 100%;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-
-    .box-header {
-        color: #333;
-        background: #fff;
-        border-bottom: 1px solid #f4f4f4;
-        padding: 12px 15px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .box-title {
-        display: inline-block;
-        font-size: 16px;
-        margin: 0;
-        line-height: 1.2;
-        font-weight: 500;
-        color: #333333;
-    }
-
-    .box-body {
-        padding: 15px;
-        background: #fff;
-    }
-
-    .box-footer {
-        border-top: 1px solid #f4f4f4;
-        padding: 10px 15px;
-        background-color: #fff;
-        text-align: right;
-    }
-
-    /* Form Controls */
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 400;
-        font-size: 13px;
-        color: #333;
-    }
-
-    .form-group label .req {
-        color: #ff0000;
-        font-size: 13px;
-        font-weight: normal;
-    }
-
-    .form-control-cmsc {
-        width: 100%;
-        height: 34px;
-        padding: 6px 12px;
-        background-color: #fff;
-        border: 1px solid #d2d6de;
-        border-radius: 4px;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-        font-size: 13px;
-        color: #555;
-        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-        outline: none;
-        box-sizing: border-box;
-    }
-
-    .form-control-cmsc:focus {
-        border-color: #66afe9;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
-    }
-
-    textarea.form-control-cmsc {
-        height: auto;
-        min-height: 70px;
-        resize: vertical;
-    }
-
-    /* Action Buttons */
-    .btn-save-cmsc {
-        background-color: #1e3a8a;
-        color: #fff;
-        border: 1px solid #1e3a8a;
-        padding: 6px 20px;
-        font-size: 13px;
-        font-weight: 500;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-save-cmsc:hover {
-        background-color: #162c6d;
-        border-color: #162c6d;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .btn-cancel-cmsc {
-        background-color: #ffffff;
-        color: #333333;
-        border: 1px solid #d2d6de;
-        padding: 6px 16px;
-        font-size: 13px;
-        font-weight: 400;
-        border-radius: 4px;
-        text-decoration: none;
-        display: inline-block;
-        margin-right: 6px;
-        transition: background-color 0.2s ease;
-    }
-
-    .btn-cancel-cmsc:hover {
-        background-color: #f4f4f4;
-        color: #333;
-    }
-
-    .btn-pdf-download {
-        background-color: #f39c12;
-        color: #ffffff;
-        border: 1px solid #e08e0b;
-        padding: 5px 12px;
-        font-size: 12.5px;
-        font-weight: 500;
-        border-radius: 4px;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: background-color 0.2s ease;
-    }
-
-    .btn-pdf-download:hover {
-        background-color: #d68400;
-        color: #ffffff;
-    }
-
-    /* Alerts */
-    .alert-cmsc-success {
-        background-color: #dff0d8;
-        border: 1px solid #d6e9c6;
-        color: #3c763d;
-        padding: 10px 15px;
-        border-radius: 4px;
-        margin-bottom: 15px;
-        font-size: 13px;
-    }
-
-    .alert-cmsc-danger {
-        background-color: #f2dede;
-        border: 1px solid #ebccd1;
-        color: #a94442;
-        padding: 10px 15px;
-        border-radius: 4px;
-        margin-bottom: 15px;
-        font-size: 13px;
-    }
-
-    /* Toolbar above Table */
-    .dt-toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .dt-search-input {
-        height: 32px;
-        width: 200px;
-        padding: 4px 10px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        font-size: 13px;
-        outline: none;
-        color: #495057;
-        background-color: #fff;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        box-sizing: border-box;
-    }
-
-    .dt-search-input:focus {
-        border-color: #24448d;
-        box-shadow: 0 0 0 2px rgba(36, 68, 141, 0.2);
-    }
-
-    .dt-buttons-group {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .dt-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        background: #1e3a8a;
-        border: 1px solid #1e3a8a;
-        color: #ffffff;
-        border-radius: 4px;
-        font-size: 13.5px;
-        cursor: pointer;
-        position: relative;
-        transition: all 0.15s ease;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        box-sizing: border-box;
-    }
-
-    .dt-btn:hover {
-        background: #172554;
-        border-color: #172554;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 5px rgba(30, 58, 138, 0.3);
-    }
-
-    .dt-btn[data-tooltip]::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: 115%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        font-size: 11px;
-        padding: 3px 6px;
-        border-radius: 3px;
-        white-space: nowrap;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
-        z-index: 100;
-    }
-
-    .dt-btn[data-tooltip]:hover::after {
-        opacity: 1;
-    }
-
-    /* Fee Table */
-    .cmsc-table-wrap {
-        overflow-x: auto;
-        border: 1px solid #d2d6de;
-    }
-
-    .cmsc-fee-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        background: #fff;
-    }
-
-    .cmsc-fee-table thead th {
-        background-color: #1e3a8a;
-        color: #ffffff;
-        font-weight: 500;
-        padding: 9px 12px;
-        text-align: left;
-        border: 1px solid #162c6d;
-        white-space: nowrap;
-        user-select: none;
-    }
-
-    .cmsc-fee-table thead th .sort-arrow {
-        font-size: 10px;
-        margin-left: 4px;
-        opacity: 0.8;
-    }
-
-    .cmsc-fee-table tbody td {
-        padding: 8px 12px;
-        border: 1px solid #e9ecef;
-        vertical-align: middle;
-        color: #333;
-        font-weight: 400;
-    }
-
-    .cmsc-fee-table tbody tr.class-group-row td {
-        background-color: #ffffff;
-        font-weight: 400;
-        color: #333;
-    }
-
-    .cmsc-fee-table tbody tr.fee-item-row td {
-        background-color: #ffffff;
-        font-weight: 400;
-    }
-
-    .cmsc-fee-table tbody tr.fee-item-row:hover td {
-        background-color: #f8fafd;
-    }
-
-    .cmsc-fee-table tbody tr.class-total-row td {
-        background-color: #ffffff;
-        font-weight: 500;
-    }
-
-    /* Action Buttons in Table */
-    .btn-action-edit {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 22px;
-        height: 22px;
-        background-color: #1e3a8a;
-        color: #ffffff !important;
-        border-radius: 3px;
-        font-size: 11px;
-        text-decoration: none !important;
-        transition: background-color 0.2s ease;
-        margin-right: 3px;
-        cursor: pointer;
-        position: relative;
-        z-index: 2;
-    }
-
-    .btn-action-edit:hover {
-        background-color: #162c6d;
-        color: #ffffff;
-    }
-
-    .btn-action-delete {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 22px;
-        height: 22px;
-        background-color: #d9534f;
-        color: #ffffff;
-        border: none;
-        border-radius: 3px;
-        font-size: 11px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    .btn-action-delete:hover {
-        background-color: #c9302c;
-    }
-
-    /* Popover Tooltip */
-    .fee-popover-trigger {
-        color: #333;
-        text-decoration: none;
-        cursor: pointer;
-        position: relative;
-        display: inline-block;
-    }
-
-    .fee-popover-trigger:hover {
-        color: #1e3a8a;
-    }
-
-    .fee-popover-box {
-        position: fixed;
-        display: none;
-        background: #ffffff;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        padding: 10px 14px;
-        font-size: 12px;
-        z-index: 10000;
-        max-width: 260px;
-        pointer-events: none;
-    }
-
-    /* Table Footer & Pagination */
-    .table-footer-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: 10px;
-        font-size: 12px;
-        color: #666;
-    }
-
-    .pagination-pills {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .pagination-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 24px;
-        height: 24px;
-        padding: 0 6px;
-        border: 1px solid #d2d6de;
-        border-radius: 3px;
-        background: #fff;
-        color: #333;
-        font-size: 11px;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .pagination-btn.active {
-        background: #1e3a8a;
-        color: #fff;
-        border-color: #1e3a8a;
-    }
-
-    #exportToast {
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        background: #1e3a8a;
-        color: #fff;
-        padding: 10px 18px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        display: none;
-        z-index: 9999;
-    }
-</style>
-@endpush
-
 @php
     $edit_month_count = !empty($feemaster->month_count) ? (int) $feemaster->month_count : 0;
     $edit_base_amount = (float) ($feemaster->amount ?? 0);
@@ -485,19 +26,6 @@
                     <input type="hidden" name="id" value="{{ $feemaster->id }}">
 
                     <div class="box-body">
-                        {{-- Flash Messages --}}
-                        @if (session('success'))
-                            <div class="alert-cmsc-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert-cmsc-danger">
-                                {{ session('error') }}
-                            </div>
-                        @endif
-
                         {{-- Branch Dropdown --}}
                         <div class="form-group">
                             <label for="brc_id">Branch <span class="req">*</span></label>
@@ -589,7 +117,7 @@
                         </div>
                     </div>
 
-                    <div class="box-footer">
+                    <div class="box-footer footer-end">
                         <a href="{{ url('admin/account/feemaster/' . $brc_id) }}" class="btn-cancel-cmsc">
                             Cancel
                         </a>
@@ -788,13 +316,41 @@
         amountHidden.value = finalAmount > 0 ? finalAmount.toFixed(2) : (baseAmount > 0 ? baseAmount.toFixed(2) : '');
     }
 
+    function handleFrequencyVisibility() {
+        var freqElem = document.getElementById('frequency');
+        var monthGroup = document.getElementById('monthCountGroup');
+        var monthInput = document.getElementById('month_count');
+        if (!freqElem || !monthGroup) return;
+
+        var freqVal = freqElem.value;
+        if (freqVal === 'Monthly') {
+            monthGroup.style.display = 'block';
+            if (monthInput) {
+                if (!monthInput.value || monthInput.value === '0') {
+                    monthInput.value = 1;
+                }
+            }
+        } else {
+            // One Time, Yearly or Select -> Hide Month
+            monthGroup.style.display = 'none';
+            if (monthInput) {
+                monthInput.value = 1;
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         var freqElem = document.getElementById('frequency');
         var dispElem = document.getElementById('amount_display');
         var monthElem = document.getElementById('month_count');
 
+        handleFrequencyVisibility();
+
         if (freqElem) {
-            freqElem.addEventListener('change', updateFeeStructureAmount);
+            freqElem.addEventListener('change', function() {
+                handleFrequencyVisibility();
+                updateFeeStructureAmount();
+            });
         }
         if (dispElem) {
             dispElem.addEventListener('input', updateFeeStructureAmount);

@@ -3,170 +3,6 @@
 @section('title', 'Fee Revise')
 
 @section('content')
-    @include('admin.account.coa._styles')
-
-    <style>
-        .feerevise-box {
-            background: #fff;
-            border: 1px solid #d2d6de;
-            border-top: 3px solid #24448d;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
-        }
-
-        .feerevise-box .box-header {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f4f4f4;
-            background: #fff;
-        }
-
-        .feerevise-box .box-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-
-        .feerevise-box .box-body {
-            padding: 15px;
-        }
-
-        .feerevise-box .box-footer {
-            padding: 10px 15px;
-            border-top: 1px solid #f4f4f4;
-            background: #fff;
-        }
-
-        .criteria-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-left: -7px;
-            margin-right: -7px;
-        }
-
-        .criteria-col-3 {
-            flex: 0 0 25%;
-            max-width: 25%;
-            padding-left: 7px;
-            padding-right: 7px;
-            margin-bottom: 12px;
-        }
-
-        @media (max-width: 991px) {
-            .criteria-col-3 {
-                flex: 0 0 50%;
-                max-width: 50%;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .criteria-col-3 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-        }
-
-        .feerevise-box label {
-            display: inline-block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .feerevise-box .req {
-            color: #dd4b39;
-            font-weight: bold;
-        }
-
-        .feerevise-box .form-control {
-            display: block;
-            width: 100%;
-            height: 34px;
-            padding: 6px 12px;
-            font-size: 13px;
-            color: #444;
-            background-color: #fff;
-            border: 1px solid #d2d6de;
-            border-radius: 3px;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-        }
-
-        .feerevise-box .form-control:focus {
-            border-color: #24448d;
-            outline: 0;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(36, 68, 141, .3);
-        }
-
-        .btn-theme-search {
-            background-color: #1e3a8a;
-            color: #ffffff;
-            border: 1px solid #1e3a8a;
-            padding: 6px 22px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        .btn-theme-search:hover {
-            background-color: #162c6d;
-            border-color: #162c6d;
-            color: #ffffff;
-        }
-
-        .btn-theme-save {
-            background-color: #1e3a8a;
-            color: #ffffff;
-            border: 1px solid #1e3a8a;
-            padding: 7px 24px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .btn-theme-save:hover {
-            background-color: #162c6d;
-            color: #ffffff;
-        }
-
-        .radio-inline-wrap {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            height: 34px;
-        }
-
-        .radio-inline-wrap label {
-            margin-bottom: 0;
-            font-weight: normal;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        #feereviseToast {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: #1e3a8a;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            display: none;
-            z-index: 99999;
-        }
-    </style>
-
     <div class="legacy-coa">
         <section class="content">
             {{-- Select Criteria Card --}}
@@ -284,7 +120,7 @@
                         </div>
                     </div>
 
-                    <div class="box-footer text-right" style="text-align: right;">
+                    <div class="box-footer text-right">
                         <button type="submit" class="btn-theme-search">
                             Search
                         </button>
@@ -306,11 +142,11 @@
                         <input type="hidden" name="section_post" value="{{ $section_post }}">
 
                         <div class="box-body">
-                            <div style="overflow-x: auto;">
+                            <div class="cmsc-table-wrap">
                                 <table class="table table-striped table-bordered table-hover example" id="feeReviseTable">
                                     <thead>
                                         <tr>
-                                            <th style="width: 40px; text-align: center;">
+                                            <th class="th-checkbox-col">
                                                 <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
                                             </th>
                                             <th>Admission No</th>
@@ -319,8 +155,8 @@
                                             <th>Father Name</th>
                                             <th>Date of Birth</th>
                                             <th>Gender</th>
-                                            <th style="text-align: right;">Current Fee</th>
-                                            <th style="width: 140px; text-align: right;">
+                                            <th class="text-right">Current Fee</th>
+                                            <th class="th-fee-col">
                                                 @if ((string) $feesmanage === '1')
                                                     Revised Fee
                                                 @elseif ((string) $feesmanage === '2')
@@ -336,7 +172,7 @@
                                     <tbody>
                                         @forelse ($resultlist as $student)
                                             <tr>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td class="text-center">
                                                     <input type="checkbox" class="student-checkbox" name="check[]" value="{{ $student->student_session_id }}">
                                                     <input type="hidden" name="dues_id_{{ $student->student_session_id }}" value="{{ $due_id }}">
                                                 </td>
@@ -346,24 +182,24 @@
                                                 <td>{{ $student->father_name }}</td>
                                                 <td>{{ $student->dob ? \Illuminate\Support\Carbon::parse($student->dob)->format('d-m-Y') : '' }}</td>
                                                 <td>{{ ucfirst($student->gender) }}</td>
-                                                <td style="text-align: right; font-weight: 600;">
+                                                <td class="td-fee-amount">
                                                     {{ number_format((float) ($student->current_fee ?? 0), 2) }}
                                                 </td>
-                                                <td style="text-align: right;">
+                                                <td class="text-right">
                                                     @if ((string) $feesmanage === '1')
-                                                        <input type="number" step="any" min="0" name="incrementfee_{{ $student->student_session_id }}" class="form-control" style="text-align: right; width: 120px; display: inline-block;" value="{{ $student->suggested_fee ?? '' }}">
+                                                        <input type="number" step="any" min="0" name="incrementfee_{{ $student->student_session_id }}" class="form-control input-revised-fee" value="{{ $student->suggested_fee ?? '' }}">
                                                     @elseif ((string) $feesmanage === '2')
-                                                        <input type="number" step="any" min="0" name="decrementfee_{{ $student->student_session_id }}" class="form-control" style="text-align: right; width: 120px; display: inline-block;" placeholder="Amount">
+                                                        <input type="number" step="any" min="0" name="decrementfee_{{ $student->student_session_id }}" class="form-control input-revised-fee" placeholder="Amount">
                                                     @elseif ((string) $feesmanage === '3')
-                                                        <input type="number" step="any" min="0" name="assignfee_{{ $student->student_session_id }}" class="form-control" style="text-align: right; width: 120px; display: inline-block;" value="{{ $student->suggested_fee ?? '' }}">
+                                                        <input type="number" step="any" min="0" name="assignfee_{{ $student->student_session_id }}" class="form-control input-revised-fee" value="{{ $student->suggested_fee ?? '' }}">
                                                     @else
-                                                        <input type="number" step="any" min="0" name="fee_{{ $student->student_session_id }}" class="form-control" style="text-align: right; width: 120px; display: inline-block;" value="{{ $student->current_fee ?? '' }}">
+                                                        <input type="number" step="any" min="0" name="fee_{{ $student->student_session_id }}" class="form-control input-revised-fee" value="{{ $student->current_fee ?? '' }}">
                                                     @endif
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="9" class="text-center" style="padding: 20px; color: #777;">
+                                                <td colspan="9" class="td-empty-notice">
                                                     No students found for the selected criteria.
                                                 </td>
                                             </tr>
@@ -374,7 +210,7 @@
                         </div>
 
                         @if (count($resultlist) > 0)
-                            <div class="box-footer text-right" style="text-align: right;">
+                            <div class="box-footer text-right">
                                 <button type="button" class="btn-theme-save" onclick="submitFeeRevise(event)">
                                     Save
                                 </button>
@@ -385,9 +221,6 @@
             @endif
         </section>
     </div>
-
-    {{-- Toast Notification --}}
-    <div id="feereviseToast"></div>
 
     <script>
         function getBranchByID(val) {
@@ -462,12 +295,31 @@
         }
 
         function showToast(msg) {
-            var toast = document.getElementById('feereviseToast');
-            if (!toast) return;
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(function () {
-                toast.style.display = 'none';
+            let toast = document.getElementById('appToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'appToast';
+                toast.className = 'fixed top-3.5 right-3.5 z-[9999] w-[230px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md bg-green-100 border-l-[3px] border-green-500 text-green-700 shadow-md toast-slide-in';
+                toast.innerHTML = `
+                    <div class="flex items-start gap-2 px-2.5 py-1.5">
+                        <div class="flex h-4 w-4 mt-0.5 shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-[9px] font-bold leading-none">✓</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[11px] font-bold leading-tight">Success</p>
+                            <p class="text-[10px] leading-tight mt-0.5 opacity-90 truncate">${msg}</p>
+                        </div>
+                        <button type="button" onclick="hideToast()" class="text-xs font-bold opacity-60 hover:opacity-100 transition leading-none px-0.5" aria-label="Close">×</button>
+                    </div>
+                    <div class="toast-progress-track">
+                        <div id="toastProgress" class="toast-progress bg-green-500"></div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+            } else {
+                toast.classList.remove('toast-slide-out');
+                toast.classList.add('toast-slide-in');
+            }
+            setTimeout(() => {
+                if (typeof window.hideToast === 'function') window.hideToast();
             }, 3000);
         }
 

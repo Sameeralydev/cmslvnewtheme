@@ -46,6 +46,25 @@ const initializeAdminShell = () => {
         });
     }
 
+    /* Laravel Toast Functions */
+    window.hideToast = function () {
+        const toast = document.getElementById('appToast');
+        if (!toast) return;
+
+        toast.classList.remove('toast-slide-in');
+        toast.classList.add('toast-slide-out');
+
+        setTimeout(() => {
+            toast.remove();
+        }, 350);
+    };
+
+    const toast = document.getElementById('appToast');
+    if (toast) {
+        setTimeout(() => {
+            window.hideToast();
+        }, 3000);
+    }
 };
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdminShell);

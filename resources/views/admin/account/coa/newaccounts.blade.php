@@ -3,41 +3,6 @@
 @section('title', $title)
 
 @section('content')
-    @include('admin.account.coa._styles')
-
-    <style>
-        .legacy-coa .mailbox-date .btn,
-        .legacy-coa .mailbox-date a,
-        .legacy-coa .btn.btn-primary.btn-xs {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 22px !important;
-            height: 22px !important;
-            min-width: 22px !important;
-            min-height: 22px !important;
-            max-width: 22px !important;
-            max-height: 22px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border-radius: 3px !important;
-            background-color: #24448d !important;
-            border: 1px solid #1d3f8d !important;
-            color: #ffffff !important;
-            text-decoration: none !important;
-            box-sizing: border-box !important;
-        }
-        .legacy-coa .mailbox-date .btn i,
-        .legacy-coa .mailbox-date a i,
-        .legacy-coa .btn.btn-primary.btn-xs i {
-            font-size: 11px !important;
-            line-height: 1 !important;
-            color: #ffffff !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-    </style>
-
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
@@ -50,9 +15,6 @@
                         <form action="{{ $account ? route('admin.account.accounts.newaccounts.update', $account->id, false) : route('admin.account.accounts.newaccounts.store', absolute: false) }}" method="post" accept-charset="utf-8">
                             @csrf
                             <div class="box-body">
-                                @if (session('success'))
-                                    <div class="alert alert-success text-left">{{ session('success') }}</div>
-                                @endif
 
                                 @if ($account)
                                     <input type="hidden" name="id" value="{{ $account->id }}">
@@ -85,12 +47,11 @@
                                 </div>
                             </div>
 
-                            <div class="box-footer">
+                            <div class="box-footer footer-end">
                                 @if ($account)
-                                    <a href="{{ route('admin.account.accounts.newaccounts', absolute: false) }}" class="btn btn-default pull-left" style="margin-top: 2px;">Cancel</a>
+                                    <a href="{{ route('admin.account.accounts.newaccounts', absolute: false) }}" class="btn btn-default">Cancel</a>
                                 @endif
-                                <button type="submit" class="btn btn-primary pull-right">{{ $account ? 'Update' : 'Save' }}</button>
-                                <div class="clear-both"></div>
+                                <button type="submit" class="btn btn-primary">{{ $account ? 'Update' : 'Save' }}</button>
                             </div>
                         </form>
                     </div>
@@ -138,8 +99,8 @@
                                                 <td class="mailbox-name" style="padding-left: 20px;">{{ $newAccount->code }}. {{ $newAccount->name }}</td>
                                                 <td class="mailbox-date text-right" style="text-align: right; white-space: nowrap; width: 10%;">
                                                     @unless ((bool) ($newAccount->is_system ?? false))
-                                                        <a href="{{ route('admin.account.accounts.newaccounts.edit', $newAccount->id, false) }}" class="btn btn-primary btn-xs" title="Edit" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; max-width: 22px !important; max-height: 22px !important; padding: 0 !important; border-radius: 3px !important; background-color: #24448d !important; border: 1px solid #1d3f8d !important; color: #ffffff !important; text-decoration: none !important; vertical-align: middle !important; box-sizing: border-box !important;">
-                                                            <i class="fa fa-pencil" style="font-size: 11px !important; line-height: 1 !important; color: #ffffff !important;"></i>
+                                                        <a href="{{ route('admin.account.accounts.newaccounts.edit', $newAccount->id, false) }}" class="btn btn-primary btn-xs" title="Edit">
+                                                            <i class="fa fa-pencil"></i>
                                                         </a>
                                                     @endunless
                                                 </td>
