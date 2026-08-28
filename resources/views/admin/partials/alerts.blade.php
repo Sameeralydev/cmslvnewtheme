@@ -1,18 +1,22 @@
-@foreach (['success', 'status', 'error'] as $flashType)
-    @if (session($flashType))
-        <div class="mb-4 rounded border px-4 py-3 text-sm {{ $flashType === 'error' ? 'border-red-200 bg-red-50 text-red-800' : 'border-green-200 bg-green-50 text-green-800' }}">
-            {{ session($flashType) }}
-        </div>
-    @endif
-@endforeach
+@php
+    $toastMessage = session('toast_message') ?? session('success') ?? session('status') ?? session('error');
+    $toastType = session('toast_type', session('error') ? 'error' : 'success');
+@endphp
+
+@if ($toastMessage)
+    <div id="appToast" data-toast class="admin-toast {{ $toastType === 'error' ? 'admin-toast-error' : ($toastType === 'warning' ? 'admin-toast-warning' : 'admin-toast-success') }} toast-slide-in" role="status">
+        <span class="admin-toast-icon">@if($toastType === 'error')&#10005;@elseif($toastType === 'warning')!@else&#10003;@endif</span>
+        <span class="admin-toast-content"><strong>{{ ucfirst($toastType) }}</strong><small>{{ $toastMessage }}</small></span>
+        <button type="button" class="admin-toast-close" data-toast-close aria-label="Close">&times;</button>
+        <span class="admin-toast-progress"></span>
+    </div>
+@endif
 
 @if ($errors->any())
-    <div class="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-        <p class="font-medium">Please correct the highlighted fields.</p>
-        <ul class="mt-2 list-disc pl-5">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div data-toast class="admin-toast admin-toast-error toast-slide-in" role="alert">
+        <span class="admin-toast-icon">&#10005;</span>
+        <span class="admin-toast-content"><strong>Error</strong><small>Please correct the highlighted fields.</small></span>
+        <button type="button" class="admin-toast-close" data-toast-close aria-label="Close">&times;</button>
+        <span class="admin-toast-progress"></span>
     </div>
 @endif

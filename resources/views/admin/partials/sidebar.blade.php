@@ -478,8 +478,8 @@
             ['label' => 'Registers', 'route' => 'admin.academics.documents.index'],
             ['label' => 'Video Supports', 'route' => 'admin.academics.documents.index'],
         ]),
-        $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics', 'domain-modules', 'domains'])),
-        $academicGroup('syllabus_management', 'Syllabus Mgmt.', 'fa fa-building', $academicChildren(['term-settings', 'week-settings', 'day-settings', 'syllabus'])),
+        $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics'])),
+        $academicGroup('syllabus_management', 'Syllabus Mgmt.', 'fa fa-building', $academicChildren(['term-settings', 'week-settings', 'day-settings', 'syllabus', 'syllabus-directory'])),
         $academicGroup('effective_lesson_planning', 'Effective Lesson Planning', 'fa fa-calendar-check', $academicChildren(['lessons'])),
         $academicGroup('timetable_staffing', 'Timetable & Staffing', 'fa fa-clock', $academicChildren(['timetables', 'teachers'])),
         $academicGroup('what_i_have_learnt', 'What I Have Learnt', 'fa fa-flask', $academicChildren(['homework'])),
@@ -540,7 +540,7 @@
                         data-sidebar-toggle
                         data-sidebar-target="sidebar-menu-{{ $item['key'] }}"
                         aria-expanded="{{ $isExpanded ? 'true' : 'false' }}"
-                        href="{{ $item['route'] ? route($item['route'], absolute: false) : request()->fullUrlWithQuery(['menu' => $item['key']]) }}"
+                        href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}"
                     >
                         <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                         <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
@@ -553,12 +553,9 @@
                                 @php
                                     $childKey = $child['key'] ?? '';
                                     $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
+                                    // Keep navigation URLs clean. Menu state is handled by the
+                                    // sidebar toggle and active route detection, not query strings.
                                     $childUrl = route($child['route'], absolute: false);
-                                    if ($child['route'] !== 'admin.hrms.staff.index') {
-                                        $childParams = ['menu' => $item['key']];
-                                        if ($childKey !== '') $childParams['submenu'] = $childKey;
-                                        $childUrl = route($child['route'], $childParams, false);
-                                    }
                                 @endphp
                                 <a class="admin-sidebar-link admin-sidebar-child {{ $childIsCurrent ? 'is-active' : '' }}" href="{{ $childUrl }}">
                                     <span class="admin-sidebar-link-icon"><i class="fa fa-angle-double-right"></i></span>

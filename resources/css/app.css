@@ -19,3 +19,73 @@
         @apply bg-gray-50 text-gray-800 antialiased dark:bg-gray-950 dark:text-gray-100;
     }
 }
+
+/* Academic curriculum tables and compact admin notifications. */
+#curriculum-table { border:1px solid #d1d5db; border-collapse:separate; border-spacing:0; }
+#curriculum-table th, #curriculum-table td { border-right:1px solid #d1d5db; border-bottom:1px solid #d1d5db; }
+#curriculum-table th:last-child, #curriculum-table td:last-child { border-right:0; }
+#curriculum-table tbody tr:last-child td { border-bottom:0; }
+#curriculum-table th.cursor-pointer { cursor:pointer; user-select:none; }
+.curriculum-print-hide { position:relative; }
+.curriculum-print-hide > div:last-child { width:100%; justify-content:flex-end; }
+.curriculum-print-hide > div:last-child form { order:1; margin-right:auto; }
+.curriculum-print-hide > div:last-child > button:first-child { position:absolute; top:0; right:0; order:2; }
+.curriculum-print-hide > div:last-child > button:not(:first-child) { order:3; }
+.curriculum-print-hide > div:last-child form input { width:240px; min-width:180px; min-height:2.5rem; }
+@media (max-width:640px) {
+    .curriculum-print-hide > div:last-child > button:first-child { position:static; }
+}
+.curriculum-sort-label { margin-right:.2rem; }
+.curriculum-sort-arrow { display:inline-block; font-size:.62rem; vertical-align:middle; }
+.syllabus-file-input { min-height:2.5rem; background:repeating-linear-gradient(135deg,#fff 0,#fff 10px,#fff7ed 10px,#fff7ed 20px); cursor:pointer; }
+.syllabus-file-input::file-selector-button { margin:-.7rem .75rem -.7rem -.75rem; border:0; border-right:1px solid #d1d5db; background:transparent; padding:.7rem .75rem; color:#1e3a8a; cursor:pointer; }
+.syllabus-directory-toolbar { display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; }
+.syllabus-directory-toolbar > div { display:flex; gap:.25rem; }
+.syllabus-directory-toolbar button, .syllabus-directory-toolbar a { display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center; border:0; border-radius:4px; background:#1e3a8a; color:#fff; cursor:pointer; text-decoration:none; }
+.syllabus-directory-toolbar button:hover, .syllabus-directory-toolbar a:hover { background:#173475; }
+.curriculum-actions { justify-content:center; gap:4px; }
+.curriculum-actions a, .curriculum-actions button { width:20px; height:20px; min-width:20px; padding:0; border-radius:2px; line-height:20px; box-shadow:none; }
+.curriculum-actions a { background:#203f8f; }
+.curriculum-actions button { background:#e53935; }
+.curriculum-actions a:hover { background:#183477; }
+.curriculum-actions button:hover { background:#c62828; }
+.admin-modal { position:fixed; inset:0; z-index:9998; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; background:rgb(15 23 42 / 55%); padding:5rem 1rem 2rem; }
+.admin-modal.is-open { display:flex; }
+.admin-modal-panel { width:min(620px, 100%); max-height:calc(100vh - 7rem); overflow-y:auto; box-shadow:0 20px 45px rgb(15 23 42 / 25%); }
+.admin-modal-close { border:0; background:transparent; color:#64748b; cursor:pointer; font-size:1.5rem; line-height:1; padding:.1rem .3rem; }
+.admin-modal-close:hover { color:#1e3a8a; }
+body.admin-modal-open { overflow:hidden; }
+.name-row, .curriculum-name-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto !important; align-items:end; gap:.5rem; }
+.name-row .remove-name, .curriculum-name-row .remove-name { margin-bottom:.25rem; }
+.admin-toast { position:fixed; top:14px; right:14px; left:auto; z-index:9999; display:flex; width:260px; height:58px; min-height:58px; max-width:calc(100vw - 2rem); align-items:center; gap:8px; overflow:hidden; border:1px solid #bbf7d0; border-radius:10px; padding:9px 12px 11px; font-size:11px; box-shadow:0 4px 12px rgb(15 23 42 / 16%); }
+.admin-toast-success { background:#d8fbe5; color:#2f7d55; }
+.admin-toast-error { border-color:#fecaca; background:#ffdede; color:#b23b3b; }
+.admin-toast-warning { border-color:#fde68a; background:#fff4c7; color:#996b00; }
+.admin-toast-icon { display:flex; width:20px; height:20px; flex:none; align-items:center; justify-content:center; border-radius:999px; background:#22c55e; color:#fff; font-size:13px; font-weight:700; }
+.admin-toast-error .admin-toast-icon { background:#ef4444; }
+.admin-toast-warning .admin-toast-icon { background:#eab308; }
+.admin-toast-content { display:flex; min-width:0; flex:1; flex-direction:column; gap:0; padding-top:0; line-height:1.1; }
+.admin-toast-content strong { color:#28764d; font-size:16px; font-weight:700; }
+.admin-toast-error .admin-toast-content strong { color:#a83232; }
+.admin-toast-warning .admin-toast-content strong { color:#896000; }
+.admin-toast-content small { color:inherit; font-size:11px; line-height:1.2; white-space:nowrap; overflow:visible; }
+.admin-toast-close { border:0; background:transparent; color:inherit; cursor:pointer; font-size:12px; line-height:1; padding:0; opacity:.7; }
+.admin-toast-close:hover { opacity:1; }
+.admin-toast-progress { position:absolute; bottom:0; left:0; height:2px; width:100%; background:#22c55e; animation:toastProgress 3s linear forwards; transform-origin:left; }
+.admin-toast-error .admin-toast-progress { background:#ef4444; }
+.admin-toast-warning .admin-toast-progress { background:#eab308; }
+.toast-slide-in { animation:toastSlideIn .35s ease-out forwards; }
+.toast-slide-out { animation:toastSlideOut .35s ease-in forwards; }
+@keyframes toastSlideIn { from { transform:translateX(120%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+@keyframes toastSlideOut { from { transform:translateX(0); opacity:1; } to { transform:translateX(120%); opacity:0; } }
+@keyframes toastProgress { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+@media print {
+    .admin-sidebar,.admin-topbar,.main-footer,.curriculum-print-hide,.curriculum-actions,.admin-toast { display:none!important; }
+    .syllabus-directory-toolbar { display:none!important; }
+    #directory-results th:last-child, #directory-results td:last-child { display:none!important; }
+    .admin-main > .mb-4 { display:none!important; }
+    .admin-content-wrap { margin:0!important; padding:0!important; }
+    .admin-main { padding:0!important; }
+    #curriculum-table { width:100%!important; border-collapse:collapse!important; }
+    #curriculum-table th { background:#1e3a8a!important; color:#fff!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}

@@ -5,4 +5,6 @@ namespace App\Models\Academics;
 class TermSetting extends AcademicModel
 {
     protected $table = 'term';
+
+    public $timestamps = false;
 }
