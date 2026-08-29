@@ -66,7 +66,7 @@ class AcademicModuleRegistry
             'test-groups' => $this->module('Test Groups', TestGroup::class, 'test_groups', 'admin.academics.test-groups.index', 'testgroup', ['name', 'test_type', 'description'], ['name', 'test_type', 'is_active']),
             'test-results' => $this->module('Test Results', TestResult::class, 'test_group_test_results', 'admin.academics.test-results.index', 'testresult', ['attendence', 'note'], ['attendence', 'get_marks', 'is_active']),
             'test-schedules' => $this->module('Test Schedules', TestSchedule::class, 'test_group_class_batch_test_subjects', 'admin.academics.test-schedules.index', 'testschedule', ['room_no', 'syllabus'], ['date_from', 'time_from', 'duration', 'room_no', 'max_marks']),
-            'timetables' => $this->module('Timetables', Timetable::class, 'subject_timetable', 'admin.academics.timetables.index', 'timetable', ['day', 'room_no'], ['day', 'class_id', 'section_id', 'subject_id', 'staff_id', 'room_no']),
+            'timetables' => $this->module('Time Tables', Timetable::class, 'subject_timetable', 'admin.academics.timetables.index', 'timetable', ['day', 'room_no'], ['day', 'class_id', 'section_id', 'subject_id', 'staff_id', 'slot_id']),
             'topics' => $this->module('Topics', Topic::class, 'topic', 'admin.academics.topics.index', 'topic', ['name', 'urdu', 'note'], ['name', 'class_id', 'subject_id', 'chapter_id', 'is_active']),
             'week-settings' => $this->module('Week Settings', WeekSetting::class, 'week', 'admin.academics.week-settings.index', 'weeksetting', ['name', 'note'], ['name', 'start_date', 'end_date', 'term_id', 'is_active']),
         ];

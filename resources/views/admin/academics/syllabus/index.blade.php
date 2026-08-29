@@ -3,18 +3,17 @@
 @section('title', 'Syllabus')
 
 @section('content')
-    <div class="mb-3 flex justify-end"><button type="button" data-modal-open="syllabus-criteria" class="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"><i class="fa fa-plus"></i> Add</button></div>
-    <section id="syllabus-criteria-modal" data-modal="syllabus-criteria" class="admin-modal">
-        <div class="admin-modal-panel rounded border border-neutral-200 bg-white">
+    <section id="syllabus-criteria-modal" class="mb-4 rounded border border-neutral-200 bg-white">
+        <div>
         <div class="border-b border-neutral-200 px-4 py-3">
-            <div class="flex items-center justify-between"><h2 class="text-lg font-medium">Add Syllabus</h2><button type="button" class="admin-modal-close" data-modal-close="syllabus-criteria" aria-label="Close">&times;</button></div>
+            <div><h2 class="text-lg font-medium">Select Criteria</h2></div>
         </div>
         <form method="GET" action="{{ route('admin.academics.syllabus.index', absolute: false) }}" class="p-4">
             <input type="hidden" name="searched" value="1">
             <div class="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
                 <div>
                     <label class="mb-1 block text-sm">Branch <span class="text-red-600">*</span></label>
-                    <select name="brc_id" required class="w-full rounded border border-neutral-300 px-3 py-2">
+                    <select id="syllabus-branch" name="brc_id" required class="w-full rounded border border-neutral-300 px-3 py-2">
                         <option value="">Select</option>
                         @foreach($branches as $branch)<option value="{{ $branch->id }}" @selected((string)($selected['brc_id'] ?? '') === (string)$branch->id)>{{ $branch->name }}</option>@endforeach
                     </select>
@@ -63,16 +62,19 @@
     </section>
 
     @if(request()->boolean('searched'))
-        <form method="POST" action="{{ route('admin.academics.syllabus.store', absolute: false) }}" enctype="multipart/form-data" class="mt-4 rounded border border-neutral-200 bg-white p-3">
+        <section id="syllabus-entry-modal" data-modal="syllabus-entry" class="admin-modal syllabus-entry-modal {{ session('toast_message') ? '' : 'is-open' }}">
+        <div class="admin-modal-panel rounded border border-neutral-200 bg-white">
+        <div class="border-b border-neutral-200 px-4 py-3"><div class="flex items-center justify-between"><h2 class="text-lg font-medium">Add Syllabus</h2><button type="button" class="admin-modal-close" data-modal-close="syllabus-entry" aria-label="Close">&times;</button></div></div>
+        <form method="POST" action="{{ route('admin.academics.syllabus.store', absolute: false) }}" enctype="multipart/form-data" class="p-4">
             @csrf
             @foreach(['brc_id','term_id','month_id','class_id','section_id','subject_id'] as $field)<input type="hidden" name="{{ $field }}" value="{{ $selected[$field] ?? '' }}">@endforeach
             <div class="border-b border-neutral-200 bg-neutral-100 px-3 py-2 text-lg">Chapter/Topic Information</div>
             <div class="max-h-64 overflow-y-auto px-2 py-3">
                 @forelse($chapters as $chapter)
                     <div class="mb-2 border-b border-neutral-200 pb-2">
-                        <label class="flex items-center gap-2 font-medium"><input type="checkbox" name="chapters_id[]" value="{{ $chapter->id }}" @checked(in_array($chapter->id, json_decode(optional($syllabus)->chapters_id ?: '[]', true) ?: []))> {{ $chapter->name }} @if($chapter->name_urdu)<span class="text-sm text-neutral-500">({{ $chapter->name_urdu }})</span>@endif</label>
+                        <label class="flex items-center gap-2 font-medium"><input type="checkbox" name="chapters_id[]" value="{{ $chapter->id }}"> {{ $chapter->name }} @if($chapter->name_urdu)<span class="text-sm text-neutral-500">({{ $chapter->name_urdu }})</span>@endif</label>
                         @foreach($chapter->topics as $topic)
-                            <label class="ml-6 mt-1 flex items-center gap-2 text-sm"><input type="checkbox" name="topics_id[]" value="{{ $topic->id }}" @checked(in_array($topic->id, json_decode(optional($syllabus)->topics_id ?: '[]', true) ?: []))> {{ $topic->name }} @if($topic->name_urdu)<span class="text-neutral-500">({{ $topic->name_urdu }})</span>@endif</label>
+                            <label class="ml-6 mt-1 flex items-center gap-2 text-sm"><input type="checkbox" name="topics_id[]" value="{{ $topic->id }}"> {{ $topic->name }} @if($topic->name_urdu)<span class="text-neutral-500">({{ $topic->name_urdu }})</span>@endif</label>
                         @endforeach
                     </div>
                 @empty
@@ -81,29 +83,31 @@
             </div>
             <div class="mt-3 border-b border-t border-neutral-200 bg-neutral-100 px-3 py-2 text-lg">Syllabus Information</div>
             <label class="mt-3 block text-sm">Syllabus <span class="text-red-600">*</span></label>
-            <textarea name="presentation" required class="mt-1 min-h-24 w-full rounded border border-neutral-300 px-3 py-2">{{ optional($syllabus)->presentation }}</textarea>
+            <textarea name="presentation" required class="mt-1 min-h-24 w-full rounded border border-neutral-300 px-3 py-2"></textarea>
             <div class="mt-3 border-b border-t border-neutral-200 bg-neutral-100 px-3 py-2 text-lg">Video Lecture/Materials Information</div>
             <div class="mt-3 grid gap-4 md:grid-cols-2">
-                <div><label class="block text-sm">Lecture YouTube URL</label><input type="url" name="vid_url" value="{{ optional($syllabus)->vid_url }}" class="mt-1 w-full rounded border border-neutral-300 px-3 py-2"></div>
+                <div><label class="block text-sm">Lecture YouTube URL</label><input type="url" name="vid_url" value="" class="mt-1 w-full rounded border border-neutral-300 px-3 py-2"></div>
                 <div><label class="block text-sm">Material Attachment <span class="text-xs text-red-600">File Format PDF Only</span></label><input type="file" name="file" accept="application/pdf" class="syllabus-file-input mt-1 w-full rounded border border-neutral-300 px-3 py-2"></div>
             </div>
             <div class="mt-4 flex justify-end"><button class="rounded bg-blue-800 px-4 py-2 text-sm text-white hover:bg-blue-700">Save</button></div>
         </form>
+        </div>
+        </section>
     @endif
 
-    @if(request()->boolean('searched') && $records->isNotEmpty())
+    @if(request()->boolean('searched'))
         <section class="mt-4 overflow-x-auto rounded border border-neutral-200 bg-white">
-            <div class="border-b border-neutral-200 px-4 py-3"><h2 class="text-lg font-medium">Syllabus List</h2></div>
+            <div class="border-b border-neutral-200 px-4 py-3"><div class="flex flex-wrap items-center justify-between gap-2"><h2 class="text-lg font-medium">Syllabus List</h2><div class="syllabus-directory-toolbar"><input type="search" data-table-search="syllabus-results" placeholder="Search..." class="rounded border border-neutral-300 px-3 py-2"><div class="flex gap-1"><button type="button" data-table-export="copy" data-table="syllabus-results" title="Copy"><i class="fa fa-copy"></i></button><button type="button" data-table-export="excel" data-table="syllabus-results" title="Excel"><i class="fa fa-file-excel"></i></button><button type="button" data-table-export="csv" data-table="syllabus-results" title="CSV"><i class="fa fa-file-csv"></i></button><a href="{{ route('admin.academics.syllabus.pdf', request()->query(), false) }}" title="PDF"><i class="fa fa-file-pdf"></i></a><button type="button" data-table-export="print" data-table="syllabus-results" title="Print"><i class="fa fa-print"></i></button><button type="button" data-table-columns="syllabus-results" title="Columns"><i class="fa fa-table-columns"></i></button></div></div></div></div>
             <table id="syllabus-results" class="w-full text-left text-sm">
-                <thead class="bg-blue-800 text-white"><tr><th class="px-3 py-2">Branch ▼</th><th class="px-3 py-2">Term ▼</th><th class="px-3 py-2">Months ▼</th><th class="px-3 py-2">Class ▼</th><th class="px-3 py-2">Section ▼</th><th class="px-3 py-2">Subject ▼</th><th class="px-3 py-2">Status ▼</th></tr></thead>
+                <thead class="bg-blue-800 text-white"><tr><th class="px-3 py-2">Branch ▼</th><th class="px-3 py-2">Term ▼</th><th class="px-3 py-2">Months ▼</th><th class="px-3 py-2">Class ▼</th><th class="px-3 py-2">Section ▼</th><th class="px-3 py-2">Subject ▼</th><th class="px-3 py-2">Syllabus ▼</th><th class="px-3 py-2">Status ▼</th></tr></thead>
                 <tbody class="divide-y divide-neutral-200">
                     @forelse($records as $record)
-                        <tr><td class="px-3 py-2">{{ $record->branch_name }}</td><td class="px-3 py-2">{{ $record->term_name }}</td><td class="px-3 py-2">{{ $months[$record->month_id] ?? $record->month_id }}</td><td class="px-3 py-2">{{ $record->class_name }}</td><td class="px-3 py-2">{{ $record->section_name }}</td><td class="px-3 py-2">{{ $record->subject_name }}</td><td class="px-3 py-2">{{ $record->status ? 'Active' : 'Inactive' }}</td></tr>
+                        <tr><td class="px-3 py-2">{{ $record->branch_name }}</td><td class="px-3 py-2">{{ $record->term_name }}</td><td class="px-3 py-2">{{ $months[$record->month_id] ?? $record->month_id }}</td><td class="px-3 py-2">{{ $record->class_name }}</td><td class="px-3 py-2">{{ $record->section_name }}</td><td class="px-3 py-2">{{ $record->subject_name }}</td><td class="max-w-md px-3 py-2">{{ strip_tags((string) $record->presentation) }}</td><td class="px-3 py-2">{{ $record->status ? 'Active' : 'Inactive' }}</td></tr>
                     @empty
-                        <tr><td colspan="7" class="px-3 py-8 text-center text-neutral-500">No syllabus found for the selected criteria.</td></tr>
+                        <tr><td colspan="8" class="px-3 py-8 text-center text-neutral-500">No syllabus found for the selected criteria.</td></tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table><div class="px-3 py-2 text-xs text-neutral-600">Records: {{ $records->count() ? 1 : 0 }} to {{ $records->count() }} of {{ $records->count() }}</div>
         </section>
     @endif
 @endsection
@@ -138,7 +142,8 @@
             .finally(() => { sectionSelect.disabled = false; subjectSelect.disabled = false; });
     };
     classSelect.addEventListener('change', () => load());
-    if (classSelect.value && (!sectionSelect.options.length || !subjectSelect.options.length)) load(initialSection, initialSubject);
+    document.getElementById('syllabus-branch')?.addEventListener('change', () => { if (classSelect.value) load(); });
+    if (classSelect.value && (sectionSelect.options.length <= 1 || subjectSelect.options.length <= 1)) load(initialSection, initialSubject);
 })();
 </script>
 @endpush

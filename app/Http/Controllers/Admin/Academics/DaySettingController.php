@@ -13,7 +13,7 @@ class DaySettingController extends BaseAcademicsController
 {
     public function index(Request $request): View
     {
-        $records = DaySetting::query()->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->string('search')->toString().'%')->orWhere('note', 'like', '%'.$request->string('search')->toString().'%'))->orderBy('id')->paginate(15)->withQueryString();
+        $records = DaySetting::query()->with(['term', 'week'])->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->string('search')->toString().'%')->orWhere('note', 'like', '%'.$request->string('search')->toString().'%'))->orderBy('id')->paginate(15)->withQueryString();
         $day = $request->integer('edit') ? DaySetting::findOrFail($request->integer('edit')) : null;
         $terms = TermSetting::query()->orderBy('id')->get(); $weeks = WeekSetting::query()->orderBy('id')->get();
         return view('admin.academics.curriculum.day-settings', compact('records', 'day', 'terms', 'weeks'));

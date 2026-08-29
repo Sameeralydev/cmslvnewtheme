@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\Academics\TestGroupController;
 use App\Http\Controllers\Admin\Academics\TestResultController;
 use App\Http\Controllers\Admin\Academics\TestScheduleController;
 use App\Http\Controllers\Admin\Academics\TimetableController;
+use App\Http\Controllers\Admin\Academics\TimeAllocationController;
 use App\Http\Controllers\Admin\Academics\TopicController;
 use App\Http\Controllers\Admin\Academics\WeekSettingController;
 use App\Http\Controllers\Admin\Account\AccountController;
@@ -400,6 +401,18 @@ Route::prefix('admin/academics')
         Route::get('/timetable', [TimetableController::class, 'index'])
             ->middleware('permission:timetable,view')
             ->name('timetables.index');
+        Route::get('/timetable/mastertimetable', [TimetableController::class, 'masterTimetable'])->middleware('permission:timetable,view')->name('master-timetables.index');
+        Route::get('/timetable/slots/{branchId}', [TimetableController::class, 'slots'])->middleware('permission:timetable,view')->name('timetables.slots');
+        Route::get('/timetable/print', [TimetableController::class, 'print'])->middleware('permission:timetable,view')->name('timetables.print');
+        Route::get('/timetable/pdf', [TimetableController::class, 'pdf'])->middleware('permission:timetable,view')->name('timetables.pdf');
+        Route::post('/timetable', [TimetableController::class, 'store'])->middleware('permission:timetable,add')->name('timetables.store');
+        Route::delete('/timetable/{timetable}', [TimetableController::class, 'destroy'])->middleware('permission:timetable,delete')->name('timetables.destroy');
+        Route::get('/timetable/index/{legacy?}', fn () => redirect()->route('admin.academics.timetables.index'))->middleware('permission:timetable,view');
+        Route::get('/timetable/timeallocation', [TimeAllocationController::class, 'index'])->middleware('permission:time_allocation,view')->name('time-allocation.index');
+        Route::post('/timetable/timeallocation', [TimeAllocationController::class, 'store'])->middleware('permission:time_allocation,add')->name('time-allocation.store');
+        Route::delete('/timetable/timeallocation/{timeAllocation}', [TimeAllocationController::class, 'destroy'])->middleware('permission:time_allocation,delete')->name('time-allocation.destroy');
+        Route::get('/timetable/timeallocation/print', [TimeAllocationController::class, 'print'])->middleware('permission:time_allocation,view')->name('time-allocation.print');
+        Route::get('/timetable/timeallocation/pdf', [TimeAllocationController::class, 'pdf'])->middleware('permission:time_allocation,view')->name('time-allocation.pdf');
 
         Route::get('/topic', [TopicController::class, 'index'])
             ->middleware('permission:topic,view')

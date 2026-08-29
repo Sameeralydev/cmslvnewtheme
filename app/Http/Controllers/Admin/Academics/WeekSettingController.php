@@ -12,7 +12,7 @@ class WeekSettingController extends BaseAcademicsController
 {
     public function index(Request $request): View
     {
-        $records = WeekSetting::query()->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->string('search')->toString().'%')->orWhere('note', 'like', '%'.$request->string('search')->toString().'%'))->orderBy('id')->paginate(15)->withQueryString();
+        $records = WeekSetting::query()->with('term')->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->string('search')->toString().'%')->orWhere('note', 'like', '%'.$request->string('search')->toString().'%'))->orderBy('id')->paginate(15)->withQueryString();
         $week = $request->integer('edit') ? WeekSetting::findOrFail($request->integer('edit')) : null;
         $terms = TermSetting::query()->orderBy('id')->get();
         return view('admin.academics.curriculum.week-settings', compact('records', 'week', 'terms'));

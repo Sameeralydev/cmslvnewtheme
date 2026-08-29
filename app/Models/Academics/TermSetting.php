@@ -10,6 +10,11 @@ class TermSetting extends AcademicModel
 
     protected function casts(): array
     {
-        return ['start_date' => 'date', 'end_date' => 'date', 'is_active' => 'boolean'];
+        return ['start_date' => 'date', 'end_date' => 'date'];
+    }
+
+    public function getIsActiveAttribute($value): bool
+    {
+        return in_array(strtolower((string) $value), ['1', 'yes', 'active'], true);
     }
 }

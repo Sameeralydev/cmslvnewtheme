@@ -485,7 +485,7 @@
         $academicGroup('curriculum_management', 'Curriculum Mgmt.', 'fa fa-list-alt', $academicChildren(['subjects', 'subject-groups', 'chapters', 'topics'])),
         $academicGroup('syllabus_management', 'Syllabus Mgmt.', 'fa fa-building', $academicChildren(['term-settings', 'week-settings', 'day-settings', 'syllabus', 'syllabus-directory'])),
         $academicGroup('effective_lesson_planning', 'Effective Lesson Planning', 'fa fa-calendar-check', $academicChildren(['lessons'])),
-        $academicGroup('timetable_staffing', 'Timetable & Staffing', 'fa fa-clock', $academicChildren(['timetables', 'teachers'])),
+        $academicGroup('timetable_staffing', 'Timetable & Staffing', 'fa fa-clock', [['label' => 'Time Allocation', 'route' => 'admin.academics.time-allocation.index'], ['label' => 'TimeTable', 'route' => 'admin.academics.timetables.index'], ['label' => 'Master Timetable', 'route' => 'admin.academics.master-timetables.index'], ...$academicChildren(['teachers'])]),
         $academicGroup('what_i_have_learnt', 'What I Have Learnt', 'fa fa-flask', $academicChildren(['homework'])),
         $academicGroup('zoom_live_classes', 'Zoom Live Classes', 'fa fa-video-camera', []),
         $academicGroup('gmeet_live_classes', 'Gmeet Live Classes', 'fa fa-video-camera', $academicChildren(['google-meet'])),

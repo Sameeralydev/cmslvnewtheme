@@ -87,6 +87,32 @@ const initializeAdminShell = () => {
         });
     });
 
+    document.querySelectorAll('[data-date-picker]').forEach((input) => {
+        const syncDate = () => input.classList.toggle('has-date', Boolean(input.value));
+        input.addEventListener('input', syncDate);
+        input.addEventListener('change', syncDate);
+        input.addEventListener('click', () => input.showPicker?.());
+        syncDate();
+    });
+
+    document.querySelectorAll('[data-time-picker]').forEach((input) => {
+        input.addEventListener('click', () => input.showPicker?.());
+    });
+    const timeFrom = document.querySelector('[data-duration-from]');
+    const timeTo = document.querySelector('[data-duration-to]');
+    const duration = document.querySelector('[data-duration-badge]');
+    const updateDuration = () => {
+        if (!timeFrom?.value || !timeTo?.value || !duration) return duration && (duration.textContent = '');
+        let minutes = (Number(timeTo.value.split(':')[0]) * 60 + Number(timeTo.value.split(':')[1])) - (Number(timeFrom.value.split(':')[0]) * 60 + Number(timeFrom.value.split(':')[1]));
+        if (minutes < 0) minutes += 1440;
+        duration.textContent = `${minutes} mins`;
+    };
+    timeFrom?.addEventListener('input', updateDuration); timeTo?.addEventListener('input', updateDuration);
+
+    document.getElementById('directory-branch')?.addEventListener('change', () => {
+        document.getElementById('directory-class')?.dispatchEvent(new Event('change'));
+    });
+
     const closeModal = (modal) => {
         modal?.classList.remove('is-open');
         if (!document.querySelector('.admin-modal.is-open')) document.body.classList.remove('admin-modal-open');
@@ -146,8 +172,14 @@ const initializeAdminShell = () => {
         header.textContent = `${label} \u25bc`;
     });
 
+    document.querySelectorAll('#timetable-table th.cursor-pointer, #master-timetable-table th.cursor-pointer').forEach((header) => {
+        const label = header.textContent.replace(/[\u2191\u2193\u2195\u25b2\u25bc]/g, '').trim();
+        header.dataset.sortDirection = '';
+        header.textContent = `${label} \u25bc`;
+    });
+
     document.addEventListener('click', (event) => {
-        const header = event.target.closest('#syllabus-results th, #directory-results th.cursor-pointer, #curriculum-table th.cursor-pointer');
+        const header = event.target.closest('#syllabus-results th, #directory-results th.cursor-pointer, #curriculum-table th.cursor-pointer, #time-allocation-table th.cursor-pointer, #timetable-table th.cursor-pointer, #master-timetable-table th.cursor-pointer');
         if (!header) return;
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -171,6 +203,24 @@ const initializeAdminShell = () => {
             table?.tBodies[0].querySelectorAll('tr').forEach((row) => { row.hidden = !row.innerText.toLowerCase().includes(query); });
         });
     });
+    const timeAllocationPager = document.querySelector('#time-allocation-table + div > span:last-child');
+    if (timeAllocationPager) { timeAllocationPager.className = 'list-pagination'; timeAllocationPager.innerHTML = '<button type="button" disabled aria-label="Previous page"><i class="fa fa-angle-left"></i></button><span>1</span><button type="button" disabled aria-label="Next page"><i class="fa fa-angle-right"></i></button>'; }
+    const formatTime = (value) => {
+        const [hours, minutes] = String(value || '').split(':').map(Number);
+        if (Number.isNaN(hours) || Number.isNaN(minutes)) return value || '';
+        const suffix = hours >= 12 ? 'PM' : 'AM';
+        return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+    };
+    document.getElementById('timetable-branch')?.addEventListener('change', async (event) => {
+        const slot = document.getElementById('timetable-slot');
+        if (!slot || !event.target.value) return;
+        slot.innerHTML = '<option value="">Loading...</option>';
+        try {
+            const url = slot.dataset.slotsUrl.replace('__BRANCH__', event.target.value);
+            const slots = await fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}}).then((response) => response.json());
+            slot.innerHTML = '<option value="">Select</option>' + slots.map((item) => `<option value="${item.id}">${item.slot} (${formatTime(item.start_time)} - ${formatTime(item.end_time)})</option>`).join('');
+        } catch { slot.innerHTML = '<option value="">Unable to load slots</option>'; }
+    });
     const directoryToolbar = document.querySelector('.syllabus-directory-toolbar');
     const directoryTable = document.getElementById('directory-results');
     if (directoryToolbar && directoryTable) directoryTable.closest('section')?.insertBefore(directoryToolbar, directoryTable);
@@ -179,14 +229,22 @@ const initializeAdminShell = () => {
         if (!button) return;
         const table = document.getElementById(button.dataset.table);
         if (!table) return;
+        event.preventDefault();
         const rows = [...table.rows].map((row) => [...row.cells].map((cell) => cell.innerText.trim()).join('\t')).join('\n');
-        if (button.dataset.tableExport === 'copy') await navigator.clipboard?.writeText(rows);
+        if (button.dataset.tableExport === 'copy') {
+            try { await navigator.clipboard.writeText(rows); }
+            catch { const helper = document.createElement('textarea'); helper.value = rows; document.body.appendChild(helper); helper.select(); document.execCommand('copy'); helper.remove(); }
+        }
         if (button.dataset.tableExport === 'csv' || button.dataset.tableExport === 'excel') {
-            const blob = new Blob([rows], {type: button.dataset.tableExport === 'csv' ? 'text/csv' : 'application/vnd.ms-excel'});
-            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `syllabus.${button.dataset.tableExport === 'csv' ? 'csv' : 'xls'}`; link.click(); URL.revokeObjectURL(link.href);
+            const csvRows = [...table.rows].map((row) => [...row.cells].map((cell) => `"${cell.innerText.trim().replaceAll('"', '""')}"`).join(','));
+            const isCsv = button.dataset.tableExport === 'csv';
+            const blob = new Blob([isCsv ? '\ufeff' + csvRows.join('\n') : rows], {type: isCsv ? 'text/csv;charset=utf-8' : 'application/vnd.ms-excel;charset=utf-8'});
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `time-allocation.${isCsv ? 'csv' : 'xls'}`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
         }
         if (button.dataset.tableExport === 'print') {
-            if (button.dataset.table === 'directory-results') window.open(`/admin/academics/syllabus/print${window.location.search}`, '_blank');
+            if (button.dataset.table === 'directory-results' || button.dataset.table === 'syllabus-results') window.open(`/admin/academics/syllabus/print${window.location.search}`, '_blank');
+            else if (button.dataset.table === 'time-allocation-table') window.open(`/admin/academics/timetable/timeallocation/print${window.location.search}`, '_blank');
+            else if (button.dataset.table === 'timetable-table') window.open(`/admin/academics/timetable/print${window.location.search}`, '_blank');
             else window.print();
         }
     });

@@ -22,6 +22,7 @@ class SyllabusController extends BaseAcademicsController
         $months = [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'];
         $branches = DB::table('branch')->whereIn('is_active', [1, '1', 'yes', 'active'])->orderBy('name')->get(['id', 'name']);
         $terms = TermSetting::query()->whereIn('is_active', [1, '1', 'yes', 'active'])->orderBy('id')->get(['id', 'name']);
+        if ($terms->isEmpty()) $terms = TermSetting::query()->orderBy('id')->get(['id', 'name']);
         $classes = $this->syllabusClasses();
 
         $selected = $request->only(['brc_id', 'term_id', 'month_id', 'class_id', 'section_id', 'subject_id']);
@@ -101,22 +102,12 @@ class SyllabusController extends BaseAcademicsController
         $data['created_by'] = auth()->id();
         unset($data['file']);
 
-        $record = Syllabus::query()->where('brc_id', $data['brc_id'])
-            ->where('term_id', $data['term_id'])->where('month_id', $data['month_id'])
-            ->where('class_id', $data['class_id'])->where('section_id', $data['section_id'])
-            ->where('subject_id', $data['subject_id'])->first();
-
         if ($request->hasFile('file')) {
             $data['attachment'] = $request->file('file')->store('syllabus_attachment', 'public');
         }
 
-        if ($record) {
-            $record->update($data);
-            $message = 'Syllabus updated successfully.';
-        } else {
-            Syllabus::query()->create($data);
-            $message = 'Syllabus saved successfully.';
-        }
+        Syllabus::query()->create($data);
+        $message = 'Syllabus saved successfully.';
 
         return redirect()->route('admin.academics.syllabus.index', [
             'searched' => 1, 'brc_id' => $request->brc_id, 'term_id' => $request->term_id,
@@ -173,6 +164,7 @@ class SyllabusController extends BaseAcademicsController
         $months = [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'];
         $branches = DB::table('branch')->whereIn('is_active', [1, '1', 'yes', 'active'])->orderBy('name')->get(['id', 'name']);
         $terms = TermSetting::query()->whereIn('is_active', [1, '1', 'yes', 'active'])->orderBy('id')->get(['id', 'name']);
+        if ($terms->isEmpty()) $terms = TermSetting::query()->orderBy('id')->get(['id', 'name']);
         $classes = $this->syllabusClasses();
         $selected = array_merge(['brc_id' => $branch, 'term_id' => null, 'month_id' => null, 'class_id' => null, 'section_id' => null, 'subject_id' => null], $request->only(['brc_id', 'term_id', 'month_id', 'class_id', 'section_id', 'subject_id']));
         $sections = $selected['class_id'] ? $this->sections((int) $selected['class_id']) : collect();

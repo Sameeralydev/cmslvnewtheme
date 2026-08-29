@@ -41,5 +41,5 @@
         </table>
     </section>
 
-    <div class="mt-4">{{ $records->links() }}</div>
+    <div class="mt-4 flex items-center justify-between text-xs text-neutral-600"><span>Records: {{ $records->firstItem() ?? 0 }} to {{ $records->lastItem() ?? 0 }} of {{ $records->total() }}</span><span>{{ $records->links() }}</span></div>
 @endsection

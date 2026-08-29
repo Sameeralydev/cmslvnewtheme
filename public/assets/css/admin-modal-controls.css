@@ -1,4 +1,12 @@
 /* Shared modal-control overrides. Loaded after legacy module CSS. */
+.table-export-button { display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center; border:0; border-radius:4px; background:#1e3a8a; color:#fff; cursor:pointer; }
+.table-export-button:hover { background:#173475; }
+.required-mark { color:#dc2626; }
+.list-pagination { display:inline-flex; align-items:center; gap:.35rem; }
+.list-pagination button, .list-pagination > span { display:inline-flex; width:22px; height:22px; align-items:center; justify-content:center; border:0; background:transparent; color:#64748b; }
+.list-pagination > span { background:#f1f3f5; color:#555; }
+.list-pagination button:disabled { cursor:default; opacity:.55; }
+
 .admin-modal .admin-modal-panel {
     width: min(620px, calc(100vw - 2rem));
     max-height: calc(100vh - 7rem);
@@ -43,3 +51,24 @@
     width: min(760px, calc(100vw - 2rem));
     max-height: calc(100vh - 3rem);
 }
+
+.admin-modal.syllabus-entry-modal .admin-modal-panel {
+    width: min(1000px, calc(100vw - 2rem));
+    max-height: calc(100vh - 3rem);
+}
+
+.admin-modal .time-allocation-modal {
+    width: min(1000px, calc(100vw - 2rem));
+    max-height: calc(100vh - 3rem);
+}
+
+.admin-modal .time-table-modal {
+    width: min(1000px, calc(100vw - 2rem));
+    max-height: calc(100vh - 3rem);
+}
+
+/* Empty date fields show only the calendar affordance, not a locale placeholder. */
+.admin-modal input.date-picker-input:not(:focus):not(.has-date)::-webkit-datetime-edit { color: transparent; }
+.admin-modal input.date-picker-input:not(:focus):not(.has-date) { color: transparent; }
+.admin-modal input.date-picker-input:focus,
+.admin-modal input.date-picker-input.has-date { color: inherit; }
