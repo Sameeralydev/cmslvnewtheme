@@ -14,6 +14,17 @@ class DaySetting extends AcademicModel
             'date' => 'date',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'is_working_day' => 'boolean',
         ];
+    }
+
+    public function term()
+    {
+        return $this->belongsTo(TermSetting::class, 'term_id');
+    }
+
+    public function week()
+    {
+        return $this->belongsTo(WeekSetting::class, 'week_id');
     }
 }
