@@ -511,6 +511,22 @@ Route::prefix('admin/account')
             ->middleware('permission:expenses,view')
             ->name('expenses.index');
 
+        Route::post('/expenses', [ExpenseController::class, 'store'])
+            ->middleware('permission:expenses,view')
+            ->name('expenses.store');
+
+        Route::get('/expenses/{id}', [ExpenseController::class, 'show'])
+            ->middleware('permission:expenses,view')
+            ->name('expenses.show');
+
+        Route::match(['post', 'put', 'patch'], '/expenses/{id}', [ExpenseController::class, 'update'])
+            ->middleware('permission:expenses,view')
+            ->name('expenses.update');
+
+        Route::match(['delete', 'get', 'post'], '/expenses/delete/{id}', [ExpenseController::class, 'destroy'])
+            ->middleware('permission:expenses,view')
+            ->name('expenses.destroy');
+
         Route::get('/feemaster/index/{branch_id?}', [FeeMasterController::class, 'index'])
             ->whereNumber('branch_id')
             ->middleware('permission:feemaster,view')
@@ -551,6 +567,10 @@ Route::prefix('admin/account')
             ->middleware('permission:feemaster,view')
             ->name('fee-master.pdf');
 
+        Route::get('/expenses/print/{id}', [ExpenseController::class, 'printBill'])
+            ->middleware('permission:expenses,view')
+            ->name('expenses.print');
+
         Route::get('/invoicebooksets', [InvoiceBookSetController::class, 'index'])
             ->middleware('permission:invoicebooksets,view')
             ->name('invoice-book-sets.index');
@@ -570,6 +590,26 @@ Route::prefix('admin/account')
         Route::get('/payments', [PaymentVoucherController::class, 'index'])
             ->middleware('permission:payments,view')
             ->name('payments.index');
+
+        Route::get('/payments/print/{id}', [PaymentVoucherController::class, 'printVoucher'])
+            ->middleware('permission:payments,view')
+            ->name('payments.print');
+
+        Route::post('/payments', [PaymentVoucherController::class, 'store'])
+            ->middleware('permission:payments,view')
+            ->name('payments.store');
+
+        Route::get('/payments/{id}', [PaymentVoucherController::class, 'show'])
+            ->middleware('permission:payments,view')
+            ->name('payments.show');
+
+        Route::match(['post', 'put', 'patch'], '/payments/{id}', [PaymentVoucherController::class, 'update'])
+            ->middleware('permission:payments,view')
+            ->name('payments.update');
+
+        Route::match(['delete', 'get', 'post'], '/payments/delete/{id}', [PaymentVoucherController::class, 'destroy'])
+            ->middleware('permission:payments,view')
+            ->name('payments.destroy');
 
         Route::get('/payroll', [PayrollController::class, 'index'])
             ->middleware('permission:payroll,view')
@@ -1418,35 +1458,4 @@ require __DIR__.'/auth.php';
 Route::controller(WelcomeController::class)->group(function () {
     Route::get('/register', 'register')->name('frontend.register');
     Route::post('/register', 'storeRegistration')->name('frontend.register.store');
-});
-
-Route::get('/run-git-push-auto', function () {
-    header('Content-Type: text/plain; charset=utf-8');
-    putenv('PATH=' . getenv('PATH') . ';C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\bin');
-    chdir(base_path());
-    
-    echo "=== RESOLVING & PUSHING TO GITHUB ===\n\n";
-    
-    echo "--- 1. ABORT PENDING REBASE ---\n";
-    $out1 = shell_exec('git rebase --abort 2>&1');
-    echo $out1 ? "$out1\n" : "Rebase aborted / clean.\n";
-    
-    echo "\n--- 2. GIT ADD ---\n";
-    $out2 = shell_exec('git add . 2>&1');
-    echo $out2 ? "$out2\n" : "Done.\n";
-    
-    echo "\n--- 3. GIT COMMIT ---\n";
-    $out3 = shell_exec('git commit -m "Update fee voucher direct print layout and right-aligned action buttons" 2>&1');
-    echo $out3 ? "$out3\n" : "Nothing to commit / Already committed.\n";
-    
-    echo "\n--- 4. GIT PULL (MERGE) ---\n";
-    $out4 = shell_exec('git pull origin main --no-rebase --no-edit 2>&1');
-    echo $out4 ? "$out4\n" : "Synced.\n";
-    
-    echo "\n--- 5. GIT PUSH ---\n";
-    $out5 = shell_exec('git push origin main 2>&1');
-    echo $out5 ? "$out5\n" : "Push output empty.\n";
-    
-    echo "\n=== FINISHED ===\n";
-    exit;
 });

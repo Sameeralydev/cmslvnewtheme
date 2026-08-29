@@ -6,61 +6,13 @@
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">{{ $title }}</h3>
-                        </div>
-
-                        <form action="{{ $account ? route('admin.account.accounts.newaccounts.update', $account->id, false) : route('admin.account.accounts.newaccounts.store', absolute: false) }}" method="post" accept-charset="utf-8">
-                            @csrf
-                            <div class="box-body">
-
-                                @if ($account)
-                                    <input type="hidden" name="id" value="{{ $account->id }}">
-                                @endif
-
-                                <div class="form-group">
-                                    <label>Accounts Head</label><small class="req"> *</small>
-                                    <select id="accounts_type_id" name="accounts_type_id" class="form-control selectval">
-                                        <option value="">Select</option>
-                                        @foreach ($accountTypes as $accountType)
-                                            <option value="{{ $accountType->id }}" @selected((string) old('accounts_type_id', $account->accounts_type_id ?? '') === (string) $accountType->id)>{{ $accountType->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('accounts_type_id')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Account Type Name</label> <small class="req"> *</small>
-                                    <input autofocus id="name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}">
-                                    @error('name')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $account->note ?? '') }}</textarea>
-                                </div>
-                            </div>
-
-                            <div class="box-footer footer-end">
-                                @if ($account)
-                                    <a href="{{ route('admin.account.accounts.newaccounts', absolute: false) }}" class="btn btn-default">Cancel</a>
-                                @endif
-                                <button type="submit" class="btn btn-primary">{{ $account ? 'Update' : 'Save' }}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="box box-primary">
                         <div class="box-header ptbnull">
                             <h3 class="box-title titlefix">Accounts Type List</h3>
+                            <button type="button" class="btn-add-modal" onclick="openAddAccountTypeModal()">
+                                <i class="fa fa-plus"></i> Add
+                            </button>
                         </div>
                         <div class="box-body">
                             <div class="legacy-datatable-toolbar">
@@ -99,7 +51,7 @@
                                                 <td class="mailbox-name" style="padding-left: 20px;">{{ $newAccount->code }}. {{ $newAccount->name }}</td>
                                                 <td class="mailbox-date text-right" style="text-align: right; white-space: nowrap; width: 10%;">
                                                     @unless ((bool) ($newAccount->is_system ?? false))
-                                                        <a href="{{ route('admin.account.accounts.newaccounts.edit', $newAccount->id, false) }}" class="btn btn-primary btn-xs" title="Edit">
+                                                        <a href="javascript:void(0)" onclick="openEditAccountTypeModal('{{ $newAccount->id }}', '{{ $type->id }}', '{{ addslashes($newAccount->name) }}', '{{ addslashes($newAccount->note ?? '') }}')" class="btn btn-primary btn-xs" title="Edit">
                                                             <i class="fa fa-pencil"></i>
                                                         </a>
                                                     @endunless
@@ -118,6 +70,56 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    {{-- Modern Add / Edit Modal Popup --}}
+    <div class="coa-modal-backdrop" id="accountTypeModal" onclick="handleBackdropClick(event)">
+        <div class="coa-modal-dialog modal-dialog-md">
+            <div class="coa-modal-header">
+                <h4 class="coa-modal-title" id="accountTypeModalTitle">
+                    {{ $account ? 'Edit Accounts Type' : 'Add Accounts Type' }}
+                </h4>
+                <button type="button" class="coa-modal-close" onclick="closeAddAccountTypeModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <form id="accountTypeForm" action="{{ $account ? route('admin.account.accounts.newaccounts.update', $account->id, false) : route('admin.account.accounts.newaccounts.store', absolute: false) }}" method="post" accept-charset="utf-8">
+                @csrf
+                <input type="hidden" name="id" id="modalAccountId" value="{{ $account->id ?? '' }}">
+
+                <div class="coa-modal-body">
+                    <div class="form-group">
+                        <label>Accounts Head <span class="req">*</span></label>
+                        <select id="modal_accounts_type_id" name="accounts_type_id" class="form-control selectval" required>
+                            <option value="">Select</option>
+                            @foreach ($accountTypes as $accountType)
+                                <option value="{{ $accountType->id }}" @selected((string) old('accounts_type_id', $account->accounts_type_id ?? '') === (string) $accountType->id)>{{ $accountType->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('accounts_type_id')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label>Account Type Name <span class="req">*</span></label>
+                        <input id="modal_name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}" placeholder="Enter account type name" required>
+                        @error('name')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" id="modal_description" name="description" rows="3" placeholder="Enter description...">{{ old('description', $account->note ?? '') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="coa-modal-footer">
+                    <button type="button" class="btn-modal-cancel" onclick="closeAddAccountTypeModal()">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="modalSubmitBtn">{{ $account ? 'Update' : 'Save' }}</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- Toast Notification --}}
@@ -461,5 +463,89 @@
             });
         });
     });
+
+    function openAddAccountTypeModal() {
+        var modal = document.getElementById('accountTypeModal');
+        var form = document.getElementById('accountTypeForm');
+        var title = document.getElementById('accountTypeModalTitle');
+        var submitBtn = document.getElementById('modalSubmitBtn');
+        var idField = document.getElementById('modalAccountId');
+        var nameField = document.getElementById('modal_name');
+        var descField = document.getElementById('modal_description');
+        var headSelect = document.getElementById('modal_accounts_type_id');
+
+        if (form) {
+            form.action = "{{ route('admin.account.accounts.newaccounts.store', absolute: false) }}";
+        }
+        if (title) title.innerText = 'Add Accounts Type';
+        if (submitBtn) submitBtn.innerText = 'Save';
+        if (idField) idField.value = '';
+        if (nameField) nameField.value = '';
+        if (descField) descField.value = '';
+        if (headSelect) headSelect.value = '';
+
+        if (modal) {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            if (nameField) setTimeout(function () { nameField.focus(); }, 100);
+        }
+    }
+
+    function openEditAccountTypeModal(id, headId, name, note) {
+        var modal = document.getElementById('accountTypeModal');
+        var form = document.getElementById('accountTypeForm');
+        var title = document.getElementById('accountTypeModalTitle');
+        var submitBtn = document.getElementById('modalSubmitBtn');
+        var idField = document.getElementById('modalAccountId');
+        var nameField = document.getElementById('modal_name');
+        var descField = document.getElementById('modal_description');
+        var headSelect = document.getElementById('modal_accounts_type_id');
+
+        if (form) {
+            form.action = "{{ url('admin/account/accounts/newaccounts') }}/" + id;
+        }
+        if (title) title.innerText = 'Edit Accounts Type';
+        if (submitBtn) submitBtn.innerText = 'Update';
+        if (idField) idField.value = id;
+        if (nameField) nameField.value = name || '';
+        if (descField) descField.value = note || '';
+        if (headSelect) headSelect.value = headId || '';
+
+        if (modal) {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            if (nameField) setTimeout(function () { nameField.focus(); }, 100);
+        }
+    }
+
+    function closeAddAccountTypeModal() {
+        var modal = document.getElementById('accountTypeModal');
+        if (modal) {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function handleBackdropClick(event) {
+        if (event.target && event.target.classList.contains('coa-modal-backdrop')) {
+            closeAddAccountTypeModal();
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeAddAccountTypeModal();
+        }
+    });
+
+    @if ($account || $errors->any())
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('accountTypeModal');
+            if (modal) {
+                modal.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    @endif
 </script>
 @endpush

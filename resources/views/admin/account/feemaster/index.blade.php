@@ -4,141 +4,33 @@
 
 @section('content')
 <div class="feemaster-container">
-    <div class="feemaster-grid">
-        {{-- Left Side: Add/Edit Fee Structure Card --}}
-        @php
-            $isEdit = !empty($editingFee);
-            $editId = $isEdit ? ($editingFee->id ?? $id) : null;
-            $editClassId = $isEdit ? ($editingFee->fee_class_id ?? '') : '';
-            $editFeeTypeId = $isEdit ? ($editingFee->feetype_id ?? '') : '';
-            $editFrequency = $isEdit ? ($editingFee->frequency ?? 'Monthly') : 'Monthly';
-            $editMonthCount = $isEdit ? ($editingFee->month_count ?? 0) : 0;
-            $editAmount = $isEdit ? ($editingFee->amount ?? '') : '';
-            $editNote = $isEdit ? ($editingFee->note ?? '') : '';
-        @endphp
-        <div>
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">{{ $isEdit ? 'Edit Fee Structure' : 'Add Fee Structure' }} : {{ $current_session_name ?? ($sessionLabel ?? '') }}</h3>
-                </div>
+    @php
+        $isEdit = !empty($editingFee);
+        $editId = $isEdit ? ($editingFee->id ?? $id) : null;
+        $editClassId = $isEdit ? ($editingFee->fee_class_id ?? '') : '';
+        $editFeeTypeId = $isEdit ? ($editingFee->feetype_id ?? '') : '';
+        $editFrequency = $isEdit ? ($editingFee->frequency ?? 'Monthly') : 'Monthly';
+        $editMonthCount = $isEdit ? ($editingFee->month_count ?? 0) : 0;
+        $editAmount = $isEdit ? ($editingFee->amount ?? '') : '';
+        $editNote = $isEdit ? ($editingFee->note ?? '') : '';
+    @endphp
 
-                <form id="feemasterform" action="{{ $isEdit ? url('admin/account/feemaster/edit/' . $editId . '/' . $brc_id) : url('admin/account/feemaster/' . $brc_id) }}" method="POST">
-                    @csrf
-                    @if ($isEdit)
-                        <input type="hidden" name="id" value="{{ $editId }}">
-                    @endif
-                    <div class="box-body">
-                        {{-- Branch Dropdown --}}
-                        <div class="form-group">
-                            <label for="brc_id">Branch <span class="req">*</span></label>
-                            <select id="brc_id" name="brc_id" class="form-control-cmsc" onchange="getBranchByID(this.value)">
-                                <option value="">Select</option>
-                                @foreach ($branchlist as $brc)
-                                    <option value="{{ $brc->id }}" {{ (string)$brc_id === (string)$brc->id ? 'selected' : '' }}>
-                                        {{ $brc->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('brc_id')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Class Dropdown --}}
-                        <div class="form-group">
-                            <label for="class_id">Class <span class="req">*</span></label>
-                            <select id="class_id" name="class_id" class="form-control-cmsc" required>
-                                <option value="">Select</option>
-                                @foreach ($classlist as $class)
-                                    <option value="{{ $class->id }}" {{ (string)old('class_id', $editClassId) === (string)$class->id ? 'selected' : '' }}>
-                                        {{ $class->class }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('class_id')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Frequency Dropdown --}}
-                        <div class="form-group">
-                            <label for="frequency">Frequency <span class="req">*</span></label>
-                            <select id="frequency" name="frequency" class="form-control-cmsc" required>
-                                <option value="">Select</option>
-                                <option value="One Time" {{ old('frequency', $editFrequency) === 'One Time' ? 'selected' : '' }}>One Time</option>
-                                <option value="Monthly" {{ old('frequency', $editFrequency) === 'Monthly' ? 'selected' : '' }}>Monthly</option>
-                                <option value="Yearly" {{ old('frequency', $editFrequency) === 'Yearly' ? 'selected' : '' }}>Yearly</option>
-                            </select>
-                            @error('frequency')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Month Count (shown when installments/both mode) --}}
-                        <div class="form-group fee-month-count-group" id="monthCountGroup" style="{{ $show_month_count ? '' : 'display:none;' }}">
-                            <label for="month_count">Month <span class="req">*</span></label>
-                            <input id="month_count" name="month_count" type="number" min="0" class="form-control-cmsc" value="{{ old('month_count', $editMonthCount) }}" />
-                            @error('month_count')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Fee Type Dropdown --}}
-                        <div class="form-group">
-                            <label for="feetype_id">Fee Type <span class="req">*</span></label>
-                            <select id="feetype_id" name="feetype_id" class="form-control-cmsc" required>
-                                <option value="">Select</option>
-                                @foreach ($feetypeList as $feetype)
-                                    <option value="{{ $feetype->id }}" {{ (string)old('feetype_id', $editFeeTypeId) === (string)$feetype->id ? 'selected' : '' }}>
-                                        {{ $feetype->name ?? ($feetype->type ?? '') }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('feetype_id')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Amount Input --}}
-                        <div class="form-group">
-                            <label for="amount_display">Amount({{ $currency_symbol ?? ($currencySymbol ?? 'Rs.') }}) <span class="req">*</span></label>
-                            <input id="amount_display" type="number" step="any" placeholder="" class="form-control-cmsc" value="{{ old('amount_display', old('amount', $editAmount)) }}" required />
-                            <input id="amount" name="amount" type="hidden" value="{{ old('amount', $editAmount) }}" />
-                            @error('amount')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        {{-- Description Textarea --}}
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" class="form-control-cmsc" rows="3" placeholder="Enter Description">{{ old('description', $editNote) }}</textarea>
-                            @error('description')
-                                <span style="color: #ff0000; font-size: 12px; display: block; margin-top: 4px;">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="box-footer footer-end">
-                        <button type="submit" class="btn-save-cmsc">Save</button>
-                    </div>
-                </form>
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Fee Structure List : {{ $current_session_name ?? ($sessionLabel ?? '') }}</h3>
+            <div class="header-tools-group">
+                <button type="button" class="btn-add-modal" onclick="openAddFeeMasterModal()">
+                    <i class="fa fa-plus"></i> Add
+                </button>
+                <button type="button" class="btn-pdf-download" onclick="generateFeePdfDownload()">
+                    <i class="fa fa-download"></i> PDF Download
+                </button>
             </div>
         </div>
 
-        {{-- Right Side: Fee Structure List Card --}}
-        <div>
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Fee Structure List : {{ $current_session_name ?? ($sessionLabel ?? '') }}</h3>
-                    <button type="button" class="btn-pdf-download" onclick="generateFeePdfDownload()">
-                        <i class="fa fa-download"></i> PDF Download
-                    </button>
-                </div>
-
-                <div class="box-body">
-                    {{-- Toolbar: Search on Left, Export Buttons on Right --}}
-                    <div class="dt-toolbar">
+        <div class="box-body">
+            {{-- Toolbar: Search on Left, Export Buttons on Right --}}
+            <div class="dt-toolbar">
                         <div>
                             <input type="text" id="tableSearch" placeholder="Search..." class="dt-search-input" onkeyup="filterFeeTable()" autocomplete="off" />
                         </div>
@@ -266,6 +158,127 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- Modern Add / Edit Fee Structure Modal Popup --}}
+<div class="coa-modal-backdrop" id="feeMasterModal" onclick="handleFeeModalBackdrop(event)">
+    <div class="coa-modal-dialog modal-dialog-md">
+        <div class="coa-modal-header">
+            <h4 class="coa-modal-title" id="feeMasterModalTitle">
+                <i class="fa fa-plus-circle"></i> {{ $isEdit ? 'Edit Fee Structure' : 'Add Fee Structure' }}
+            </h4>
+            <button type="button" class="coa-modal-close" onclick="closeAddFeeMasterModal()" aria-label="Close">&times;</button>
+        </div>
+
+        <form id="feemasterform" action="{{ $isEdit ? url('admin/account/feemaster/edit/' . $editId . '/' . $brc_id) : url('admin/account/feemaster/' . $brc_id) }}" method="POST">
+            @csrf
+            @if ($isEdit)
+                <input type="hidden" name="id" value="{{ $editId }}">
+            @endif
+
+            <div class="coa-modal-body">
+                <div class="grid-2-col">
+                    {{-- Branch Dropdown --}}
+                    <div class="form-group">
+                        <label for="brc_id">Branch <span class="req">*</span></label>
+                        <select id="brc_id" name="brc_id" class="form-control-cmsc" onchange="getBranchByID(this.value)">
+                            <option value="">Select</option>
+                            @foreach ($branchlist as $brc)
+                                <option value="{{ $brc->id }}" {{ (string)$brc_id === (string)$brc->id ? 'selected' : '' }}>
+                                    {{ $brc->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('brc_id')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Class Dropdown --}}
+                    <div class="form-group">
+                        <label for="class_id">Class <span class="req">*</span></label>
+                        <select id="class_id" name="class_id" class="form-control-cmsc" required>
+                            <option value="">Select</option>
+                            @foreach ($classlist as $class)
+                                <option value="{{ $class->id }}" {{ (string)old('class_id', $editClassId) === (string)$class->id ? 'selected' : '' }}>
+                                    {{ $class->class }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('class_id')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid-2-col">
+                    {{-- Frequency Dropdown --}}
+                    <div class="form-group">
+                        <label for="frequency">Frequency <span class="req">*</span></label>
+                        <select id="frequency" name="frequency" class="form-control-cmsc" required>
+                            <option value="">Select</option>
+                            <option value="One Time" {{ old('frequency', $editFrequency) === 'One Time' ? 'selected' : '' }}>One Time</option>
+                            <option value="Monthly" {{ old('frequency', $editFrequency) === 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                            <option value="Yearly" {{ old('frequency', $editFrequency) === 'Yearly' ? 'selected' : '' }}>Yearly</option>
+                        </select>
+                        @error('frequency')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Fee Type Dropdown --}}
+                    <div class="form-group">
+                        <label for="feetype_id">Fee Type <span class="req">*</span></label>
+                        <select id="feetype_id" name="feetype_id" class="form-control-cmsc" required>
+                            <option value="">Select</option>
+                            @foreach ($feetypeList as $feetype)
+                                <option value="{{ $feetype->id }}" {{ (string)old('feetype_id', $editFeeTypeId) === (string)$feetype->id ? 'selected' : '' }}>
+                                    {{ $feetype->name ?? ($feetype->type ?? '') }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('feetype_id')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Month Count & Amount --}}
+                <div class="grid-2-col">
+                    <div class="form-group fee-month-count-group" id="monthCountGroup">
+                        <label for="month_count">Month <span class="req">*</span></label>
+                        <input id="month_count" name="month_count" type="number" min="0" class="form-control-cmsc" value="{{ old('month_count', $editMonthCount) }}" />
+                        @error('month_count')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount_display">Amount ({{ $currency_symbol ?? ($currencySymbol ?? 'Rs.') }}) <span class="req">*</span></label>
+                        <input id="amount_display" type="number" step="any" placeholder="0.00" class="form-control-cmsc" value="{{ old('amount_display', old('amount', $editAmount)) }}" required />
+                        <input id="amount" name="amount" type="hidden" value="{{ old('amount', $editAmount) }}" />
+                        @error('amount')
+                            <span class="text-danger font-12">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Description Textarea --}}
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control-cmsc" rows="3" placeholder="Enter Description">{{ old('description', $editNote) }}</textarea>
+                    @error('description')
+                        <span class="text-danger font-12">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="coa-modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="closeAddFeeMasterModal()">Cancel</button>
+                <button type="submit" class="btn-modal-save">{{ $isEdit ? 'Update' : 'Save' }}</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -764,6 +777,62 @@
             }
         });
     }
+
+    function openAddFeeMasterModal() {
+        var modal = document.getElementById('feeMasterModal');
+        var form = document.getElementById('feemasterform');
+        var title = document.getElementById('feeMasterModalTitle');
+        var classSelect = document.getElementById('class_id');
+        var feetypeSelect = document.getElementById('feetype_id');
+        var amountDisplay = document.getElementById('amount_display');
+        var amountHidden = document.getElementById('amount');
+        var descField = document.getElementById('description');
+
+        if (form) {
+            form.action = "{{ url('admin/account/feemaster/' . $brc_id) }}";
+        }
+        if (title) title.innerHTML = '<i class="fa fa-plus-circle"></i> Add Fee Structure';
+        if (classSelect) classSelect.value = '';
+        if (feetypeSelect) feetypeSelect.value = '';
+        if (amountDisplay) amountDisplay.value = '';
+        if (amountHidden) amountHidden.value = '';
+        if (descField) descField.value = '';
+
+        if (modal) {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeAddFeeMasterModal() {
+        var modal = document.getElementById('feeMasterModal');
+        if (modal) {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function handleFeeModalBackdrop(event) {
+        if (event.target && event.target.classList.contains('coa-modal-backdrop')) {
+            closeAddFeeMasterModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAddFeeMasterModal();
+        }
+    });
+
+    @if ($isEdit || $errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('feeMasterModal');
+            if (modal) {
+                modal.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    @endif
 </script>
 <script src="{{ asset('assets/dist/datatables/js/pdfmake.min.js') }}"></script>
 <script src="{{ asset('assets/dist/datatables/js/vfs_fonts.js') }}"></script>

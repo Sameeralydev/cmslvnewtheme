@@ -543,7 +543,11 @@
                         data-sidebar-toggle
                         data-sidebar-target="sidebar-menu-{{ $item['key'] }}"
                         aria-expanded="{{ $isExpanded ? 'true' : 'false' }}"
+<<<<<<< HEAD
                         href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}"
+=======
+                        href="{{ (!empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route'])) ? route($item['route'], absolute: false) : 'javascript:void(0);' }}"
+>>>>>>> d2db107 (feat: Payment Voucher & Expense Bill 2-Up PDF print download, table layout and account modules updates)
                     >
                         <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                         <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
@@ -555,10 +559,16 @@
                             @foreach ($item['children'] as $child)
                                 @php
                                     $childKey = $child['key'] ?? '';
+<<<<<<< HEAD
                                     $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
                                     // Keep navigation URLs clean. Menu state is handled by the
                                     // sidebar toggle and active route detection, not query strings.
                                     $childUrl = route($child['route'], absolute: false);
+=======
+                                    $hasRoute = !empty($child['route']) && \Illuminate\Support\Facades\Route::has($child['route']);
+                                    $childIsCurrent = $hasRoute && request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
+                                    $childUrl = $hasRoute ? route($child['route'], absolute: false) : '#';
+>>>>>>> d2db107 (feat: Payment Voucher & Expense Bill 2-Up PDF print download, table layout and account modules updates)
                                 @endphp
                                 <a class="admin-sidebar-link admin-sidebar-child {{ $childIsCurrent ? 'is-active' : '' }}" href="{{ $childUrl }}">
                                     <span class="admin-sidebar-link-icon"><i class="fa fa-angle-double-right"></i></span>
@@ -569,7 +579,7 @@
                     </div>
                 </div>
             @else
-                <a class="admin-sidebar-link px-3 {{ $itemIsActive ? 'is-active' : '' }}" href="{{ !empty($item['route']) ? route($item['route'], absolute: false) : '#' }}">
+                <a class="admin-sidebar-link px-3 {{ $itemIsActive ? 'is-active' : '' }}" href="{{ (!empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route'])) ? route($item['route'], absolute: false) : '#' }}">
                     <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                     <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
                 </a>

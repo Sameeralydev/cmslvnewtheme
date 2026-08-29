@@ -12,122 +12,13 @@
     <div class="legacy-coa">
         <section class="content">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">{{ $title }}</h3>
-                        </div>
-
-                        <form action="{{ $account ? route('admin.account.accounts.accountshead.update', ['account' => $account->id, 'branch' => $branchId], false) : route('admin.account.accounts.accountshead.store', ['branch' => $branchId], false) }}" method="post" accept-charset="utf-8">
-                            @csrf
-                            <div class="box-body">
-
-                                @if ($account)
-                                    <input type="hidden" name="id" value="{{ $account->id }}">
-                                @endif
-
-                                @if ($branches !== [])
-                                    <div class="form-group">
-                                        <label>Branch</label><small class="req"> *</small>
-                                        <select id="brc_id" name="brc_id" class="form-control selectval brc_id" onchange="getBranchByID(this.value);">
-                                            <option value="">Select</option>
-                                            @foreach ($branches as $branch)
-                                                <option value="{{ $branch->id }}" @selected((int) $branchId === (int) $branch->id)>{{ $branch->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endif
-
-                                <div class="form-group">
-                                    <label>Account Head</label><small class="req"> *</small>
-                                    <select id="accounts_head_id" name="accounts_head_id" class="form-control">
-                                        <option value="">Select</option>
-                                        @foreach ($accountTypes as $accountType)
-                                            <option value="{{ $accountType->id }}" @selected((string) $selectedHeadId === (string) $accountType->id)>{{ $accountType->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('accounts_head_id')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Account Type</label><small class="req"> *</small>
-                                    <select id="account_type_id" name="account_type_id" class="form-control selectval">
-                                        <option value="">Select</option>
-                                        @foreach ($newAccounts as $newAccount)
-                                            <option value="{{ $newAccount->id }}" @selected((string) $selectedTypeId === (string) $newAccount->id)>{{ $newAccount->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('account_type_id')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div id="ooa" class="hidden">
-                                    <div class="form-group">
-                                        <label>Account Name</label> <small class="req"> *</small>
-                                        <input autofocus id="name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}">
-                                        @error('name')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div id="ob" class="hidden">
-                                        <div class="form-group">
-                                            <label>Staff</label>
-                                            <select id="staff_id" name="staff_id" class="form-control">
-                                                <option value="">Select</option>
-                                                @foreach ($staffList as $staff)
-                                                    <option value="{{ $staff->staff_id ?? $staff->id }}" @selected((string) old('staff_id', $account->staff_id ?? '') === (string) ($staff->staff_id ?? $staff->id))>
-                                                        {{ $staff->employee_id }} - {{ trim(($staff->name ?? '').' '.($staff->surname ?? '')) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Opening Balance Date</label>
-                                            <input id="date" name="date" type="date" class="form-control date" value="{{ old('date', isset($openingBalance->date) ? \Illuminate\Support\Carbon::parse($openingBalance->date)->toDateString() : now()->toDateString()) }}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Opening Balance Amount</label>
-                                            <input id="opening_balance_amount" name="opening_balance_amount" type="text" class="form-control" value="{{ $openingAmount }}" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $account->note ?? '') }}</textarea>
-                                    </div>
-                                </div>
-
-                                <div id="ooamsg" class="hidden">
-                                    <div class="alert alert-danger text-left trevd hidden">Please add "trade receivable" in the "Student Admission" menu from "Admission Process" tab.</div>
-                                    <div class="alert alert-danger text-left trpayabl hidden">Please add "trade Payable" in the "Supplier" menu from "Inventory Process" tab.</div>
-                                    <div class="alert alert-danger text-left invt hidden">Please add "Inventories" in the "Product/Service" menu from "Inventory Process" tab.</div>
-                                    <div class="alert alert-danger text-left salaies hidden">Please add " Staff Directory" in the "Employees" menu from "Staff Recruitment" tab.</div>
-                                    <div class="alert alert-danger text-left sales hidden">"Sales" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
-                                    <div class="alert alert-danger text-left salesreturn hidden">"Sales Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left purchases hidden">"Purchases" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left purchasesreturn hidden">"Purchases Return" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                    <div class="alert alert-danger text-left costofsales hidden">"Cost of Sales" accounts cannot be created here. They are automatically generated when adding new products / services</div>
-                                </div>
-                            </div>
-
-                            <div class="box-footer footer-end">
-                                @if ($account)
-                                    <a href="{{ route('admin.account.accounts.accountshead', ['branch' => $branchId], false) }}" class="btn btn-default">Cancel</a>
-                                @endif
-                                <button type="submit" class="btn btn-primary">{{ $account ? 'Update' : 'Save' }}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="box box-primary">
                         <div class="box-header ptbnull">
                             <h3 class="box-title titlefix">Accounts Head List</h3>
+                            <button type="button" class="btn-add-modal" onclick="openAddAccountHeadModal()">
+                                <i class="fa fa-plus"></i> Add
+                            </button>
                         </div>
                         <div class="box-body">
                             <div class="legacy-datatable-toolbar">
@@ -210,6 +101,122 @@
         </section>
     </div>
 
+    {{-- Modern Add / Edit Modal Popup --}}
+    <div class="coa-modal-backdrop" id="accountHeadModal" onclick="handleHeadModalBackdropClick(event)">
+        <div class="coa-modal-dialog modal-dialog-lg">
+            <div class="coa-modal-header">
+                <h4 class="coa-modal-title" id="accountHeadModalTitle">
+                    {{ $account ? 'Edit Account' : 'Add New Account' }}
+                </h4>
+                <button type="button" class="coa-modal-close" onclick="closeAddAccountHeadModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <form id="accountHeadForm" action="{{ $account ? route('admin.account.accounts.accountshead.update', ['account' => $account->id, 'branch' => $branchId], false) : route('admin.account.accounts.accountshead.store', ['branch' => $branchId], false) }}" method="post" accept-charset="utf-8">
+                @csrf
+                <input type="hidden" name="id" id="modalAccountHeadId" value="{{ $account->id ?? '' }}">
+
+                <div class="coa-modal-body">
+                    <div class="grid-3-col">
+                        @if ($branches !== [])
+                            <div class="form-group">
+                                <label>Branch <span class="req">*</span></label>
+                                <select id="modal_brc_id" name="brc_id" class="form-control selectval brc_id" onchange="getBranchByID(this.value);">
+                                    <option value="">Select</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}" @selected((int) $branchId === (int) $branch->id)>{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        <div class="form-group">
+                            <label>Account Head <span class="req">*</span></label>
+                            <select id="modal_accounts_head_id" name="accounts_head_id" class="form-control" required>
+                                <option value="">Select</option>
+                                @foreach ($accountTypes as $accountType)
+                                    <option value="{{ $accountType->id }}" @selected((string) $selectedHeadId === (string) $accountType->id)>{{ $accountType->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('accounts_head_id')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label>Account Type <span class="req">*</span></label>
+                            <select id="modal_account_type_id" name="account_type_id" class="form-control selectval" required>
+                                <option value="">Select</option>
+                                @foreach ($newAccounts as $newAccount)
+                                    <option value="{{ $newAccount->id }}" @selected((string) $selectedTypeId === (string) $newAccount->id)>{{ $newAccount->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('account_type_id')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div id="modal_ooa">
+                        <div class="grid-2-col">
+                            <div class="form-group">
+                                <label>Account Name <span class="req">*</span></label>
+                                <input id="modal_name" name="name" type="text" class="form-control" value="{{ old('name', $account->name ?? '') }}" placeholder="Enter account name" required>
+                                @error('name')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="form-group" id="modal_staff_group">
+                                <label>Staff (Optional)</label>
+                                <select id="modal_staff_id" name="staff_id" class="form-control">
+                                    <option value="">Select Staff</option>
+                                    @foreach ($staffList as $staff)
+                                        <option value="{{ $staff->staff_id ?? $staff->id }}" @selected((string) old('staff_id', $account->staff_id ?? '') === (string) ($staff->staff_id ?? $staff->id))>
+                                            {{ $staff->employee_id }} - {{ trim(($staff->name ?? '').' '.($staff->surname ?? '')) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2-col" id="modal_ob_fields">
+                            <div class="form-group">
+                                <label>Opening Balance Date</label>
+                                <input id="modal_date" name="date" type="date" class="form-control date" value="{{ old('date', isset($openingBalance->date) ? \Illuminate\Support\Carbon::parse($openingBalance->date)->toDateString() : now()->toDateString()) }}">
+                            </div>
+                            <div class="form-group">
+                                <label>Opening Balance Amount</label>
+                                <input id="modal_opening_balance_amount" name="opening_balance_amount" type="text" class="form-control" value="{{ $openingAmount }}" placeholder="0.00" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description / Notes</label>
+                            <textarea class="form-control" id="modal_description" name="description" rows="3" placeholder="Enter any notes or description...">{{ old('description', $account->note ?? '') }}</textarea>
+                        </div>
+                    </div>
+
+                    <div id="modal_ooamsg" class="hidden">
+                        <div class="alert alert-danger text-left trevd hidden">Please add "trade receivable" in the "Student Admission" menu from "Admission Process" tab.</div>
+                        <div class="alert alert-danger text-left trpayabl hidden">Please add "trade Payable" in the "Supplier" menu from "Inventory Process" tab.</div>
+                        <div class="alert alert-danger text-left invt hidden">Please add "Inventories" in the "Product/Service" menu from "Inventory Process" tab.</div>
+                        <div class="alert alert-danger text-left salaies hidden">Please add "Staff Directory" in the "Employees" menu from "Staff Recruitment" tab.</div>
+                        <div class="alert alert-danger text-left sales hidden">"Sales" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                        <div class="alert alert-danger text-left salesreturn hidden">"Sales Return" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                        <div class="alert alert-danger text-left purchases hidden">"Purchases" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                        <div class="alert alert-danger text-left purchasesreturn hidden">"Purchases Return" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                        <div class="alert alert-danger text-left costofsales hidden">"Cost of Sales" accounts cannot be created here. They are automatically generated when adding new products / services.</div>
+                    </div>
+                </div>
+
+                <div class="coa-modal-footer">
+                    <button type="button" class="btn-modal-cancel" onclick="closeAddAccountHeadModal()">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="modalHeadSubmitBtn">{{ $account ? 'Update' : 'Save' }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Toast Notification --}}
     <div id="accHeadToast" style="display: none; position: fixed; bottom: 25px; right: 25px; background: #24448d; color: #fff; padding: 10px 18px; border-radius: 4px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 99999;">
         Table copied to clipboard!
@@ -233,34 +240,45 @@
                 36: 'purchasesreturn',
                 37: 'costofsales'
             };
-            document.querySelectorAll('#ooamsg .alert').forEach(function (element) {
+            document.querySelectorAll('#modal_ooamsg .alert').forEach(function (element) {
+                element.classList.add('hidden');
                 element.style.display = 'none';
             });
 
-            if (blocked[value]) {
-                document.getElementById('ooa').style.display = 'none';
-                document.getElementById('ooamsg').style.display = 'block';
-                document.querySelector('.' + blocked[value]).style.display = 'block';
+            var modalOoa = document.getElementById('modal_ooa');
+            var modalOoamsg = document.getElementById('modal_ooamsg');
 
+            if (blocked[value]) {
+                if (modalOoa) modalOoa.classList.add('hidden');
+                if (modalOoamsg) modalOoamsg.classList.remove('hidden');
+                var msgEl = document.querySelector('#modal_ooamsg .' + blocked[value]);
+                if (msgEl) {
+                    msgEl.classList.remove('hidden');
+                    msgEl.style.display = 'block';
+                }
                 return;
             }
 
-            document.getElementById('ooamsg').style.display = 'none';
-            document.getElementById('ooa').style.display = 'block';
+            if (modalOoamsg) modalOoamsg.classList.add('hidden');
+            if (modalOoa) modalOoa.classList.remove('hidden');
         }
 
         function setOpeningBalanceVisibility(headId) {
-            document.getElementById('ob').style.display = ['1', '2', '3'].includes(String(headId)) ? 'block' : 'none';
+            var obFields = document.getElementById('modal_ob_fields');
+            var staffGroup = document.getElementById('modal_staff_group');
+            var show = ['1', '2', '3'].includes(String(headId));
+            if (obFields) obFields.style.display = show ? 'grid' : 'none';
+            if (staffGroup) staffGroup.style.display = show ? 'block' : 'none';
         }
 
         function loadAccountTypes(headId, selectedTypeId) {
-            var target = document.getElementById('account_type_id');
+            var target = document.getElementById('modal_account_type_id');
+            if (!target) return;
             target.innerHTML = '<option value="">Select</option>';
 
             if (!headId) {
                 setAccountTypeVisibility('');
                 setOpeningBalanceVisibility('');
-
                 return;
             }
 
@@ -285,6 +303,69 @@
                     setOpeningBalanceVisibility(headId);
                 });
         }
+
+        function openAddAccountHeadModal() {
+            var modal = document.getElementById('accountHeadModal');
+            var form = document.getElementById('accountHeadForm');
+            var title = document.getElementById('accountHeadModalTitle');
+            var submitBtn = document.getElementById('modalHeadSubmitBtn');
+            var idField = document.getElementById('modalAccountHeadId');
+            var nameField = document.getElementById('modal_name');
+            var descField = document.getElementById('modal_description');
+            var headSelect = document.getElementById('modal_accounts_head_id');
+            var typeSelect = document.getElementById('modal_account_type_id');
+            var obField = document.getElementById('modal_opening_balance_amount');
+
+            if (form) {
+                form.action = "{{ route('admin.account.accounts.accountshead.store', ['branch' => $branchId], false) }}";
+            }
+            if (title) title.innerText = 'Add New Account';
+            if (submitBtn) submitBtn.innerText = 'Save';
+            if (idField) idField.value = '';
+            if (nameField) nameField.value = '';
+            if (descField) descField.value = '';
+            if (obField) obField.value = '';
+            if (headSelect) headSelect.value = '';
+            if (typeSelect) typeSelect.innerHTML = '<option value="">Select</option>';
+
+            setAccountTypeVisibility('');
+            setOpeningBalanceVisibility('');
+
+            if (modal) {
+                modal.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeAddAccountHeadModal() {
+            var modal = document.getElementById('accountHeadModal');
+            if (modal) {
+                modal.classList.remove('is-open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function handleHeadModalBackdropClick(event) {
+            if (event.target && event.target.classList.contains('coa-modal-backdrop')) {
+                closeAddAccountHeadModal();
+            }
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeAddAccountHeadModal();
+            }
+        });
+
+        @if ($account || $errors->any())
+            document.addEventListener('DOMContentLoaded', function () {
+                var modal = document.getElementById('accountHeadModal');
+                if (modal) {
+                    modal.classList.add('is-open');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        @endif
 
         function postStatus(url, id) {
             fetch(url, {
@@ -315,16 +396,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            var headSelect = document.getElementById('accounts_head_id');
-            var typeSelect = document.getElementById('account_type_id');
+            var headSelect = document.getElementById('modal_accounts_head_id');
+            var typeSelect = document.getElementById('modal_account_type_id');
 
-            headSelect.addEventListener('change', function () {
-                loadAccountTypes(this.value, '');
-            });
-            typeSelect.addEventListener('change', function () {
-                setAccountTypeVisibility(this.value);
-            });
-            loadAccountTypes(headSelect.value, '{{ $selectedTypeId }}');
+            if (headSelect) {
+                headSelect.addEventListener('change', function () {
+                    loadAccountTypes(this.value, '');
+                });
+            }
+            if (typeSelect) {
+                typeSelect.addEventListener('change', function () {
+                    setAccountTypeVisibility(this.value);
+                });
+            }
+
+            if (headSelect && headSelect.value) {
+                loadAccountTypes(headSelect.value, '{{ $selectedTypeId }}');
+            }
 
             // Toolbar functionality
             var searchInput = document.getElementById('accHeadSearchInput');
