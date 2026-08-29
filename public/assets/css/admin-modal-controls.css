@@ -1,0 +1,45 @@
+/* Shared modal-control overrides. Loaded after legacy module CSS. */
+.admin-modal .admin-modal-panel {
+    width: min(620px, calc(100vw - 2rem));
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+}
+
+.admin-modal .admin-modal-panel button:not(.admin-modal-close) {
+    width: auto;
+    min-height: 2rem;
+    padding: .4rem .75rem;
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+
+.admin-modal .admin-modal-panel input[type="checkbox"],
+.admin-modal .admin-modal-panel input[type="radio"] {
+    width: 1rem;
+    min-width: 1rem;
+    height: 1rem;
+    min-height: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-modal .admin-modal-panel label:has(input[type="radio"]) {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    gap: .35rem;
+}
+
+.admin-modal .admin-modal-panel label:has(input[type="checkbox"]) {
+    width: auto;
+}
+
+.admin-modal .curriculum-compact-modal {
+    width: min(370px, calc(100vw - 2rem));
+}
+
+/* Subject Group has multiple fields and subjects; keep it comfortably landscape. */
+.admin-modal .curriculum-group-modal {
+    width: min(760px, calc(100vw - 2rem));
+    max-height: calc(100vh - 3rem);
+}

@@ -543,11 +543,7 @@
                         data-sidebar-toggle
                         data-sidebar-target="sidebar-menu-{{ $item['key'] }}"
                         aria-expanded="{{ $isExpanded ? 'true' : 'false' }}"
-<<<<<<< HEAD
-                        href="javascript:void(0);"
-=======
                         href="{{ $item['route'] ? route($item['route'], absolute: false) : '#' }}"
->>>>>>> 3ad0cb5a0f32fcd6b32268372f5f2da5b3c69c60
                     >
                         <span class="admin-sidebar-link-icon"><i class="{{ $item['icon'] }}"></i></span>
                         <span class="admin-sidebar-link-label">{{ $item['label'] }}</span>
@@ -558,16 +554,11 @@
                         <div class="admin-sidebar-tree-inner">
                             @foreach ($item['children'] as $child)
                                 @php
-<<<<<<< HEAD
-                                    $childIsCurrent = !empty($child['route']) && request()->routeIs($child['route']);
-                                    $childUrl = !empty($child['route']) ? route($child['route'], absolute: false) : '#';
-=======
                                     $childKey = $child['key'] ?? '';
                                     $childIsCurrent = request()->routeIs($child['route']) && ($requestedSubmenu === '' || $requestedSubmenu === $childKey);
                                     // Keep navigation URLs clean. Menu state is handled by the
                                     // sidebar toggle and active route detection, not query strings.
                                     $childUrl = route($child['route'], absolute: false);
->>>>>>> 3ad0cb5a0f32fcd6b32268372f5f2da5b3c69c60
                                 @endphp
                                 <a class="admin-sidebar-link admin-sidebar-child {{ $childIsCurrent ? 'is-active' : '' }}" href="{{ $childUrl }}">
                                     <span class="admin-sidebar-link-icon"><i class="fa fa-angle-double-right"></i></span>

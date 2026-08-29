@@ -46,7 +46,6 @@ const initializeAdminShell = () => {
         });
     }
 
-<<<<<<< HEAD
     /* Laravel Toast Functions */
     window.hideToast = function () {
         const toast = document.getElementById('appToast');
@@ -66,7 +65,6 @@ const initializeAdminShell = () => {
             window.hideToast();
         }, 3000);
     }
-=======
     document.querySelectorAll('[data-toast]').forEach((toast) => {
         const close = toast.querySelector('[data-toast-close]');
         const dismiss = () => {
@@ -105,6 +103,31 @@ const initializeAdminShell = () => {
         if (event.key === 'Escape') closeModal(document.querySelector('.admin-modal.is-open'));
     });
     if (document.querySelector('.admin-modal.is-open')) document.body.classList.add('admin-modal-open');
+
+    const importClass = document.getElementById('curriculum-import-class');
+    const importSubject = document.getElementById('curriculum-import-subject');
+    if (importClass && importSubject) {
+        importClass.addEventListener('change', async () => {
+            const selected = importClass.value;
+            importSubject.innerHTML = '<option value="">Loading...</option>';
+            importSubject.disabled = true;
+            if (!selected) {
+                importSubject.innerHTML = '<option value="">Select</option>';
+                importSubject.disabled = false;
+                return;
+            }
+            try {
+                const response = await fetch(importClass.dataset.subjectUrl.replace('__CLASS__', selected), {headers: {'Accept': 'application/json'}});
+                if (!response.ok) throw new Error('Unable to load subjects');
+                const subjects = await response.json();
+                importSubject.innerHTML = '<option value="">Select</option>' + subjects.map((subject) => `<option value="${subject.id}">${subject.name}${subject.code ? ` (${subject.code})` : ''}</option>`).join('');
+            } catch (error) {
+                importSubject.innerHTML = '<option value="">Unable to load subjects</option>';
+            } finally {
+                importSubject.disabled = false;
+            }
+        });
+    }
 
     const syllabusLabels = ['Branch', 'Term', 'Months', 'Class', 'Section', 'Subject', 'Status'];
     document.querySelectorAll('#syllabus-results th').forEach((header, index) => {
@@ -175,7 +198,93 @@ const initializeAdminShell = () => {
         headers.forEach((header, index) => { header.style.display = header.style.display === 'none' ? '' : 'none'; [...table.rows].forEach((row) => { if (row.cells[index]) row.cells[index].style.display = header.style.display; }); });
     });
 
->>>>>>> 3ad0cb5a0f32fcd6b32268372f5f2da5b3c69c60
+    const csvValue = (value) => `"${String(value).replaceAll('"', '""')}"`;
+    const finishCurriculumPrint = () => {
+        document.body.classList.remove('is-printing-curriculum');
+        document.querySelectorAll('#curriculum-table .print-hide-column').forEach((cell) => cell.classList.remove('print-hide-column'));
+    };
+
+    const printCurriculumTable = (table, title) => {
+        const printableTable = table.cloneNode(true);
+        const headers = [...printableTable.tHead.rows[0].cells];
+        const actionIndex = headers.findIndex((cell) => cell.textContent.trim().toLowerCase() === 'action');
+        if (actionIndex >= 0) [...printableTable.rows].forEach((row) => row.cells[actionIndex]?.remove());
+        printableTable.querySelectorAll('.curriculum-actions, .float-right').forEach((element) => element.remove());
+        printableTable.querySelectorAll('th.cursor-pointer').forEach((header) => {
+            header.textContent = header.textContent.replace(/[\u2191\u2193\u2195\u25b2\u25bc]/g, '').trim();
+        });
+
+        const printWindow = window.open('', '_blank', 'width=1000,height=700');
+        if (!printWindow) return;
+        printWindow.document.open();
+        printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><link rel="stylesheet" href="${window.location.origin}/assets/css/curriculum-print-table.css"></head><body><h1>${title}</h1>${printableTable.outerHTML}</body></html>`);
+        printWindow.document.close();
+        printWindow.addEventListener('load', () => {
+            printWindow.focus();
+            printWindow.print();
+        }, {once: true});
+    };
+
+    window.addEventListener('afterprint', finishCurriculumPrint);
+    document.addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-export]');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const table = button.closest('.curriculum-print-section')?.querySelector('#curriculum-table');
+        if (!table) return;
+        const visibleCells = (row) => [...row.cells].filter((cell) => cell.style.display !== 'none');
+        const rows = [...table.rows].map((row) => visibleCells(row).map((cell) => cell.innerText.trim()));
+
+        if (button.dataset.export === 'copy') {
+            await navigator.clipboard?.writeText(rows.map((row) => row.join('\t')).join('\n'));
+            return;
+        }
+        if (button.dataset.export === 'csv' || button.dataset.export === 'excel') {
+            const csv = rows.map((row) => row.map(csvValue).join(',')).join('\r\n');
+            const type = button.dataset.export === 'csv' ? 'text/csv;charset=utf-8' : 'application/vnd.ms-excel';
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([csv], {type}));
+            link.download = `curriculum.${button.dataset.export === 'csv' ? 'csv' : 'xls'}`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            return;
+        }
+        if (button.dataset.export === 'pdf' || button.dataset.export === 'print') {
+            const title = button.closest('.curriculum-print-section')?.querySelector('h2')?.textContent?.trim() || 'Curriculum List';
+            printCurriculumTable(table, title);
+        }
+    }, true);
+
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-column-toggle]');
+        if (!button) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        document.querySelectorAll('.curriculum-column-menu').forEach((menu) => menu.remove());
+        const table = document.getElementById(button.dataset.columnToggle);
+        if (!table?.tHead) return;
+        const menu = document.createElement('div');
+        menu.className = 'curriculum-column-menu';
+        [...table.tHead.rows[0].cells].forEach((header, index) => {
+            const label = document.createElement('label');
+            label.className = 'flex cursor-pointer items-center gap-2 px-2 py-1';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox'; checkbox.checked = header.style.display !== 'none'; checkbox.dataset.column = String(index);
+            label.append(checkbox, document.createTextNode(` ${header.innerText.replace(/[\u2191\u2193\u2195\u25b2\u25bc]/g, '').trim()}`));
+            menu.appendChild(label);
+        });
+        button.parentElement.classList.add('relative');
+        button.parentElement.appendChild(menu);
+        menu.addEventListener('change', (changeEvent) => {
+            const index = Number(changeEvent.target.dataset.column);
+            const visible = changeEvent.target.checked;
+            [...table.rows].forEach((row) => { if (row.cells[index]) row.cells[index].style.display = visible ? '' : 'none'; });
+        });
+        document.addEventListener('click', (closeEvent) => { if (!menu.contains(closeEvent.target) && closeEvent.target !== button) menu.remove(); }, {once: true});
+    }, true);
+
 };
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdminShell);

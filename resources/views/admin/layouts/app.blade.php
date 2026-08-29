@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/custom-toast.css') }}">
     @vite(['resources/css/app.css', 'resources/js/admin.js'])
     <link rel="stylesheet" href="{{ asset('assets/css/account-modules.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin-modal-controls.css') }}">
     @stack('styles')
 </head>
 

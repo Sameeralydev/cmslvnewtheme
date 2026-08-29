@@ -1,0 +1,40 @@
+/* Loaded after account-modules.css: keep only the Subject type options compact. */
+.admin-modal .curriculum-subject-type {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.admin-modal .curriculum-subject-type label {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 5px !important;
+    font-size: 14px !important;
+    line-height: 18px !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+}
+
+/* Use the browser's normal, small radio control — no large custom control. */
+.admin-modal .curriculum-subject-type input[type="radio"] {
+    -webkit-appearance: radio !important;
+    appearance: auto !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    width: 13px !important;
+    min-width: 13px !important;
+    height: 13px !important;
+    min-height: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: initial !important;
+    border-radius: initial !important;
+    background: initial !important;
+    box-shadow: none !important;
+    transform: none !important;
+}

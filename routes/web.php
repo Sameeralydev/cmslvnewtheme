@@ -267,6 +267,7 @@ Route::prefix('admin/academics')
             ->name('chapters.index');
         Route::post('/chapter', [ChapterController::class, 'store'])->middleware('permission:chapter,add')->name('chapters.store');
         Route::post('/chapter/import', [ChapterController::class, 'import'])->middleware('permission:chapter,add')->name('chapters.import');
+        Route::get('/chapter/subjects/{classId}', [ChapterController::class, 'subjectsForClass'])->middleware('permission:chapter,view')->name('chapters.subjects');
         Route::put('/chapter/{chapter}', [ChapterController::class, 'update'])->middleware('permission:chapter,edit')->name('chapters.update');
         Route::delete('/chapter/{chapter}', [ChapterController::class, 'destroy'])->middleware('permission:chapter,delete')->name('chapters.destroy');
 
@@ -405,6 +406,7 @@ Route::prefix('admin/academics')
             ->name('topics.index');
         Route::post('/topic', [TopicController::class, 'store'])->middleware('permission:topic,add')->name('topics.store');
         Route::post('/topic/import', [TopicController::class, 'import'])->middleware('permission:topic,add')->name('topics.import');
+        Route::get('/topic/subjects/{classId}', [TopicController::class, 'subjectsForClass'])->middleware('permission:topic,view')->name('topics.subjects');
         Route::put('/topic/{topic}', [TopicController::class, 'update'])->middleware('permission:topic,edit')->name('topics.update');
         Route::delete('/topic/{topic}', [TopicController::class, 'destroy'])->middleware('permission:topic,delete')->name('topics.destroy');
 

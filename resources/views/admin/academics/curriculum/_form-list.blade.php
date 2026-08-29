@@ -12,6 +12,11 @@
     $title = $titles[$kind];
     $routeBase = ['subjects'=>'subjects','subject-groups'=>'subject-groups','chapters'=>'chapters','topics'=>'topics','term-settings'=>'term-settings','week-settings'=>'week-settings','day-settings'=>'day-settings'][$kind];
 @endphp
+@if($kind === 'subjects')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/curriculum-subject-modal.css') }}">
+@endpush
+@endif
 @push('scripts')
 <script>(function(){const headers=[...document.querySelectorAll('#curriculum-table th.cursor-pointer')];headers.forEach(h=>{h.dataset.asc='1';h.textContent=h.textContent.replace(/[\u2195\u2191\u2193]|â†•/g,'').trim()+' ↑';h.addEventListener('click',()=>{const up=h.dataset.asc==='1';h.textContent=h.textContent.replace(/[\u2195\u2191\u2193]|â†•/g,'').trim()+(up?' ↓':' ↑')})})})();</script>
 @endpush
@@ -61,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-<div class="grid gap-4 lg:grid-cols-3">
+<div class="curriculum-print-page grid gap-4 lg:grid-cols-3">
     <section id="curriculum-form-modal" class="curriculum-print-hide admin-modal {{ (($edit || request()->filled('class_id') || request()->filled('subject_id')) && !session('success') && !session('error')) ? 'is-open' : '' }}" data-modal="curriculum-form">
-        <div class="admin-modal-panel rounded border border-neutral-200 bg-white p-4">
+        <div class="admin-modal-panel {{ $kind === 'subjects' ? 'curriculum-compact-modal' : '' }} {{ $kind === 'subject-groups' ? 'curriculum-group-modal' : '' }} rounded border border-neutral-200 bg-white p-4">
         <div class="mb-4 flex items-center justify-between border-b border-neutral-200 pb-3"><h2 class="text-lg font-medium">{{ $edit ? 'Edit '.$title : 'Add '.$title }}</h2><button type="button" class="admin-modal-close" data-modal-close="curriculum-form" aria-label="Close">&times;</button></div>
         <form method="POST" action="{{ $edit ? route('admin.academics.'.$routeBase.'.update',$edit) : route('admin.academics.'.$routeBase.'.store') }}" class="space-y-4">
             @csrf @if($edit) @method('PUT') @endif
@@ -72,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div><label class="mb-1 block text-sm">Description</label><textarea name="description" rows="3" class="w-full rounded border border-neutral-300 px-3 py-2">{{ old('description',$setting?->note) }}</textarea>@error('description')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
             @elseif($kind==='subjects')
                 <div><label class="mb-1 block text-sm">Subject Name <span class="text-red-600">*</span></label><input name="name" value="{{ old('name',$subject?->name) }}" required class="w-full rounded border border-neutral-300 px-3 py-2">@error('name')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
-                <div class="curriculum-subject-type flex gap-4"><label><input type="radio" name="type" value="theory" @checked(old('type',$subject?->type)==='theory') required> Theory</label><label><input type="radio" name="type" value="practical" @checked(old('type',$subject?->type)==='practical')> Practical</label></div>
-                <div><label class="mb-1 block text-sm">Subject Code <span class="text-red-600">*</span></label><input name="code" value="{{ old('code',$subject?->code) }}" required class="w-full rounded border border-neutral-300 px-3 py-2">@error('code')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
+                <div class="curriculum-subject-type"><label><input type="radio" name="type" value="theory" @checked(old('type',$subject?->type)==='theory') required> Theory</label><label><input type="radio" name="type" value="practical" @checked(old('type',$subject?->type)==='practical')> Practical</label></div>
+                <div class="curriculum-subject-code"><label class="mb-1 block text-sm">Subject Code <span class="text-red-600">*</span></label><input name="code" value="{{ old('code',$subject?->code) }}" required class="w-full rounded border border-neutral-300 px-3 py-2">@error('code')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
             @elseif($kind==='subject-groups')
                 <div><label class="mb-1 block text-sm">Class <span class="text-red-600">*</span></label><select name="class_id" required class="w-full rounded border border-neutral-300 px-3 py-2"><option value="">Select</option>@foreach($classes as $c)<option value="{{ $c->id }}" @selected((string)old('class_id',$subjectGroup?->class_id)===(string)$c->id)>{{ $c->class }}</option>@endforeach</select>@error('class_id')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
                 <div><label class="mb-1 block text-sm">Name <span class="text-red-600">*</span></label><input name="name" value="{{ old('name',$subjectGroup?->name) }}" required class="w-full rounded border border-neutral-300 px-3 py-2">@error('name')<p class="text-sm text-red-600">{{ $message }}</p>@enderror</div>
@@ -95,8 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mb-4 flex items-center justify-between border-b border-neutral-200 pb-3"><h2 class="text-lg font-medium">Import {{ $title }}s</h2><button type="button" class="admin-modal-close" data-modal-close="curriculum-import" aria-label="Close">&times;</button></div>
             <form method="POST" enctype="multipart/form-data" action="{{ route('admin.academics.'.$routeBase.'.import') }}" class="space-y-4">
                 @csrf
-                <div><label class="mb-1 block text-sm">Class <span class="text-red-600">*</span></label><select name="class_id" required class="w-full rounded border border-neutral-300 px-3 py-2"><option value="">Select</option>@foreach($classes as $c)<option value="{{ $c->id }}" @selected((string)($selectedClass??'')===(string)$c->id)>{{ $c->class }}</option>@endforeach</select></div>
-                <div><label class="mb-1 block text-sm">Subject <span class="text-red-600">*</span></label><select name="subject_id" required class="w-full rounded border border-neutral-300 px-3 py-2">@foreach($subjects as $s)<option value="{{ $s->id }}" @selected((string)($selectedSubject??'')===(string)$s->id)>{{ $s->name }} ({{ $s->code }})</option>@endforeach</select></div>
+                <div><label class="mb-1 block text-sm">Class <span class="text-red-600">*</span></label><select id="curriculum-import-class" name="class_id" data-subject-url="{{ $kind==='chapters' ? route('admin.academics.chapters.subjects', ['classId' => '__CLASS__'], false) : route('admin.academics.topics.subjects', ['classId' => '__CLASS__'], false) }}" required class="w-full rounded border border-neutral-300 px-3 py-2"><option value="">Select</option>@foreach($classes as $c)<option value="{{ $c->id }}" @selected((string)($selectedClass??'')===(string)$c->id)>{{ $c->class }}</option>@endforeach</select></div>
+                <div><label class="mb-1 block text-sm">Subject <span class="text-red-600">*</span></label><select id="curriculum-import-subject" name="subject_id" required class="w-full rounded border border-neutral-300 px-3 py-2"><option value="">Select</option>@foreach($subjects as $s)<option value="{{ $s->id }}" @selected((string)($selectedSubject??'')===(string)$s->id)>{{ $s->name }} ({{ $s->code }})</option>@endforeach</select></div>
                 @if($kind==='topics')<div><label class="mb-1 block text-sm">Chapter <span class="text-red-600">*</span></label><select name="chapter_id" required class="w-full rounded border border-neutral-300 px-3 py-2"><option value="">Select</option>@foreach($chapters as $co)<option value="{{ $co->id }}">{{ $co->name }} @if($co->urdu) / {{ $co->urdu }} @endif</option>@endforeach</select></div>@endif
                 <div><label class="mb-1 block text-sm">CSV File <span class="text-red-600">*</span></label><input type="file" name="file" accept=".csv,.txt" required class="syllabus-file-input w-full rounded border border-neutral-300 px-3 py-2"><p class="mt-1 text-xs text-neutral-500">First column: English name. Second column: Urdu name (optional).</p></div>
                 <div class="flex justify-end border-t border-neutral-200 pt-3"><button class="rounded bg-blue-600 px-4 py-2 text-white">Import</button></div>
@@ -104,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </section>
     @endif
-    <section class="rounded border border-neutral-200 bg-white p-4 lg:col-span-3">
-        <div class="curriculum-print-hide mb-3 flex flex-wrap items-center justify-between gap-2"><h2 class="text-lg font-medium">{{ $title }} List</h2><div class="flex flex-wrap items-center gap-1"><button type="button" data-modal-open="curriculum-form" class="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"><i class="fa fa-plus"></i> Add</button><form><input name="search" value="{{ request('search') }}" placeholder="Search..." class="rounded border border-neutral-300 px-3 py-2"></form><button type="button" data-export="copy" title="Copy" aria-label="Copy" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-copy"></i></button><button type="button" data-export="excel" title="Excel" aria-label="Excel" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-file-excel"></i></button><button type="button" data-export="csv" title="CSV" aria-label="CSV" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-file-csv"></i></button><button type="button" data-export="pdf" title="PDF" aria-label="PDF" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-file-pdf"></i></button><button type="button" data-export="print" title="Print" aria-label="Print" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-print"></i></button><button type="button" id="column-toggle" title="Columns" aria-label="Columns" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-table-columns"></i></button></div></div>
+    <section class="curriculum-print-section rounded border border-neutral-200 bg-white p-4 lg:col-span-3">
+        <div class="curriculum-toolbar curriculum-print-hide mb-3"><h2 class="text-lg font-medium">{{ $title }} List</h2><div class="curriculum-toolbar-controls"><form><input name="search" value="{{ request('search') }}" placeholder="Search..." class="rounded border border-neutral-300 px-3 py-2"></form><button type="button" data-export="copy" title="Copy" aria-label="Copy" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-copy"></i></button><button type="button" data-export="excel" title="Excel" aria-label="Excel" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-file-excel"></i></button><button type="button" data-export="csv" title="CSV" aria-label="CSV" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-file-csv"></i></button><button type="button" data-export="pdf" title="PDF" aria-label="PDF" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-regular fa-file-pdf"></i></button><button type="button" data-export="print" title="Print" aria-label="Print" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-print"></i></button><button type="button" data-column-toggle="curriculum-table" title="Columns" aria-label="Columns" class="h-8 w-8 rounded bg-blue-800 text-white hover:bg-blue-700"><i class="fa-solid fa-table-columns"></i></button><button type="button" data-modal-open="curriculum-form" class="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"><i class="fa fa-plus"></i> Add</button></div></div>
         <div class="overflow-x-auto"><table id="curriculum-table" class="w-full text-left text-sm"><thead class="bg-blue-800 text-white"><tr>@if($kind==='subjects')<th class="cursor-pointer px-3 py-2">Subject ↕</th><th class="cursor-pointer px-3 py-2">Subject Code ↕</th><th class="cursor-pointer px-3 py-2">Subject Type ↕</th><th class="px-3 py-2">Action</th>@elseif($kind==='subject-groups')<th class="cursor-pointer px-3 py-2">Name ↕</th><th class="cursor-pointer px-3 py-2">Class ↕</th><th class="cursor-pointer px-3 py-2">Subject ↕</th><th class="px-3 py-2">Action</th>@elseif($kind==='chapters')<th class="cursor-pointer px-3 py-2">Class ↕</th><th class="px-3 py-2">Subject / Chapter</th>@elseif($kind==='topics')<th class="cursor-pointer px-3 py-2">Class ↕</th><th class="px-3 py-2">Subject / Chapter / Topic</th>@endif</tr></thead><tbody class="divide-y divide-neutral-200">
         @if(in_array($kind,['term-settings','week-settings','day-settings'],true))
             @forelse($records as $r)
@@ -125,31 +130,4 @@ document.addEventListener('DOMContentLoaded', function () {
         </tbody></table></div><div class="mt-3">{{ $records->links() }}</div>
     </section>
 </div>
-@push('scripts')
-<script>
-document.addEventListener('click', function (event) {
-    const button = event.target.closest('[data-export="pdf"], [data-export="print"]');
-    if (!button) return;
-    const headers = [...document.querySelectorAll('#curriculum-table th.cursor-pointer')];
-    const original = headers.map(header => header.textContent);
-    const table = document.querySelector('#curriculum-table');
-    const actionIndex = [...table.tHead.rows[0].cells].findIndex(cell => cell.textContent.trim().toLowerCase() === 'action');
-    const actionCells = actionIndex >= 0 ? [...table.rows].map(row => row.cells[actionIndex]).filter(Boolean) : [];
-    headers.forEach(header => {
-        header.textContent = header.textContent.replace(/[\u2191\u2193\u2195]/g, '').trim();
-    });
-    if (actionIndex >= 0) {
-        table.tHead.rows[0].cells[actionIndex].style.display = 'none';
-        actionCells.forEach(cell => cell.style.display = 'none');
-    }
-    window.setTimeout(() => {
-        headers.forEach((header, index) => header.textContent = original[index]);
-        if (actionIndex >= 0) {
-            table.tHead.rows[0].cells[actionIndex].style.display = '';
-            actionCells.forEach(cell => cell.style.display = '');
-        }
-    }, 1000);
-}, true);
-</script>
-@endpush
 @push('scripts')<script>document.querySelectorAll('#curriculum-table th.cursor-pointer').forEach((h,i)=>h.addEventListener('click',()=>{const t=h.closest('table'),body=t.tBodies[0],rows=[...body.rows];const asc=h.dataset.asc!=='1';h.dataset.asc=asc?'1':'0';rows.sort((a,b)=>(a.cells[i]?.innerText||'').localeCompare(b.cells[i]?.innerText||'',undefined,{numeric:true,sensitivity:'base'})*(asc?1:-1));rows.forEach(r=>body.appendChild(r))}));document.querySelectorAll('[data-export]').forEach(b=>b.addEventListener('click',async e=>{e.preventDefault();const table=document.getElementById('curriculum-table'),rows=[...table.rows].map(r=>[...r.cells].filter((_,i)=>table.querySelectorAll('th')[i]?.style.display!=='none').map(c=>c.innerText.trim()).join('\t')).join('\n');if(b.dataset.export==='copy')await navigator.clipboard.writeText(rows);if(['csv','excel'].includes(b.dataset.export)){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows],{type:b.dataset.export==='csv'?'text/csv':'application/vnd.ms-excel'}));a.download='curriculum.'+(b.dataset.export==='csv'?'csv':'xls');a.click()}if(b.dataset.export==='pdf'||b.dataset.export==='print')window.print()}));document.getElementById('column-toggle')?.addEventListener('click',()=>{const table=document.getElementById('curriculum-table'),headers=[...table.tHead.rows[0].cells],hidden=headers.map(h=>h.style.display==='none'),menu=document.createElement('div');menu.className='absolute z-50 mt-2 rounded border border-neutral-200 bg-white p-2 text-sm text-neutral-800 shadow-lg';menu.innerHTML=headers.map((h,i)=>`<label class="block whitespace-nowrap px-2 py-1"><input type="checkbox" ${hidden[i]?'':'checked'} data-column="${i}"> ${h.innerText.replace(/[↕]/g,'')}</label>`).join('');const button=document.getElementById('column-toggle');button.parentElement.classList.add('relative');button.parentElement.appendChild(menu);menu.addEventListener('change',e=>{const i=Number(e.target.dataset.column);[...table.rows].forEach(r=>{if(r.cells[i])r.cells[i].style.display=e.target.checked?'':'none'});});menu.addEventListener('mouseleave',()=>menu.remove())});const add=document.getElementById('add-name');add?.addEventListener('click',()=>{const row=document.createElement('div');row.className='grid grid-cols-2 gap-2';row.innerHTML='<input name="eng_name[]" placeholder="Name English *" required class="rounded border border-neutral-300 px-3 py-2"><input name="urdu_name[]" placeholder="Name Urdu" class="rounded border border-neutral-300 px-3 py-2">';document.querySelector('#name-rows, #module-rows')?.appendChild(row)});document.getElementById('curriculum-class')?.addEventListener('change',e=>{const u=new URL(window.location);u.searchParams.set('class_id',e.target.value);u.searchParams.delete('subject_id');window.location=u});document.getElementById('curriculum-subject')?.addEventListener('change',e=>{const u=new URL(window.location);u.searchParams.set('subject_id',e.target.value);window.location=u});</script>@endpush
