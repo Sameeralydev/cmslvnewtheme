@@ -57,6 +57,9 @@
 body.admin-modal-open { overflow:hidden; }
 .name-row, .curriculum-name-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto !important; align-items:end; gap:.5rem; }
 .name-row .remove-name, .curriculum-name-row .remove-name { margin-bottom:.25rem; }
+.curriculum-subject-type { align-items:center; gap:1rem; }
+.curriculum-subject-type label { display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap; }
+.curriculum-subject-type input[type='radio'] { width:1rem !important; min-width:1rem; height:1rem; margin:0; padding:0; }
 .admin-toast { position:fixed; top:14px; right:14px; left:auto; z-index:9999; display:flex; width:260px; height:58px; min-height:58px; max-width:calc(100vw - 2rem); align-items:center; gap:8px; overflow:hidden; border:1px solid #bbf7d0; border-radius:10px; padding:9px 12px 11px; font-size:11px; box-shadow:0 4px 12px rgb(15 23 42 / 16%); }
 .admin-toast-success { background:#d8fbe5; color:#2f7d55; }
 .admin-toast-error { border-color:#fecaca; background:#ffdede; color:#b23b3b; }
