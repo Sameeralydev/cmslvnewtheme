@@ -15,13 +15,13 @@
             </a>
         </nav>
 
-        <div class="system-settings-dashboard-grid">
+        <div class="grid gap-4 p-4 xl:grid-cols-2">
             @foreach ($settingGroups as $group => $items)
-                <section class="system-settings-group">
-                    <h2>{{ $group }}</h2>
-                    <div class="system-settings-group-grid">
+                <section class="rounded-xl border border-neutral-300 bg-white shadow-sm">
+                    <h2 class="bg-[#2f61b3] px-3 py-2 text-sm font-semibold uppercase tracking-wide text-white">{{ $group }}</h2>
+                    <div class="grid gap-3 p-3 sm:grid-cols-2">
                         @foreach ($items as $item)
-                            <div class="system-settings-card">{{ $item }}</div>
+                            <div class="flex min-h-[88px] items-center rounded-xl border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm font-semibold text-neutral-800 shadow-sm">{{ $item }}</div>
                         @endforeach
                     </div>
                 </section>
