@@ -1,0 +1,1 @@
+<label class="admin-field"><span>{{ $label }}</span>@if(($textarea ?? false))<textarea name="{{ $name }}">{{ old($name, $value ?? '') }}</textarea>@else<input name="{{ $name }}" type="{{ $type ?? 'text' }}" value="{{ old($name, $value ?? '') }}">@endif</label>

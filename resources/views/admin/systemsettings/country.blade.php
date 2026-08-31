@@ -1,0 +1,20 @@
+@extends('admin.layouts.app')
+
+@section('title', 'Country')
+
+@section('content')
+    <section class="admin-resource-page system-settings-resource" data-auto-open="{{ $edit ? 'country-modal' : '' }}">
+        <div class="admin-resource-heading"><div><h1>Country List</h1></div><a class="admin-button admin-button-primary" href="{{ route('admin.systemsettings.dashboard.short', absolute: false) }}">Dashboard</a></div>
+        <div class="admin-particle-content">
+                <div class="admin-resource-toolbar"><form method="get" action="{{ route('admin.systemsettings.country.index', absolute: false) }}"><input name="search" value="{{ $search }}" placeholder="Search countries..."><button class="admin-button admin-search-button" type="submit" aria-label="Search" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button></form><button class="admin-button admin-button-primary" type="button" data-modal-open="country-modal"><i class="fa-solid fa-plus"></i> Add Country</button></div>
+                <div id="country-modal" class="admin-modal" hidden role="dialog" aria-modal="true" aria-labelledby="country-modal-title"><div class="admin-modal-backdrop" data-modal-close></div><div class="admin-modal-dialog"><div class="admin-modal-header"><h2 id="country-modal-title">{{ $edit ? 'Edit Country' : 'Add Country' }}</h2><button type="button" class="admin-modal-close" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><form id="country-form" class="admin-modal-form" method="post" action="{{ $edit ? route('admin.systemsettings.country.update', ['id' => $edit->id], false) : route('admin.systemsettings.country.store', absolute: false) }}">
+                    @csrf
+                    <div class="admin-modal-fields"><label class="admin-field"><span>Code</span><input name="code" value="{{ old('code', $edit?->code) }}"></label><label class="admin-field"><span>Country <b>*</b></span><input name="name" required value="{{ old('name', $edit?->name) }}"></label><label class="admin-field"><span>Currency Code</span><input name="currencyCode" value="{{ old('currencyCode', $edit?->currencyCode) }}"></label><label class="admin-field"><span>Languages</span><input name="languages" value="{{ old('languages', $edit?->languages) }}"></label><label class="admin-field"><span>Telephone Prefix</span><input name="telephonePrefix" value="{{ old('telephonePrefix', $edit?->telephonePrefix) }}"></label><label class="admin-field"><span>Description</span><textarea name="description">{{ old('description', $edit?->note) }}</textarea></label></div>
+                    <div class="admin-modal-footer"><button class="admin-button" type="button" data-modal-close>Cancel</button><button class="admin-button admin-button-primary" type="submit">{{ $edit ? 'Update' : 'Save' }}</button></div>
+                </form></div></div>
+                <div class="admin-resource-table-wrap"><table class="admin-resource-table"><thead><tr><th>Code</th><th>Country</th><th>Currency Code</th><th>Languages</th><th>Telephone Prefix</th><th>Description</th><th>Actions</th></tr></thead><tbody>
+                    @forelse($countries as $country)<tr><td>{{ $country->code }}</td><td>{{ $country->name }}</td><td>{{ $country->currencyCode }}</td><td>{{ $country->languageNames }}</td><td>{{ $country->telephonePrefix }}</td><td>{{ $country->note }}</td><td class="admin-resource-actions"><a class="admin-icon-button" href="{{ route('admin.systemsettings.country.index', ['edit' => $country->id], false) }}" aria-label="Edit"><i class="fa-solid fa-pen"></i></a><form method="post" action="{{ route('admin.systemsettings.country.destroy', ['id' => $country->id], false) }}">@csrf<button class="admin-icon-button is-danger" type="submit" aria-label="Delete"><i class="fa-solid fa-trash"></i></button></form></td></tr>@empty<tr><td colspan="7">No countries found.</td></tr>@endforelse
+                </tbody></table></div><div class="admin-pagination">{{ $countries->links() }}</div>
+        </div>
+    </section>
+@endsection

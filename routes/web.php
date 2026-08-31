@@ -124,6 +124,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SystemNotificationController;
 use App\Http\Controllers\Admin\SystemSettingsDashboardController;
+use App\Http\Controllers\Admin\SystemSettingController;
+use App\Http\Controllers\Admin\GeneralSettingsController;
+use App\Http\Controllers\Admin\CountryController;
+use App\Http\Controllers\Admin\ParticleController;
 use App\Http\Controllers\Biometric\BiometricController;
 use App\Http\Controllers\Cron\CronController;
 use App\Http\Controllers\Frontend\WelcomeController;
@@ -224,6 +228,22 @@ Route::prefix('admin')
 
         Route::get('/setting/systemsettings/dashboard', [SystemSettingsDashboardController::class, 'index'])
             ->name('systemsettings.dashboard');
+        Route::get('/setting/dashboard', [SystemSettingsDashboardController::class, 'index'])
+            ->name('systemsettings.dashboard.short');
+        Route::get('/setting/general', [GeneralSettingsController::class, 'edit'])->name('systemsettings.general');
+        Route::post('/setting/general', [GeneralSettingsController::class, 'update'])->name('systemsettings.general.update');
+        Route::get('/setting/systemsettings', [GeneralSettingsController::class, 'edit'])->name('systemsettings.general.legacy');
+        Route::post('/setting/systemsettings', [GeneralSettingsController::class, 'update'])->name('systemsettings.general.legacy.update');
+        Route::get('/setting', [GeneralSettingsController::class, 'edit'])->name('systemsettings.short');
+        Route::post('/setting', [GeneralSettingsController::class, 'update'])->name('systemsettings.short.update');
+        Route::get('/setting/country', [CountryController::class, 'index'])->name('systemsettings.country.index');
+        Route::post('/setting/country', [CountryController::class, 'store'])->name('systemsettings.country.store');
+        Route::post('/setting/country/{id}/update', [CountryController::class, 'update'])->whereNumber('id')->name('systemsettings.country.update');
+        Route::post('/setting/country/{id}/delete', [CountryController::class, 'destroy'])->whereNumber('id')->name('systemsettings.country.destroy');
+        Route::get('/setting/{slug}', [SystemSettingController::class, 'index'])->whereIn('slug', array_keys(SystemSettingController::menu()))->name('systemsettings.resource');
+        Route::post('/setting/{slug}', [SystemSettingController::class, 'store'])->whereIn('slug', array_keys(SystemSettingController::menu()))->name('systemsettings.store');
+        Route::post('/setting/{slug}/{id}/update', [SystemSettingController::class, 'update'])->whereIn('slug', array_keys(SystemSettingController::menu()))->whereNumber('id')->name('systemsettings.update');
+        Route::post('/setting/{slug}/{id}/delete', [SystemSettingController::class, 'destroy'])->whereIn('slug', array_keys(SystemSettingController::menu()))->whereNumber('id')->name('systemsettings.destroy');
 
         Route::get('/membership', [MembershipController::class, 'index'])
             ->middleware('permission:membership,view')

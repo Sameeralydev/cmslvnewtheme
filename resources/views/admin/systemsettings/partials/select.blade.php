@@ -1,0 +1,1 @@
+<label class="admin-field"><span>{{ $label }}</span><select name="{{ $name }}"><option value="">Select</option>@foreach($items as $item)<option value="{{ $item->id }}" @selected((string) ($value ?? '') === (string) $item->id)>{{ $item->{$key ?? 'name'} }}</option>@endforeach</select></label>
